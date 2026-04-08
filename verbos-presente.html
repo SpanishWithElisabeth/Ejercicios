@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Verbos en presente – Spanish with Elisabeth</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f7f7f5;
+      color: #222;
+      min-height: 100vh;
+      padding: 32px 16px 60px;
+    }
+
+    /* ── HEADER ── */
+    header {
+      max-width: 680px;
+      margin: 0 auto 32px;
+    }
+
+    header a {
+      font-size: 0.82rem;
+      color: #999;
+      text-decoration: none;
+    }
+
+    header a:hover { color: #2e7d32; }
+
+    header h1 {
+      font-size: 1.55rem;
+      font-weight: 700;
+      color: #2e7d32;
+      margin: 8px 0 4px;
+    }
+
+    header p {
+      font-size: 0.92rem;
+      color: #888;
+    }
+
+    /* ── PROGRESS ── */
+    #progress-bar-wrap {
+      max-width: 680px;
+      margin: 0 auto 24px;
+    }
+
+    #progress-label {
+      font-size: 0.8rem;
+      color: #aaa;
+      margin-bottom: 6px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    #progress-track {
+      height: 6px;
+      background: #e0e0e0;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    #progress-fill {
+      height: 100%;
+      background: #2e7d32;
+      border-radius: 10px;
+      transition: width 0.4s ease;
+      width: 0%;
+    }
+
+    /* ── QUESTION CARD ── */
+    .card {
+      max-width: 680px;
+      margin: 0 auto 16px;
+      background: #fff;
+      border-radius: 16px;
+      border: 1px solid #e8e8e8;
+      padding: 28px 28px 24px;
+    }
+
+    .question-meta {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      color: #bbb;
+      margin-bottom: 10px;
+    }
+
+    .question-text {
+      font-size: 1.15rem;
+      color: #333;
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+
+    .question-text em {
+      font-style: italic;
+      color: #555;
+    }
+
+    /* ── MULTIPLE CHOICE ── */
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .choice-btn {
+      background: #f7f7f5;
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      padding: 12px 16px;
+      font-size: 1rem;
+      color: #333;
+      cursor: pointer;
+      text-align: left;
+      transition: border-color 0.15s, background 0.15s;
+      font-family: inherit;
+    }
+
+    .choice-btn:hover:not(:disabled) {
+      border-color: #81c784;
+      background: #f1f8f1;
+    }
+
+    .choice-btn.correct {
+      border-color: #43a047;
+      background: #e8f5e9;
+      color: #1b5e20;
+    }
+
+    .choice-btn.wrong {
+      border-color: #e53935;
+      background: #fce4ec;
+      color: #b71c1c;
+    }
+
+    /* ── DRAG THE WORDS ── */
+    .drag-sentence {
+      font-size: 1.05rem;
+      line-height: 2.2;
+      color: #333;
+      margin-bottom: 8px;
+    }
+
+    .drag-blank {
+      display: inline-block;
+      min-width: 90px;
+      border-bottom: 2px solid #2e7d32;
+      margin: 0 4px;
+      text-align: center;
+      color: #2e7d32;
+      font-weight: 600;
+      cursor: pointer;
+      padding: 0 6px;
+      vertical-align: bottom;
+      transition: background 0.15s;
+      border-radius: 4px 4px 0 0;
+    }
+
+    .drag-blank:hover { background: #f1f8f1; }
+
+    .drag-blank.filled {
+      background: #f1f8f1;
+    }
+
+    .drag-blank.correct-word {
+      border-bottom-color: #43a047;
+      color: #1b5e20;
+      background: #e8f5e9;
+    }
+
+    .drag-blank.wrong-word {
+      border-bottom-color: #e53935;
+      color: #b71c1c;
+      background: #fce4ec;
+    }
+
+    .word-bank {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 16px;
+      padding: 14px;
+      background: #f7f7f5;
+      border-radius: 10px;
+      min-height: 48px;
+    }
+
+    .word-chip {
+      background: #fff;
+      border: 2px solid #ddd;
+      border-radius: 20px;
+      padding: 5px 14px;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s;
+      user-select: none;
+    }
+
+    .word-chip:hover { border-color: #81c784; background: #f1f8f1; }
+    .word-chip.used { opacity: 0.35; pointer-events: none; }
+
+    /* ── FILL IN THE BLANK ── */
+    .blank-sentence {
+      font-size: 1.1rem;
+      line-height: 2;
+      color: #333;
+    }
+
+    .blank-input {
+      border: none;
+      border-bottom: 2px solid #2e7d32;
+      background: transparent;
+      font-size: 1.05rem;
+      font-family: inherit;
+      color: #2e7d32;
+      font-weight: 600;
+      width: 120px;
+      text-align: center;
+      outline: none;
+      padding: 2px 4px;
+      margin: 0 4px;
+    }
+
+    .blank-input.correct-input {
+      border-bottom-color: #43a047;
+      color: #1b5e20;
+    }
+
+    .blank-input.wrong-input {
+      border-bottom-color: #e53935;
+      color: #e53935;
+    }
+
+    /* ── FEEDBACK ── */
+    .feedback {
+      margin-top: 16px;
+      padding: 10px 16px;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      display: none;
+    }
+
+    .feedback.correct { background: #e8f5e9; color: #2e7d32; display: block; }
+    .feedback.wrong   { background: #fce4ec; color: #c62828; display: block; }
+
+    /* ── BUTTONS ── */
+    .btn-row {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      border: none;
+      border-radius: 50px;
+      padding: 10px 28px;
+      font-size: 0.95rem;
+      font-family: inherit;
+      cursor: pointer;
+      transition: background 0.15s;
+      font-weight: 600;
+    }
+
+    .btn-primary { background: #2e7d32; color: #fff; }
+    .btn-primary:hover { background: #1b5e20; }
+    .btn-secondary { background: #eee; color: #555; }
+    .btn-secondary:hover { background: #ddd; }
+
+    /* ── SCORE ── */
+    #score-bar {
+      max-width: 680px;
+      margin: 0 auto 20px;
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .score-dot {
+      width: 11px; height: 11px;
+      border-radius: 50%;
+      background: #ddd;
+      transition: background 0.3s;
+    }
+    .score-dot.c { background: #43a047; }
+    .score-dot.w { background: #e53935; }
+
+    /* ── RESULTS ── */
+    #results {
+      display: none;
+      max-width: 500px;
+      margin: 40px auto;
+      background: #fff;
+      border-radius: 20px;
+      border: 1px solid #e8e8e8;
+      padding: 40px 32px;
+      text-align: center;
+    }
+
+    #results h2 { font-size: 1.6rem; color: #2e7d32; margin-bottom: 8px; }
+    #results .score-big { font-size: 3rem; font-weight: 700; color: #2e7d32; margin: 16px 0; }
+    #results p { color: #666; font-size: 1rem; line-height: 1.6; margin-bottom: 6px; }
+
+    @media (max-width: 480px) {
+      .card { padding: 20px 16px; }
+      .question-text { font-size: 1rem; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <a href="index.html">← Volver a ejercicios</a>
+  <h1>Verbos en presente</h1>
+  <p>Trabajar · Hablar · Comer · Leer · Abrir · Vivir · Pintar</p>
+</header>
+
+<div id="progress-bar-wrap">
+  <div id="progress-label">Pregunta <span id="q-num">1</span> de <span id="q-total">14</span></div>
+  <div id="progress-track"><div id="progress-fill"></div></div>
+</div>
+
+<div id="score-bar"></div>
+<div id="question-area"></div>
+<div id="results">
+  <h2>Fin del ejercicio</h2>
+  <div class="score-big" id="final-score"></div>
+  <p id="result-msg"></p>
+  <div class="btn-row" style="justify-content:center; margin-top:24px;">
+    <button class="btn btn-primary" onclick="restart()">Intentar otra vez</button>
+    <a href="index.html"><button class="btn btn-secondary">Volver al inicio</button></a>
+  </div>
+</div>
+
+<script>
+// ── DATA ──────────────────────────────────────────────────────────────────────
+const questions = [
+  // MULTIPLE CHOICE
+  {
+    type: "mc",
+    prompt: "Elige la forma correcta.",
+    question: "you work (trabajar)",
+    options: ["trabajaras", "trabajas"],
+    answer: "trabajas"
+  },
+  {
+    type: "mc",
+    prompt: "Elige la forma correcta.",
+    question: "we speak (hablar)",
+    options: ["hablamos", "hablaramos"],
+    answer: "hablamos"
+  },
+  {
+    type: "mc",
+    prompt: "Elige la forma correcta.",
+    question: "she eats (comer)",
+    options: ["come", "coma"],
+    answer: "come"
+  },
+  {
+    type: "mc",
+    prompt: "Elige la forma correcta.",
+    question: "they read (leer)",
+    options: ["len", "leen"],
+    answer: "leen"
+  },
+  {
+    type: "mc",
+    prompt: "Elige la forma correcta.",
+    question: "we open (abrir)",
+    options: ["abrimos", "abremos"],
+    answer: "abrimos"
+  },
+
+  // DRAG THE WORDS — TRABAJAR
+  {
+    type: "drag",
+    prompt: "Arrastra la forma correcta del verbo a cada espacio.",
+    title: "Trabajar — completa las oraciones",
+    sentences: [
+      { before: "Hoy yo no", blank: "trabajo", after: "." },
+      { before: "Ella", blank: "trabaja", after: "esta noche." },
+      { before: "Manana tu", blank: "trabajas", after: "." },
+      { before: "Esta noche ellos", blank: "trabajan", after: "." },
+      { before: "Nosotros no", blank: "trabajamos", after: "el lunes." }
+    ]
+  },
+
+  // DRAG THE WORDS — COMER
+  {
+    type: "drag",
+    prompt: "Arrastra la forma correcta del verbo a cada espacio.",
+    title: "Comer — completa las oraciones",
+    sentences: [
+      { before: "Esta noche, yo", blank: "como", after: "con mis amigos." },
+      { before: "Ellas", blank: "comen", after: "en el restaurante." },
+      { before: "¿", blank: "Come", after: "usted con mi amiga el lunes?" },
+      { before: "Nosotros no", blank: "comemos", after: "carne, somos vegetarianos." },
+      { before: "¿", blank: "Comes", after: "tu con nosotros?" }
+    ]
+  },
+
+  // DRAG THE WORDS — VIVIR
+  {
+    type: "drag",
+    prompt: "Arrastra la forma correcta del verbo a cada espacio.",
+    title: "Vivir — completa las oraciones",
+    sentences: [
+      { before: "Maria", blank: "vive", after: "con su mama." },
+      { before: "Mis amigas", blank: "viven", after: "en Buenos Aires." },
+      { before: "Jose y yo", blank: "vivimos", after: "en España." },
+      { before: "¿", blank: "Vives", after: "tu con tu familia?" },
+      { before: "Yo", blank: "vivo", after: "en una casa pequeña." }
+    ]
+  },
+
+  // FILL IN THE BLANK
+  {
+    type: "fill",
+    prompt: "Escribe la forma correcta del verbo.",
+    question: "¿Como se dice \"I paint on Sunday\"? (pintar)",
+    sentence: "El domingo ___.",
+    answer: "pinto",
+    full: "El domingo [pinto]."
+  },
+  {
+    type: "fill",
+    prompt: "Escribe la forma correcta del verbo.",
+    question: "¿Como se dice \"I don't read in the morning\"? (leer)",
+    sentence: "Por la mañana no ___.",
+    answer: "leo",
+    full: "Por la mañana no [leo]."
+  },
+  {
+    type: "fill",
+    prompt: "Escribe la forma correcta del verbo.",
+    question: "¿Como se dice \"Are you opening your store\"? (abrir)",
+    sentence: "¿___ tu tienda?",
+    answer: "abres",
+    full: "¿[Abres] tu tienda?"
+  },
+  {
+    type: "fill",
+    prompt: "Escribe la forma correcta del verbo.",
+    question: "¿Como se dice \"Are you working on Saturday\"? (trabajar)",
+    sentence: "¿___ el sabado?",
+    answer: "trabajas",
+    full: "¿[Trabajas] el sabado?"
+  },
+  {
+    type: "fill",
+    prompt: "Escribe la forma correcta del verbo.",
+    question: "¿Como se dice \"We eat fruit every day\"? (comer)",
+    sentence: "___ frutas todos los dias.",
+    answer: "comemos",
+    full: "[Comemos] frutas todos los dias."
+  },
+  {
+    type: "fill",
+    prompt: "Escribe la forma correcta del verbo.",
+    question: "¿Como se dice \"Do you speak Spanish\"? (hablar)",
+    sentence: "¿___ español?",
+    answer: "hablas",
+    full: "¿[Hablas] español?"
+  }
+];
+
+// ── STATE ─────────────────────────────────────────────────────────────────────
+let current = 0;
+let score = 0;
+let answered = false;
+let dots = [];
+let dragState = {}; // for drag questions
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+function restart() {
+  current = 0; score = 0; answered = false; dragState = {};
+  document.getElementById("results").style.display = "none";
+  document.getElementById("question-area").style.display = "";
+  document.getElementById("progress-bar-wrap").style.display = "";
+  buildDots();
+  render();
+}
+
+function buildDots() {
+  const bar = document.getElementById("score-bar");
+  bar.innerHTML = "";
+  dots = [];
+  questions.forEach(() => {
+    const d = document.createElement("div");
+    d.className = "score-dot";
+    bar.appendChild(d);
+    dots.push(d);
+  });
+}
+
+function updateProgress() {
+  const pct = (current / questions.length) * 100;
+  document.getElementById("progress-fill").style.width = pct + "%";
+  document.getElementById("q-num").textContent = current + 1;
+  document.getElementById("q-total").textContent = questions.length;
+}
+
+// ── RENDER ────────────────────────────────────────────────────────────────────
+function render() {
+  answered = false;
+  updateProgress();
+  const q = questions[current];
+  const area = document.getElementById("question-area");
+
+  if (q.type === "mc")   area.innerHTML = renderMC(q);
+  if (q.type === "drag") area.innerHTML = renderDrag(q);
+  if (q.type === "fill") area.innerHTML = renderFill(q);
+}
+
+// MULTIPLE CHOICE
+function renderMC(q) {
+  const opts = q.options.map(o =>
+    `<button class="choice-btn" onclick="checkMC('${o}', '${q.answer}')">${o}</button>`
+  ).join("");
+  return `
+    <div class="card">
+      <div class="question-meta">${q.prompt}</div>
+      <div class="question-text">${q.question}</div>
+      <div class="choices">${opts}</div>
+      <div class="feedback" id="fb"></div>
+      <div class="btn-row" id="btn-row" style="display:none">
+        <button class="btn btn-primary" onclick="advance()">Siguiente</button>
+      </div>
+    </div>`;
+}
+
+function checkMC(chosen, correct) {
+  if (answered) return;
+  answered = true;
+  document.querySelectorAll(".choice-btn").forEach(b => {
+    b.disabled = true;
+    if (b.textContent === correct) b.classList.add("correct");
+    else if (b.textContent === chosen && chosen !== correct) b.classList.add("wrong");
+  });
+  const fb = document.getElementById("fb");
+  if (chosen === correct) {
+    score++;
+    dots[current].classList.add("c");
+    fb.className = "feedback correct";
+    fb.textContent = "Correcto";
+  } else {
+    dots[current].classList.add("w");
+    fb.className = "feedback wrong";
+    fb.textContent = "Incorrecto. La respuesta correcta es: " + correct;
+  }
+  document.getElementById("btn-row").style.display = "flex";
+}
+
+// DRAG THE WORDS
+function renderDrag(q) {
+  dragState = { blanks: {}, used: {} };
+  q.sentences.forEach((s, i) => { dragState.blanks[i] = null; });
+
+  const wordBank = [...new Set(q.sentences.map(s => s.blank))];
+  // shuffle word bank
+  wordBank.sort(() => Math.random() - 0.5);
+
+  const sentenceHTML = q.sentences.map((s, i) =>
+    `<div class="drag-sentence">
+      ${s.before} <span class="drag-blank" id="blank-${i}" onclick="returnWord(${i})">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span> ${s.after}
+    </div>`
+  ).join("");
+
+  const chips = wordBank.map(w =>
+    `<span class="word-chip" id="chip-${w}" onclick="placeWord('${w}')">${w}</span>`
+  ).join("");
+
+  return `
+    <div class="card">
+      <div class="question-meta">${q.prompt}</div>
+      <div class="question-text" style="margin-bottom:12px">${q.title}</div>
+      ${sentenceHTML}
+      <div class="word-bank" id="word-bank">${chips}</div>
+      <div class="feedback" id="fb"></div>
+      <div class="btn-row" id="btn-row">
+        <button class="btn btn-primary" onclick="checkDrag()">Verificar</button>
+      </div>
+    </div>`;
+}
+
+let selectedWord = null;
+
+function placeWord(word) {
+  if (answered) return;
+  // find first empty blank
+  const q = questions[current];
+  for (let i = 0; i < q.sentences.length; i++) {
+    if (dragState.blanks[i] === null) {
+      dragState.blanks[i] = word;
+      document.getElementById("blank-" + i).textContent = word;
+      document.getElementById("blank-" + i).classList.add("filled");
+      document.getElementById("chip-" + word).classList.add("used");
+      return;
+    }
+  }
+}
+
+function returnWord(idx) {
+  if (answered) return;
+  const word = dragState.blanks[idx];
+  if (!word) return;
+  dragState.blanks[idx] = null;
+  document.getElementById("blank-" + idx).innerHTML = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+  document.getElementById("blank-" + idx).classList.remove("filled");
+  document.getElementById("chip-" + word).classList.remove("used");
+}
+
+function checkDrag() {
+  if (answered) return;
+  answered = true;
+  const q = questions[current];
+  let allCorrect = true;
+
+  q.sentences.forEach((s, i) => {
+    const blank = document.getElementById("blank-" + i);
+    const given = dragState.blanks[i];
+    if (given && given.toLowerCase() === s.blank.toLowerCase()) {
+      blank.classList.add("correct-word");
+    } else {
+      blank.classList.add("wrong-word");
+      blank.textContent = s.blank;
+      allCorrect = false;
+    }
+  });
+
+  const fb = document.getElementById("fb");
+  if (allCorrect) {
+    score++;
+    dots[current].classList.add("c");
+    fb.className = "feedback correct";
+    fb.textContent = "Correcto";
+  } else {
+    dots[current].classList.add("w");
+    fb.className = "feedback wrong";
+    fb.textContent = "Revisa las respuestas correctas arriba.";
+  }
+
+  document.getElementById("btn-row").innerHTML =
+    `<button class="btn btn-primary" onclick="advance()">Siguiente</button>`;
+}
+
+// FILL IN THE BLANK
+function renderFill(q) {
+  const display = q.sentence.replace("___", `<input class="blank-input" id="fill-input" type="text" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="...">`);
+  return `
+    <div class="card">
+      <div class="question-meta">${q.prompt}</div>
+      <div class="question-text" style="margin-bottom:12px">${q.question}</div>
+      <div class="blank-sentence">${display}</div>
+      <div class="feedback" id="fb"></div>
+      <div class="btn-row" id="btn-row">
+        <button class="btn btn-primary" onclick="checkFill('${q.answer}')">Verificar</button>
+      </div>
+    </div>`;
+}
+
+function checkFill(correct) {
+  if (answered) return;
+  answered = true;
+  const input = document.getElementById("fill-input");
+  const given = input.value.trim().toLowerCase();
+  const fb = document.getElementById("fb");
+
+  if (given === correct.toLowerCase()) {
+    score++;
+    dots[current].classList.add("c");
+    input.classList.add("correct-input");
+    fb.className = "feedback correct";
+    fb.textContent = "Correcto";
+  } else {
+    dots[current].classList.add("w");
+    input.classList.add("wrong-input");
+    fb.className = "feedback wrong";
+    fb.textContent = "La respuesta correcta es: " + correct;
+  }
+  input.disabled = true;
+  document.getElementById("btn-row").innerHTML =
+    `<button class="btn btn-primary" onclick="advance()">Siguiente</button>`;
+}
+
+// ── ADVANCE ───────────────────────────────────────────────────────────────────
+function advance() {
+  current++;
+  if (current >= questions.length) {
+    showResults();
+  } else {
+    render();
+  }
+}
+
+function showResults() {
+  document.getElementById("question-area").style.display = "none";
+  document.getElementById("progress-bar-wrap").style.display = "none";
+  const pct = score / questions.length;
+  let msg = "";
+  if (pct === 1)      msg = "¡Perfecto! Dominaste todos los verbos.";
+  else if (pct >= .8) msg = "Muy bien. Casi perfecto.";
+  else if (pct >= .6) msg = "Bien. Sigue practicando.";
+  else                msg = "Sigue estudiando. Tu puedes.";
+
+  document.getElementById("final-score").textContent = score + " / " + questions.length;
+  document.getElementById("result-msg").textContent = msg;
+  document.getElementById("results").style.display = "block";
+}
+
+// ── START ─────────────────────────────────────────────────────────────────────
+buildDots();
+render();
+</script>
+</body>
+</html>
