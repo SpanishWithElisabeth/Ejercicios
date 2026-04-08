@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>¿Qué animal soy? – Ejercicio de Español</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #e0f7fa 0%, #f9fbe7 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    header {
+      text-align: center;
+      padding: 24px 16px 12px;
+    }
+
+    header h1 {
+      font-size: 2rem;
+      color: #2e7d32;
+      letter-spacing: 1px;
+    }
+
+    header p {
+      font-size: 1.05rem;
+      color: #555;
+      margin-top: 6px;
+    }
+
+    /* ── RIDDLE CARD ───────────────────────────────── */
+    #riddle-section {
+      max-width: 680px;
+      margin: 24px auto 20px;
+      background: #fff;
+      border-radius: 20px;
+      box-shadow: 0 4px 18px rgba(0,0,0,0.10);
+      padding: 28px 32px;
+      text-align: center;
+      position: relative;
+    }
+
+    #riddle-number {
+      font-size: 0.85rem;
+      color: #aaa;
+      margin-bottom: 6px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    #riddle-text {
+      font-size: 1.35rem;
+      color: #333;
+      line-height: 1.6;
+      min-height: 80px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #riddle-text .riddle-emoji {
+      font-size: 2rem;
+      margin-right: 10px;
+    }
+
+    /* feedback banner */
+    #feedback {
+      margin-top: 16px;
+      padding: 12px 20px;
+      border-radius: 12px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    #feedback.correct {
+      background: #e8f5e9;
+      color: #2e7d32;
+      display: flex;
+    }
+
+    #feedback.wrong {
+      background: #fce4ec;
+      color: #c62828;
+      display: flex;
+    }
+
+    #next-btn {
+      margin-top: 16px;
+      display: none;
+      background: #2e7d32;
+      color: #fff;
+      border: none;
+      border-radius: 50px;
+      padding: 12px 36px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    #next-btn:hover { background: #1b5e20; }
+
+    /* score bar */
+    #score-bar {
+      max-width: 680px;
+      margin: 0 auto 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.95rem;
+      color: #555;
+      padding: 0 4px;
+    }
+
+    #score-bar span { font-weight: 700; color: #2e7d32; }
+
+    /* progress dots */
+    #progress-dots {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .dot {
+      width: 12px; height: 12px;
+      border-radius: 50%;
+      background: #ddd;
+      transition: background 0.3s;
+    }
+    .dot.correct { background: #43a047; }
+    .dot.wrong   { background: #e53935; }
+
+    /* ── ANIMAL GRID ───────────────────────────────── */
+    #animal-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+      gap: 14px;
+      max-width: 960px;
+      margin: 0 auto 40px;
+    }
+
+    .animal-card {
+      background: #fff;
+      border-radius: 16px;
+      border: 3px solid transparent;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      cursor: pointer;
+      text-align: center;
+      padding: 14px 8px 12px;
+      transition: transform 0.15s, border-color 0.2s, box-shadow 0.2s;
+      user-select: none;
+    }
+
+    .animal-card:hover:not(.disabled) {
+      transform: translateY(-4px);
+      box-shadow: 0 6px 18px rgba(0,0,0,0.13);
+      border-color: #81c784;
+    }
+
+    .animal-card .emoji {
+      font-size: 3.2rem;
+      line-height: 1.1;
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    .animal-card .label {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #37474f;
+    }
+
+    /* states after answer */
+    .animal-card.correct-answer {
+      border-color: #43a047;
+      background: #e8f5e9;
+    }
+
+    .animal-card.wrong-answer {
+      border-color: #e53935;
+      background: #fce4ec;
+    }
+
+    .animal-card.reveal-correct {
+      border-color: #43a047;
+      background: #e8f5e9;
+    }
+
+    .animal-card.disabled {
+      cursor: default;
+    }
+
+    /* ── RESULTS SCREEN ────────────────────────────── */
+    #results-screen {
+      display: none;
+      max-width: 500px;
+      margin: 40px auto;
+      background: #fff;
+      border-radius: 24px;
+      box-shadow: 0 6px 24px rgba(0,0,0,0.12);
+      padding: 40px 32px;
+      text-align: center;
+    }
+
+    #results-screen h2 {
+      font-size: 2rem;
+      color: #2e7d32;
+      margin-bottom: 10px;
+    }
+
+    #results-screen .result-emoji {
+      font-size: 4rem;
+      margin-bottom: 16px;
+      display: block;
+    }
+
+    #results-screen p {
+      font-size: 1.15rem;
+      color: #555;
+      margin-bottom: 6px;
+      line-height: 1.5;
+    }
+
+    #results-screen .score-big {
+      font-size: 3rem;
+      font-weight: 700;
+      color: #2e7d32;
+      margin: 16px 0;
+    }
+
+    #restart-btn {
+      margin-top: 24px;
+      background: #2e7d32;
+      color: #fff;
+      border: none;
+      border-radius: 50px;
+      padding: 14px 44px;
+      font-size: 1.05rem;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    #restart-btn:hover { background: #1b5e20; }
+
+    /* instruction strip */
+    #instruction {
+      text-align: center;
+      font-size: 1rem;
+      color: #666;
+      margin-bottom: 14px;
+      font-style: italic;
+    }
+
+    /* responsive */
+    @media (max-width: 500px) {
+      header h1 { font-size: 1.5rem; }
+      #riddle-text { font-size: 1.1rem; }
+      #animal-grid { grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 10px; }
+      .animal-card .emoji { font-size: 2.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>🌿 ¿Qué animal soy?</h1>
+  <p>Lee la adivinanza y haz clic en el animal correcto</p>
+</header>
+
+<!-- SCORE BAR -->
+<div id="score-bar">
+  <div>✅ Correctas: <span id="correct-count">0</span></div>
+  <div id="progress-dots"></div>
+  <div>Pregunta <span id="q-current">1</span> / <span id="q-total">20</span></div>
+</div>
+
+<!-- RIDDLE -->
+<div id="riddle-section">
+  <div id="riddle-number">ADIVINANZA</div>
+  <div id="riddle-text"></div>
+  <div id="feedback"></div>
+  <button id="next-btn" onclick="nextRiddle()">Siguiente ➜</button>
+</div>
+
+<p id="instruction">👇 Haz clic en el animal que corresponde a la adivinanza</p>
+
+<!-- ANIMAL GRID -->
+<div id="animal-grid"></div>
+
+<!-- RESULTS -->
+<div id="results-screen">
+  <span class="result-emoji" id="result-emoji">🎉</span>
+  <h2>¡Fin del ejercicio!</h2>
+  <p>Tu puntaje:</p>
+  <div class="score-big" id="final-score">0 / 20</div>
+  <p id="result-message"></p>
+  <button id="restart-btn" onclick="restartGame()">🔄 Jugar otra vez</button>
+</div>
+
+<script>
+  // ── DATA ──────────────────────────────────────────────────────────────────
+  const animals = [
+    { id: "perro",     label: "El perro",     emoji: "🐶" },
+    { id: "gato",      label: "El gato",      emoji: "🐱" },
+    { id: "caballo",   label: "El caballo",   emoji: "🐴" },
+    { id: "vaca",      label: "La vaca",      emoji: "🐮" },
+    { id: "cerdo",     label: "El cerdo",     emoji: "🐷" },
+    { id: "pollo",     label: "El pollo",     emoji: "🐔" },
+    { id: "pato",      label: "El pato",      emoji: "🦆" },
+    { id: "conejo",    label: "El conejo",    emoji: "🐰" },
+    { id: "rana",      label: "La rana",      emoji: "🐸" },
+    { id: "elefante",  label: "El elefante",  emoji: "🐘" },
+    { id: "leon",      label: "El león",      emoji: "🦁" },
+    { id: "tigre",     label: "El tigre",     emoji: "🐯" },
+    { id: "jirafa",    label: "La jirafa",    emoji: "🦒" },
+    { id: "mono",      label: "El mono",      emoji: "🐒" },
+    { id: "serpiente", label: "La serpiente", emoji: "🐍" },
+    { id: "pez",       label: "El pez",       emoji: "🐟" },
+    { id: "mariposa",  label: "La mariposa",  emoji: "🦋" },
+    { id: "abeja",     label: "La abeja",     emoji: "🐝" },
+    { id: "tortuga",   label: "La tortuga",   emoji: "🐢" },
+    { id: "pajaro",    label: "El pájaro",    emoji: "🐦" },
+  ];
+
+  const riddles = [
+    { answer: "perro",     text: "🐾 Soy el mejor amigo de las personas. Soy grande o pequeño. Tengo cuatro patas. Me gusta correr y jugar. ¿Qué animal soy?" },
+    { answer: "gato",      text: "🐾 Soy pequeño y suave. Me gusta dormir mucho. Digo «miau». Tengo bigotes. ¿Qué animal soy?" },
+    { answer: "caballo",   text: "🌾 Soy un animal grande. Tengo cuatro patas largas. Soy muy rápido. Como pasto y heno. ¿Qué animal soy?" },
+    { answer: "vaca",      text: "🥛 Soy un animal grande y blanco con manchas negras. Vivo en el campo. Doy leche. Como pasto. ¿Qué animal soy?" },
+    { answer: "cerdo",     text: "🌿 Soy rosado o marrón. Tengo una nariz redonda. Vivo en la granja. Me gusta el barro. ¿Qué animal soy?" },
+    { answer: "pollo",     text: "🥚 Soy un animal pequeño. Vivo en la granja. Pongo huevos. Digo «co-co-co». ¿Qué animal soy?" },
+    { answer: "pato",      text: "💧 Soy amarillo o verde. Me gusta el agua. Digo «cuac cuac». Tengo un pico anaranjado. ¿Qué animal soy?" },
+    { answer: "conejo",    text: "🥕 Soy pequeño y blanco o gris. Tengo las orejas muy largas. Me gusta comer zanahorias. Salto mucho. ¿Qué animal soy?" },
+    { answer: "rana",      text: "🌿 Soy verde y pequeño. Vivo cerca del agua. Salto mucho. Digo «croac croac». ¿Qué animal soy?" },
+    { answer: "elefante",  text: "🌿 Soy el animal más grande de la tierra. Soy gris. Tengo una nariz muy larga que se llama trompa. Como plantas. ¿Qué animal soy?" },
+    { answer: "leon",      text: "🌟 Soy el rey de los animales. Soy grande y amarillo. Tengo una melena. Como carne. Vivo en África. ¿Qué animal soy?" },
+    { answer: "tigre",     text: "🌿 Soy grande y anaranjado con rayas negras. Soy muy fuerte. Como carne. Vivo en la selva. ¿Qué animal soy?" },
+    { answer: "jirafa",    text: "🌳 Soy muy, muy alto. Tengo el cuello larguísimo. Soy amarillo con manchas café. Como hojas de los árboles altos. ¿Qué animal soy?" },
+    { answer: "mono",      text: "🍌 Soy pequeño y ágil. Vivo en los árboles. Me encanta comer bananas. Tengo manos y pies muy hábiles. ¿Qué animal soy?" },
+    { answer: "serpiente", text: "🌿 No tengo patas. Soy largo y delgado. Me muevo por el suelo. Vivo en lugares cálidos. ¿Qué animal soy?" },
+    { answer: "pez",       text: "💧 Vivo en el agua. Tengo aletas. No puedo vivir fuera del agua. Soy de muchos colores. ¿Qué animal soy?" },
+    { answer: "mariposa",  text: "🌸 Soy muy bonita. Tengo alas de colores. Me gustan las flores. Vuelo de flor en flor. ¿Qué animal soy?" },
+    { answer: "abeja",     text: "🍯 Soy pequeña y amarilla con rayas negras. Vuelo de flor en flor. Hago miel. Vivo con muchas amigas. ¿Qué animal soy?" },
+    { answer: "tortuga",   text: "🌿 Soy muy, muy lenta. Tengo una casa en la espalda que se llama caparazón. Soy verde o café. Vivo muchos años. ¿Qué animal soy?" },
+    { answer: "pajaro",    text: "🎵 Tengo alas y puedo volar. Tengo un pico pequeño. Canto canciones bonitas. Vivo en los árboles. ¿Qué animal soy?" },
+  ];
+
+  // ── STATE ─────────────────────────────────────────────────────────────────
+  let shuffledRiddles = [];
+  let currentIndex = 0;
+  let correctCount = 0;
+  let answered = false;
+  let dotEls = [];
+
+  // ── INIT ──────────────────────────────────────────────────────────────────
+  function buildGrid() {
+    const grid = document.getElementById("animal-grid");
+    grid.innerHTML = "";
+    animals.forEach(a => {
+      const card = document.createElement("div");
+      card.className = "animal-card";
+      card.id = "card-" + a.id;
+      card.innerHTML = `<span class="emoji">${a.emoji}</span><span class="label">${a.label}</span>`;
+      card.addEventListener("click", () => handleAnswer(a.id));
+      grid.appendChild(card);
+    });
+  }
+
+  function buildDots(total) {
+    const container = document.getElementById("progress-dots");
+    container.innerHTML = "";
+    dotEls = [];
+    for (let i = 0; i < total; i++) {
+      const d = document.createElement("div");
+      d.className = "dot";
+      container.appendChild(d);
+      dotEls.push(d);
+    }
+  }
+
+  function shuffle(arr) {
+    const a = [...arr];
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  function startGame() {
+    shuffledRiddles = shuffle(riddles);
+    currentIndex = 0;
+    correctCount = 0;
+    answered = false;
+
+    document.getElementById("correct-count").textContent = 0;
+    document.getElementById("q-total").textContent = shuffledRiddles.length;
+    document.getElementById("results-screen").style.display = "none";
+    document.getElementById("riddle-section").style.display = "";
+    document.getElementById("animal-grid").style.display = "";
+    document.getElementById("instruction").style.display = "";
+    document.getElementById("score-bar").style.display = "";
+
+    buildGrid();
+    buildDots(shuffledRiddles.length);
+    showRiddle();
+  }
+
+  function showRiddle() {
+    answered = false;
+
+    // reset cards
+    document.querySelectorAll(".animal-card").forEach(c => {
+      c.className = "animal-card";
+    });
+
+    // hide feedback & next btn
+    const fb = document.getElementById("feedback");
+    fb.style.display = "none";
+    fb.className = "feedback";
+    document.getElementById("next-btn").style.display = "none";
+
+    const r = shuffledRiddles[currentIndex];
+    document.getElementById("riddle-number").textContent = `ADIVINANZA ${currentIndex + 1} DE ${shuffledRiddles.length}`;
+    document.getElementById("riddle-text").textContent = r.text;
+    document.getElementById("q-current").textContent = currentIndex + 1;
+  }
+
+  function handleAnswer(selectedId) {
+    if (answered) return;
+    answered = true;
+
+    const r = shuffledRiddles[currentIndex];
+    const correct = r.answer === selectedId;
+    const fb = document.getElementById("feedback");
+
+    // find animal data
+    const selectedAnimal = animals.find(a => a.id === selectedId);
+    const correctAnimal  = animals.find(a => a.id === r.answer);
+
+    // style all cards as disabled
+    document.querySelectorAll(".animal-card").forEach(c => c.classList.add("disabled"));
+
+    if (correct) {
+      correctCount++;
+      document.getElementById("correct-count").textContent = correctCount;
+      document.getElementById("card-" + selectedId).classList.add("correct-answer");
+      fb.className = "correct";
+      fb.innerHTML = `✅ ¡Muy bien! La respuesta es <strong>${correctAnimal.label} ${correctAnimal.emoji}</strong>`;
+      dotEls[currentIndex].classList.add("correct");
+    } else {
+      document.getElementById("card-" + selectedId).classList.add("wrong-answer");
+      document.getElementById("card-" + r.answer).classList.add("reveal-correct");
+      fb.className = "wrong";
+      fb.innerHTML = `❌ Incorrecto. La respuesta correcta es <strong>${correctAnimal.label} ${correctAnimal.emoji}</strong>`;
+      dotEls[currentIndex].classList.add("wrong");
+    }
+
+    fb.style.display = "flex";
+
+    // show next or finish
+    const nextBtn = document.getElementById("next-btn");
+    if (currentIndex < shuffledRiddles.length - 1) {
+      nextBtn.textContent = "Siguiente ➜";
+    } else {
+      nextBtn.textContent = "Ver resultado ✨";
+    }
+    nextBtn.style.display = "inline-block";
+  }
+
+  function nextRiddle() {
+    currentIndex++;
+    if (currentIndex >= shuffledRiddles.length) {
+      showResults();
+    } else {
+      showRiddle();
+    }
+  }
+
+  function showResults() {
+    document.getElementById("riddle-section").style.display = "none";
+    document.getElementById("animal-grid").style.display = "none";
+    document.getElementById("instruction").style.display = "none";
+
+    const total = shuffledRiddles.length;
+    const pct = correctCount / total;
+    let emoji = "🌟";
+    let msg = "";
+
+    if (pct === 1) {
+      emoji = "🏆";
+      msg = "¡Perfecto! ¡Conoces muy bien los animales en español!";
+    } else if (pct >= 0.8) {
+      emoji = "🎉";
+      msg = "¡Excelente trabajo! Casi perfecto.";
+    } else if (pct >= 0.6) {
+      emoji = "😊";
+      msg = "¡Bien hecho! Sigue practicando.";
+    } else if (pct >= 0.4) {
+      emoji = "💪";
+      msg = "¡Buen intento! Practica más y vas a mejorar.";
+    } else {
+      emoji = "📚";
+      msg = "¡Sigue estudiando! Tú puedes.";
+    }
+
+    document.getElementById("result-emoji").textContent = emoji;
+    document.getElementById("final-score").textContent = `${correctCount} / ${total}`;
+    document.getElementById("result-message").textContent = msg;
+    document.getElementById("results-screen").style.display = "block";
+  }
+
+  function restartGame() {
+    startGame();
+  }
+
+  // ── START ─────────────────────────────────────────────────────────────────
+  startGame();
+</script>
+</body>
+</html>
