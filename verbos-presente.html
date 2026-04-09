@@ -15,10 +15,9 @@
       padding: 32px 16px 60px;
     }
 
-    /* ── HEADER ── */
     header {
       max-width: 680px;
-      margin: 0 auto 32px;
+      margin: 0 auto 28px;
     }
 
     header a {
@@ -44,7 +43,7 @@
     /* ── PROGRESS ── */
     #progress-bar-wrap {
       max-width: 680px;
-      margin: 0 auto 24px;
+      margin: 0 auto 14px;
     }
 
     #progress-label {
@@ -69,6 +68,52 @@
       transition: width 0.4s ease;
       width: 0%;
     }
+
+    /* ── SCORE DOTS ── */
+    #score-bar {
+      max-width: 680px;
+      margin: 0 auto 14px;
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .score-dot {
+      width: 11px; height: 11px;
+      border-radius: 50%;
+      background: #ddd;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+    }
+
+    .score-dot:hover { transform: scale(1.3); }
+    .score-dot.active { outline: 2px solid #2e7d32; outline-offset: 2px; }
+    .score-dot.c { background: #43a047; }
+    .score-dot.w { background: #e53935; }
+
+    /* ── NAV ROW ── */
+    .nav-row {
+      max-width: 680px;
+      margin: 0 auto 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .nav-btn {
+      background: none;
+      border: 1px solid #ddd;
+      border-radius: 50px;
+      padding: 7px 20px;
+      font-size: 0.88rem;
+      color: #888;
+      cursor: pointer;
+      font-family: inherit;
+      transition: border-color 0.15s, color 0.15s;
+    }
+
+    .nav-btn:hover:not(:disabled) { border-color: #81c784; color: #2e7d32; }
+    .nav-btn:disabled { opacity: 0.25; cursor: default; }
 
     /* ── QUESTION CARD ── */
     .card {
@@ -96,11 +141,6 @@
       margin-bottom: 20px;
     }
 
-    .question-text em {
-      font-style: italic;
-      color: #555;
-    }
-
     /* ── MULTIPLE CHOICE ── */
     .choices {
       display: flex;
@@ -126,24 +166,15 @@
       background: #f1f8f1;
     }
 
-    .choice-btn.correct {
-      border-color: #43a047;
-      background: #e8f5e9;
-      color: #1b5e20;
-    }
-
-    .choice-btn.wrong {
-      border-color: #e53935;
-      background: #fce4ec;
-      color: #b71c1c;
-    }
+    .choice-btn.correct { border-color: #43a047; background: #e8f5e9; color: #1b5e20; }
+    .choice-btn.wrong   { border-color: #e53935; background: #fce4ec; color: #b71c1c; }
 
     /* ── DRAG THE WORDS ── */
     .drag-sentence {
       font-size: 1.05rem;
-      line-height: 2.2;
+      line-height: 2.4;
       color: #333;
-      margin-bottom: 8px;
+      margin-bottom: 4px;
     }
 
     .drag-blank {
@@ -161,23 +192,11 @@
       border-radius: 4px 4px 0 0;
     }
 
-    .drag-blank:hover { background: #f1f8f1; }
-
-    .drag-blank.filled {
-      background: #f1f8f1;
-    }
-
-    .drag-blank.correct-word {
-      border-bottom-color: #43a047;
-      color: #1b5e20;
-      background: #e8f5e9;
-    }
-
-    .drag-blank.wrong-word {
-      border-bottom-color: #e53935;
-      color: #b71c1c;
-      background: #fce4ec;
-    }
+    .drag-blank:hover:not(.locked) { background: #f1f8f1; }
+    .drag-blank.filled  { background: #f1f8f1; }
+    .drag-blank.correct-word { border-bottom-color: #43a047; color: #1b5e20; background: #e8f5e9; }
+    .drag-blank.wrong-word   { border-bottom-color: #e53935; color: #b71c1c; background: #fce4ec; }
+    .drag-blank.locked { cursor: default; }
 
     .word-bank {
       display: flex;
@@ -201,8 +220,8 @@
       user-select: none;
     }
 
-    .word-chip:hover { border-color: #81c784; background: #f1f8f1; }
-    .word-chip.used { opacity: 0.35; pointer-events: none; }
+    .word-chip:hover:not(.used) { border-color: #81c784; background: #f1f8f1; }
+    .word-chip.used { opacity: 0.3; pointer-events: none; }
 
     /* ── FILL IN THE BLANK ── */
     .blank-sentence {
@@ -219,22 +238,15 @@
       font-family: inherit;
       color: #2e7d32;
       font-weight: 600;
-      width: 120px;
+      width: 130px;
       text-align: center;
       outline: none;
       padding: 2px 4px;
       margin: 0 4px;
     }
 
-    .blank-input.correct-input {
-      border-bottom-color: #43a047;
-      color: #1b5e20;
-    }
-
-    .blank-input.wrong-input {
-      border-bottom-color: #e53935;
-      color: #e53935;
-    }
+    .blank-input.correct-input { border-bottom-color: #43a047; color: #1b5e20; }
+    .blank-input.wrong-input   { border-bottom-color: #e53935; color: #e53935; }
 
     /* ── FEEDBACK ── */
     .feedback {
@@ -249,12 +261,13 @@
     .feedback.correct { background: #e8f5e9; color: #2e7d32; display: block; }
     .feedback.wrong   { background: #fce4ec; color: #c62828; display: block; }
 
-    /* ── BUTTONS ── */
+    /* ── ACTION BUTTONS ── */
     .btn-row {
       display: flex;
       gap: 10px;
       margin-top: 20px;
       flex-wrap: wrap;
+      align-items: center;
     }
 
     .btn {
@@ -268,28 +281,10 @@
       font-weight: 600;
     }
 
-    .btn-primary { background: #2e7d32; color: #fff; }
+    .btn-primary   { background: #2e7d32; color: #fff; }
     .btn-primary:hover { background: #1b5e20; }
     .btn-secondary { background: #eee; color: #555; }
     .btn-secondary:hover { background: #ddd; }
-
-    /* ── SCORE ── */
-    #score-bar {
-      max-width: 680px;
-      margin: 0 auto 20px;
-      display: flex;
-      gap: 6px;
-      flex-wrap: wrap;
-    }
-
-    .score-dot {
-      width: 11px; height: 11px;
-      border-radius: 50%;
-      background: #ddd;
-      transition: background 0.3s;
-    }
-    .score-dot.c { background: #43a047; }
-    .score-dot.w { background: #e53935; }
 
     /* ── RESULTS ── */
     #results {
@@ -327,7 +322,14 @@
 </div>
 
 <div id="score-bar"></div>
+
+<div class="nav-row">
+  <button class="nav-btn" id="prev-btn" onclick="go(-1)" disabled>&#8592; Anterior</button>
+  <button class="nav-btn" id="next-btn" onclick="go(1)" disabled>Siguiente &#8594;</button>
+</div>
+
 <div id="question-area"></div>
+
 <div id="results">
   <h2>Fin del ejercicio</h2>
   <div class="score-big" id="final-score"></div>
@@ -341,149 +343,69 @@
 <script>
 // ── DATA ──────────────────────────────────────────────────────────────────────
 const questions = [
-  // MULTIPLE CHOICE
-  {
-    type: "mc",
-    prompt: "Elige la forma correcta.",
-    question: "you work (trabajar)",
-    options: ["trabajaras", "trabajas"],
-    answer: "trabajas"
-  },
-  {
-    type: "mc",
-    prompt: "Elige la forma correcta.",
-    question: "we speak (hablar)",
-    options: ["hablamos", "hablaramos"],
-    answer: "hablamos"
-  },
-  {
-    type: "mc",
-    prompt: "Elige la forma correcta.",
-    question: "she eats (comer)",
-    options: ["come", "coma"],
-    answer: "come"
-  },
-  {
-    type: "mc",
-    prompt: "Elige la forma correcta.",
-    question: "they read (leer)",
-    options: ["len", "leen"],
-    answer: "leen"
-  },
-  {
-    type: "mc",
-    prompt: "Elige la forma correcta.",
-    question: "we open (abrir)",
-    options: ["abrimos", "abremos"],
-    answer: "abrimos"
-  },
+  { type:"mc", prompt:"Elige la forma correcta.", question:"you work (trabajar)", options:["trabajaras","trabajas"], answer:"trabajas" },
+  { type:"mc", prompt:"Elige la forma correcta.", question:"we speak (hablar)",   options:["hablamos","hablaramos"], answer:"hablamos" },
+  { type:"mc", prompt:"Elige la forma correcta.", question:"she eats (comer)",    options:["come","coma"],           answer:"come" },
+  { type:"mc", prompt:"Elige la forma correcta.", question:"they read (leer)",    options:["len","leen"],            answer:"leen" },
+  { type:"mc", prompt:"Elige la forma correcta.", question:"we open (abrir)",     options:["abrimos","abremos"],    answer:"abrimos" },
 
-  // DRAG THE WORDS — TRABAJAR
-  {
-    type: "drag",
-    prompt: "Arrastra la forma correcta del verbo a cada espacio.",
-    title: "Trabajar — completa las oraciones",
-    sentences: [
-      { before: "Hoy yo no", blank: "trabajo", after: "." },
-      { before: "Ella", blank: "trabaja", after: "esta noche." },
-      { before: "Manana tu", blank: "trabajas", after: "." },
-      { before: "Esta noche ellos", blank: "trabajan", after: "." },
-      { before: "Nosotros no", blank: "trabajamos", after: "el lunes." }
+  { type:"drag", prompt:"Haz clic en una palabra del banco y luego en el espacio correcto.", title:"Trabajar — completa las oraciones",
+    sentences:[
+      { before:"Hoy yo no",      blank:"trabajo",   after:"." },
+      { before:"Ella",           blank:"trabaja",   after:"esta noche." },
+      { before:"Manana tu",      blank:"trabajas",  after:"." },
+      { before:"Esta noche ellos", blank:"trabajan", after:"." },
+      { before:"Nosotros no",    blank:"trabajamos", after:"el lunes." }
+    ]
+  },
+  { type:"drag", prompt:"Haz clic en una palabra del banco y luego en el espacio correcto.", title:"Comer — completa las oraciones",
+    sentences:[
+      { before:"Esta noche, yo", blank:"como",    after:"con mis amigos." },
+      { before:"Ellas",          blank:"comen",   after:"en el restaurante." },
+      { before:"¿",              blank:"Come",    after:"usted con mi amiga el lunes?" },
+      { before:"Nosotros no",    blank:"comemos", after:"carne, somos vegetarianos." },
+      { before:"¿",              blank:"Comes",   after:"tu con nosotros?" }
+    ]
+  },
+  { type:"drag", prompt:"Haz clic en una palabra del banco y luego en el espacio correcto.", title:"Vivir — completa las oraciones",
+    sentences:[
+      { before:"Maria",         blank:"vive",    after:"con su mama." },
+      { before:"Mis amigas",    blank:"viven",   after:"en Buenos Aires." },
+      { before:"Jose y yo",     blank:"vivimos", after:"en España." },
+      { before:"¿",             blank:"Vives",   after:"tu con tu familia?" },
+      { before:"Yo",            blank:"vivo",    after:"en una casa pequeña." }
     ]
   },
 
-  // DRAG THE WORDS — COMER
-  {
-    type: "drag",
-    prompt: "Arrastra la forma correcta del verbo a cada espacio.",
-    title: "Comer — completa las oraciones",
-    sentences: [
-      { before: "Esta noche, yo", blank: "como", after: "con mis amigos." },
-      { before: "Ellas", blank: "comen", after: "en el restaurante." },
-      { before: "¿", blank: "Come", after: "usted con mi amiga el lunes?" },
-      { before: "Nosotros no", blank: "comemos", after: "carne, somos vegetarianos." },
-      { before: "¿", blank: "Comes", after: "tu con nosotros?" }
-    ]
-  },
-
-  // DRAG THE WORDS — VIVIR
-  {
-    type: "drag",
-    prompt: "Arrastra la forma correcta del verbo a cada espacio.",
-    title: "Vivir — completa las oraciones",
-    sentences: [
-      { before: "Maria", blank: "vive", after: "con su mama." },
-      { before: "Mis amigas", blank: "viven", after: "en Buenos Aires." },
-      { before: "Jose y yo", blank: "vivimos", after: "en España." },
-      { before: "¿", blank: "Vives", after: "tu con tu familia?" },
-      { before: "Yo", blank: "vivo", after: "en una casa pequeña." }
-    ]
-  },
-
-  // FILL IN THE BLANK
-  {
-    type: "fill",
-    prompt: "Escribe la forma correcta del verbo.",
-    question: "¿Como se dice \"I paint on Sunday\"? (pintar)",
-    sentence: "El domingo ___.",
-    answer: "pinto",
-    full: "El domingo [pinto]."
-  },
-  {
-    type: "fill",
-    prompt: "Escribe la forma correcta del verbo.",
-    question: "¿Como se dice \"I don't read in the morning\"? (leer)",
-    sentence: "Por la mañana no ___.",
-    answer: "leo",
-    full: "Por la mañana no [leo]."
-  },
-  {
-    type: "fill",
-    prompt: "Escribe la forma correcta del verbo.",
-    question: "¿Como se dice \"Are you opening your store\"? (abrir)",
-    sentence: "¿___ tu tienda?",
-    answer: "abres",
-    full: "¿[Abres] tu tienda?"
-  },
-  {
-    type: "fill",
-    prompt: "Escribe la forma correcta del verbo.",
-    question: "¿Como se dice \"Are you working on Saturday\"? (trabajar)",
-    sentence: "¿___ el sabado?",
-    answer: "trabajas",
-    full: "¿[Trabajas] el sabado?"
-  },
-  {
-    type: "fill",
-    prompt: "Escribe la forma correcta del verbo.",
-    question: "¿Como se dice \"We eat fruit every day\"? (comer)",
-    sentence: "___ frutas todos los dias.",
-    answer: "comemos",
-    full: "[Comemos] frutas todos los dias."
-  },
-  {
-    type: "fill",
-    prompt: "Escribe la forma correcta del verbo.",
-    question: "¿Como se dice \"Do you speak Spanish\"? (hablar)",
-    sentence: "¿___ español?",
-    answer: "hablas",
-    full: "¿[Hablas] español?"
-  }
+  { type:"fill", prompt:"Escribe la forma correcta del verbo.", question:'¿Como se dice "I paint on Sunday"? (pintar)',          sentence:"El domingo ___.",         answer:"pinto"    },
+  { type:"fill", prompt:"Escribe la forma correcta del verbo.", question:'¿Como se dice "I don\'t read in the morning"? (leer)', sentence:"Por la mañana no ___.",   answer:"leo"      },
+  { type:"fill", prompt:"Escribe la forma correcta del verbo.", question:'¿Como se dice "Are you opening your store"? (abrir)',  sentence:"¿___ tu tienda?",         answer:"abres"    },
+  { type:"fill", prompt:"Escribe la forma correcta del verbo.", question:'¿Como se dice "Are you working on Saturday"? (trabajar)', sentence:"¿___ el sabado?",      answer:"trabajas" },
+  { type:"fill", prompt:"Escribe la forma correcta del verbo.", question:'¿Como se dice "We eat fruit every day"? (comer)',      sentence:"___ frutas todos los dias.", answer:"comemos"},
+  { type:"fill", prompt:"Escribe la forma correcta del verbo.", question:'¿Como se dice "Do you speak Spanish"? (hablar)',       sentence:"¿___ español?",           answer:"hablas"   }
 ];
 
 // ── STATE ─────────────────────────────────────────────────────────────────────
+// results[i] = { correct: bool } once answered, else null
+let results = [];
 let current = 0;
-let score = 0;
-let answered = false;
-let dots = [];
-let dragState = {}; // for drag questions
+let dots    = [];
+// per-question drag state (keyed by question index)
+let dragStates = {};
+// selected chip for two-step drag
+let selectedChip = null;
 
 // ── INIT ──────────────────────────────────────────────────────────────────────
 function restart() {
-  current = 0; score = 0; answered = false; dragState = {};
-  document.getElementById("results").style.display = "none";
+  results    = questions.map(() => null);
+  dragStates = {};
+  selectedChip = null;
+  current    = 0;
+  document.getElementById("results").style.display       = "none";
   document.getElementById("question-area").style.display = "";
   document.getElementById("progress-bar-wrap").style.display = "";
+  document.getElementById("score-bar").style.display     = "";
+  document.querySelector(".nav-row").style.display       = "";
   buildDots();
   render();
 }
@@ -492,140 +414,222 @@ function buildDots() {
   const bar = document.getElementById("score-bar");
   bar.innerHTML = "";
   dots = [];
-  questions.forEach(() => {
+  questions.forEach((_, i) => {
     const d = document.createElement("div");
     d.className = "score-dot";
+    d.title = "Pregunta " + (i + 1);
+    d.onclick = () => { current = i; render(); };
     bar.appendChild(d);
     dots.push(d);
   });
 }
 
+function refreshDots() {
+  dots.forEach((d, i) => {
+    d.className = "score-dot";
+    if (results[i] !== null) d.classList.add(results[i].correct ? "c" : "w");
+    if (i === current)       d.classList.add("active");
+  });
+}
+
 function updateProgress() {
-  const pct = (current / questions.length) * 100;
+  const pct = ((current + 1) / questions.length) * 100;
   document.getElementById("progress-fill").style.width = pct + "%";
-  document.getElementById("q-num").textContent = current + 1;
+  document.getElementById("q-num").textContent   = current + 1;
   document.getElementById("q-total").textContent = questions.length;
+
+  document.getElementById("prev-btn").disabled = (current === 0);
+  // next enabled if already answered OR there are later questions
+  document.getElementById("next-btn").disabled = (current >= questions.length - 1);
+}
+
+function go(dir) {
+  const next = current + dir;
+  if (next < 0 || next >= questions.length) return;
+  current = next;
+  render();
 }
 
 // ── RENDER ────────────────────────────────────────────────────────────────────
 function render() {
-  answered = false;
+  selectedChip = null;
+  refreshDots();
   updateProgress();
-  const q = questions[current];
+  const q    = questions[current];
   const area = document.getElementById("question-area");
+  const done = results[current] !== null;
 
-  if (q.type === "mc")   area.innerHTML = renderMC(q);
-  if (q.type === "drag") area.innerHTML = renderDrag(q);
-  if (q.type === "fill") area.innerHTML = renderFill(q);
+  if (q.type === "mc")   area.innerHTML = renderMC(q, done);
+  if (q.type === "drag") area.innerHTML = renderDrag(q, done);
+  if (q.type === "fill") area.innerHTML = renderFill(q, done);
+
+  // restore drag UI if coming back to an answered drag question
+  if (q.type === "drag" && done) restoreDrag(q);
 }
 
-// MULTIPLE CHOICE
-function renderMC(q) {
-  const opts = q.options.map(o =>
-    `<button class="choice-btn" onclick="checkMC('${o}', '${q.answer}')">${o}</button>`
-  ).join("");
-  return `
-    <div class="card">
-      <div class="question-meta">${q.prompt}</div>
-      <div class="question-text">${q.question}</div>
-      <div class="choices">${opts}</div>
-      <div class="feedback" id="fb"></div>
-      <div class="btn-row" id="btn-row" style="display:none">
-        <button class="btn btn-primary" onclick="advance()">Siguiente</button>
-      </div>
-    </div>`;
+// ── SCORE COUNT ───────────────────────────────────────────────────────────────
+function countScore() {
+  return results.filter(r => r && r.correct).length;
 }
 
-function checkMC(chosen, correct) {
-  if (answered) return;
-  answered = true;
+// ── MULTIPLE CHOICE ───────────────────────────────────────────────────────────
+function renderMC(q, done) {
+  const opts = q.options.map(o => {
+    let cls = "choice-btn";
+    let dis = "";
+    if (done) {
+      dis = "disabled";
+      if (o === q.answer) cls += " correct";
+      else if (results[current] && !results[current].correct && o === results[current].chosen) cls += " wrong";
+    }
+    return `<button class="${cls}" ${dis} onclick="checkMC('${o}')">${o}</button>`;
+  }).join("");
+
+  const fb = done
+    ? `<div class="feedback ${results[current].correct ? "correct" : "wrong"}">${results[current].correct ? "Correcto" : "Incorrecto. La respuesta correcta es: " + q.answer}</div>`
+    : `<div class="feedback" id="fb"></div>`;
+
+  const nav = done
+    ? navButtons()
+    : `<div class="btn-row" id="btn-row" style="display:none">${navButtons()}</div>`;
+
+  return `<div class="card">
+    <div class="question-meta">${q.prompt}</div>
+    <div class="question-text">${q.question}</div>
+    <div class="choices">${opts}</div>
+    ${fb}
+    ${done ? `<div class="btn-row" style="margin-top:16px">${navButtons()}</div>` : `<div class="btn-row" id="btn-row" style="display:none">${navButtons()}</div>`}
+  </div>`;
+}
+
+function checkMC(chosen) {
+  if (results[current] !== null) return;
+  const q       = questions[current];
+  const correct = chosen === q.answer;
+  results[current] = { correct, chosen };
+  refreshDots();
+
   document.querySelectorAll(".choice-btn").forEach(b => {
     b.disabled = true;
-    if (b.textContent === correct) b.classList.add("correct");
-    else if (b.textContent === chosen && chosen !== correct) b.classList.add("wrong");
+    if (b.textContent === q.answer) b.classList.add("correct");
+    else if (b.textContent === chosen && !correct) b.classList.add("wrong");
   });
+
   const fb = document.getElementById("fb");
-  if (chosen === correct) {
-    score++;
-    dots[current].classList.add("c");
-    fb.className = "feedback correct";
-    fb.textContent = "Correcto";
-  } else {
-    dots[current].classList.add("w");
-    fb.className = "feedback wrong";
-    fb.textContent = "Incorrecto. La respuesta correcta es: " + correct;
-  }
+  fb.className = "feedback " + (correct ? "correct" : "wrong");
+  fb.textContent = correct ? "Correcto" : "Incorrecto. La respuesta correcta es: " + q.answer;
+
   document.getElementById("btn-row").style.display = "flex";
 }
 
-// DRAG THE WORDS
-function renderDrag(q) {
-  dragState = { blanks: {}, used: {} };
-  q.sentences.forEach((s, i) => { dragState.blanks[i] = null; });
+// ── DRAG THE WORDS ────────────────────────────────────────────────────────────
+function renderDrag(q, done) {
+  // init drag state for this question if needed
+  if (!dragStates[current]) {
+    const bank = [...new Set(q.sentences.map(s => s.blank))].sort(() => Math.random() - 0.5);
+    dragStates[current] = { blanks: q.sentences.map(() => null), bank, checked: false };
+  }
+  const ds = dragStates[current];
 
-  const wordBank = [...new Set(q.sentences.map(s => s.blank))];
-  // shuffle word bank
-  wordBank.sort(() => Math.random() - 0.5);
-
-  const sentenceHTML = q.sentences.map((s, i) =>
-    `<div class="drag-sentence">
-      ${s.before} <span class="drag-blank" id="blank-${i}" onclick="returnWord(${i})">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span> ${s.after}
-    </div>`
-  ).join("");
-
-  const chips = wordBank.map(w =>
-    `<span class="word-chip" id="chip-${w}" onclick="placeWord('${w}')">${w}</span>`
-  ).join("");
-
-  return `
-    <div class="card">
-      <div class="question-meta">${q.prompt}</div>
-      <div class="question-text" style="margin-bottom:12px">${q.title}</div>
-      ${sentenceHTML}
-      <div class="word-bank" id="word-bank">${chips}</div>
-      <div class="feedback" id="fb"></div>
-      <div class="btn-row" id="btn-row">
-        <button class="btn btn-primary" onclick="checkDrag()">Verificar</button>
-      </div>
+  const sentenceHTML = q.sentences.map((s, i) => {
+    const val = ds.blanks[i] || "";
+    return `<div class="drag-sentence">
+      ${s.before} <span class="drag-blank${val ? " filled" : ""}${ds.checked ? " locked" : ""}" id="blank-${i}" onclick="blankClick(${i})">${val || "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"}</span> ${s.after}
     </div>`;
+  }).join("");
+
+  const chips = ds.bank.map(w => {
+    const isUsed = ds.blanks.includes(w) || ds.blanks.map(b => b && b.toLowerCase()).includes(w.toLowerCase());
+    return `<span class="word-chip${isUsed ? " used" : ""}" id="chip-${w}" onclick="chipClick('${w}')">${w}</span>`;
+  }).join("");
+
+  const fb = ds.checked
+    ? `<div class="feedback ${results[current] && results[current].correct ? "correct" : "wrong"}">${results[current] && results[current].correct ? "Correcto" : "Revisa las respuestas correctas arriba."}</div>`
+    : `<div class="feedback" id="fb"></div>`;
+
+  const btnRow = ds.checked
+    ? `<div class="btn-row" style="margin-top:16px">${navButtons()}</div>`
+    : `<div class="btn-row" id="btn-row"><button class="btn btn-primary" onclick="checkDrag()">Verificar</button></div>`;
+
+  return `<div class="card">
+    <div class="question-meta">${q.prompt}</div>
+    <div class="question-text" style="margin-bottom:12px">${q.title}</div>
+    ${sentenceHTML}
+    <div class="word-bank" id="word-bank">${chips}</div>
+    ${fb}
+    ${btnRow}
+  </div>`;
 }
 
-let selectedWord = null;
+function restoreDrag(q) {
+  const ds = dragStates[current];
+  if (!ds || !ds.checked) return;
+  q.sentences.forEach((s, i) => {
+    const blank = document.getElementById("blank-" + i);
+    if (!blank) return;
+    const given = ds.blanks[i];
+    if (given && given.toLowerCase() === s.blank.toLowerCase()) blank.classList.add("correct-word");
+    else blank.classList.add("wrong-word");
+  });
+}
 
-function placeWord(word) {
-  if (answered) return;
-  // find first empty blank
-  const q = questions[current];
-  for (let i = 0; i < q.sentences.length; i++) {
-    if (dragState.blanks[i] === null) {
-      dragState.blanks[i] = word;
-      document.getElementById("blank-" + i).textContent = word;
-      document.getElementById("blank-" + i).classList.add("filled");
-      document.getElementById("chip-" + word).classList.add("used");
-      return;
+function chipClick(word) {
+  const ds = dragStates[current];
+  if (!ds || ds.checked) return;
+
+  // deselect previous
+  if (selectedChip) {
+    const prev = document.getElementById("chip-" + selectedChip);
+    if (prev) prev.style.borderColor = "";
+  }
+
+  if (selectedChip === word) { selectedChip = null; return; }
+
+  selectedChip = word;
+  const el = document.getElementById("chip-" + word);
+  if (el) el.style.borderColor = "#2e7d32";
+}
+
+function blankClick(idx) {
+  const ds = dragStates[current];
+  if (!ds || ds.checked) return;
+
+  if (selectedChip) {
+    // place selected chip into this blank
+    const old = ds.blanks[idx];
+    if (old) {
+      // return old word to bank
+      const oldChip = document.getElementById("chip-" + old);
+      if (oldChip) oldChip.classList.remove("used");
     }
+    ds.blanks[idx] = selectedChip;
+    document.getElementById("blank-" + idx).textContent = selectedChip;
+    document.getElementById("blank-" + idx).classList.add("filled");
+    document.getElementById("chip-" + selectedChip).classList.add("used");
+    document.getElementById("chip-" + selectedChip).style.borderColor = "";
+    selectedChip = null;
+  } else {
+    // return the word in this blank to the bank
+    const word = ds.blanks[idx];
+    if (!word) return;
+    ds.blanks[idx] = null;
+    document.getElementById("blank-" + idx).innerHTML = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+    document.getElementById("blank-" + idx).classList.remove("filled");
+    const chip = document.getElementById("chip-" + word);
+    if (chip) chip.classList.remove("used");
   }
 }
 
-function returnWord(idx) {
-  if (answered) return;
-  const word = dragState.blanks[idx];
-  if (!word) return;
-  dragState.blanks[idx] = null;
-  document.getElementById("blank-" + idx).innerHTML = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
-  document.getElementById("blank-" + idx).classList.remove("filled");
-  document.getElementById("chip-" + word).classList.remove("used");
-}
-
 function checkDrag() {
-  if (answered) return;
-  answered = true;
-  const q = questions[current];
-  let allCorrect = true;
+  const q  = questions[current];
+  const ds = dragStates[current];
+  if (!ds || ds.checked) return;
+  ds.checked = true;
 
+  let allCorrect = true;
   q.sentences.forEach((s, i) => {
     const blank = document.getElementById("blank-" + i);
-    const given = dragState.blanks[i];
+    const given = ds.blanks[i];
     if (given && given.toLowerCase() === s.blank.toLowerCase()) {
       blank.classList.add("correct-word");
     } else {
@@ -633,91 +637,107 @@ function checkDrag() {
       blank.textContent = s.blank;
       allCorrect = false;
     }
+    blank.classList.add("locked");
   });
 
+  results[current] = { correct: allCorrect };
+  refreshDots();
+
   const fb = document.getElementById("fb");
-  if (allCorrect) {
-    score++;
-    dots[current].classList.add("c");
-    fb.className = "feedback correct";
-    fb.textContent = "Correcto";
+  fb.className = "feedback " + (allCorrect ? "correct" : "wrong");
+  fb.textContent = allCorrect ? "Correcto" : "Revisa las respuestas correctas arriba.";
+
+  document.getElementById("btn-row").innerHTML = navButtons();
+}
+
+// ── FILL IN THE BLANK ─────────────────────────────────────────────────────────
+function renderFill(q, done) {
+  let inputHTML;
+  if (done) {
+    const given   = results[current].given;
+    const correct = results[current].correct;
+    inputHTML = `<input class="blank-input ${correct ? "correct-input" : "wrong-input"}" value="${given}" disabled>`;
   } else {
-    dots[current].classList.add("w");
-    fb.className = "feedback wrong";
-    fb.textContent = "Revisa las respuestas correctas arriba.";
+    inputHTML = `<input class="blank-input" id="fill-input" type="text" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="...">`;
   }
 
-  document.getElementById("btn-row").innerHTML =
-    `<button class="btn btn-primary" onclick="advance()">Siguiente</button>`;
+  const display = q.sentence.replace("___", inputHTML);
+
+  const fb = done
+    ? `<div class="feedback ${results[current].correct ? "correct" : "wrong"}">${results[current].correct ? "Correcto" : "La respuesta correcta es: " + q.answer}</div>`
+    : `<div class="feedback" id="fb"></div>`;
+
+  const btnRow = done
+    ? `<div class="btn-row" style="margin-top:16px">${navButtons()}</div>`
+    : `<div class="btn-row" id="btn-row"><button class="btn btn-primary" onclick="checkFill()">Verificar</button></div>`;
+
+  return `<div class="card">
+    <div class="question-meta">${q.prompt}</div>
+    <div class="question-text" style="margin-bottom:12px">${q.question}</div>
+    <div class="blank-sentence">${display}</div>
+    ${fb}
+    ${btnRow}
+  </div>`;
 }
 
-// FILL IN THE BLANK
-function renderFill(q) {
-  const display = q.sentence.replace("___", `<input class="blank-input" id="fill-input" type="text" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="...">`);
-  return `
-    <div class="card">
-      <div class="question-meta">${q.prompt}</div>
-      <div class="question-text" style="margin-bottom:12px">${q.question}</div>
-      <div class="blank-sentence">${display}</div>
-      <div class="feedback" id="fb"></div>
-      <div class="btn-row" id="btn-row">
-        <button class="btn btn-primary" onclick="checkFill('${q.answer}')">Verificar</button>
-      </div>
-    </div>`;
-}
-
-function checkFill(correct) {
-  if (answered) return;
-  answered = true;
+function checkFill() {
+  if (results[current] !== null) return;
+  const q     = questions[current];
   const input = document.getElementById("fill-input");
-  const given = input.value.trim().toLowerCase();
-  const fb = document.getElementById("fb");
+  const given = input.value.trim();
+  const correct = given.toLowerCase() === q.answer.toLowerCase();
 
-  if (given === correct.toLowerCase()) {
-    score++;
-    dots[current].classList.add("c");
-    input.classList.add("correct-input");
-    fb.className = "feedback correct";
-    fb.textContent = "Correcto";
-  } else {
-    dots[current].classList.add("w");
-    input.classList.add("wrong-input");
-    fb.className = "feedback wrong";
-    fb.textContent = "La respuesta correcta es: " + correct;
-  }
+  results[current] = { correct, given };
+  refreshDots();
+
+  input.classList.add(correct ? "correct-input" : "wrong-input");
   input.disabled = true;
-  document.getElementById("btn-row").innerHTML =
-    `<button class="btn btn-primary" onclick="advance()">Siguiente</button>`;
+
+  const fb = document.getElementById("fb");
+  fb.className  = "feedback " + (correct ? "correct" : "wrong");
+  fb.textContent = correct ? "Correcto" : "La respuesta correcta es: " + q.answer;
+
+  document.getElementById("btn-row").innerHTML = navButtons();
 }
 
-// ── ADVANCE ───────────────────────────────────────────────────────────────────
-function advance() {
-  current++;
-  if (current >= questions.length) {
-    showResults();
-  } else {
-    render();
+// ── SHARED NAV BUTTONS ────────────────────────────────────────────────────────
+function navButtons() {
+  const isLast = current === questions.length - 1;
+  const allDone = results.every(r => r !== null);
+
+  if (isLast && allDone) {
+    return `<button class="btn btn-primary" onclick="showResults()">Ver resultado</button>
+            <button class="btn btn-secondary" onclick="go(-1)">&#8592; Anterior</button>`;
   }
+  if (isLast) {
+    return `<button class="btn btn-secondary" onclick="go(-1)">&#8592; Anterior</button>`;
+  }
+  return `<button class="btn btn-primary" onclick="go(1)">Siguiente &#8594;</button>
+          ${current > 0 ? `<button class="btn btn-secondary" onclick="go(-1)">&#8592; Anterior</button>` : ""}`;
 }
 
+// ── RESULTS ───────────────────────────────────────────────────────────────────
 function showResults() {
-  document.getElementById("question-area").style.display = "none";
-  document.getElementById("progress-bar-wrap").style.display = "none";
-  const pct = score / questions.length;
+  document.getElementById("question-area").style.display      = "none";
+  document.getElementById("progress-bar-wrap").style.display  = "none";
+  document.getElementById("score-bar").style.display          = "none";
+  document.querySelector(".nav-row").style.display            = "none";
+
+  const score = countScore();
+  const pct   = score / questions.length;
   let msg = "";
-  if (pct === 1)      msg = "¡Perfecto! Dominaste todos los verbos.";
+  if (pct === 1)      msg = "Perfecto. Dominaste todos los verbos.";
   else if (pct >= .8) msg = "Muy bien. Casi perfecto.";
   else if (pct >= .6) msg = "Bien. Sigue practicando.";
   else                msg = "Sigue estudiando. Tu puedes.";
 
   document.getElementById("final-score").textContent = score + " / " + questions.length;
-  document.getElementById("result-msg").textContent = msg;
-  document.getElementById("results").style.display = "block";
+  document.getElementById("result-msg").textContent   = msg;
+  document.getElementById("results").style.display    = "block";
 }
 
 // ── START ─────────────────────────────────────────────────────────────────────
-buildDots();
-render();
+restart();
 </script>
 </body>
 </html>

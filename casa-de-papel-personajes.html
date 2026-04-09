@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Casa de Papel – Personajes – Spanish with Elisabeth</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #1a1a1a;
+      color: #f0f0f0;
+      min-height: 100vh;
+      padding: 28px 16px 60px;
+    }
+
+    header {
+      max-width: 900px;
+      margin: 0 auto 28px;
+    }
+
+    header a {
+      font-size: 0.82rem;
+      color: #888;
+      text-decoration: none;
+    }
+
+    header a:hover { color: #e63946; }
+
+    header h1 {
+      font-size: 1.7rem;
+      font-weight: 800;
+      color: #e63946;
+      margin: 8px 0 2px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    header .subtitle {
+      font-size: 0.88rem;
+      color: #777;
+      letter-spacing: 0.5px;
+    }
+
+    .badge-b2 {
+      display: inline-block;
+      background: #e63946;
+      color: #fff;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      padding: 3px 10px;
+      border-radius: 20px;
+      margin-left: 10px;
+      vertical-align: middle;
+    }
+
+    /* ── RIDDLE CARD ── */
+    #riddle-section {
+      max-width: 680px;
+      margin: 0 auto 24px;
+      background: #242424;
+      border-radius: 16px;
+      border: 1px solid #333;
+      padding: 28px 32px;
+      text-align: center;
+    }
+
+    #riddle-number {
+      font-size: 0.72rem;
+      color: #666;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+
+    #riddle-text {
+      font-size: 1.2rem;
+      color: #ddd;
+      line-height: 1.7;
+      min-height: 72px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #feedback {
+      margin-top: 16px;
+      padding: 11px 20px;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: 600;
+      display: none;
+    }
+
+    #feedback.correct { background: #1e3a21; color: #66bb6a; display: block; }
+    #feedback.wrong   { background: #3a1e1e; color: #ef5350; display: block; }
+
+    #next-btn {
+      margin-top: 16px;
+      display: none;
+      background: #e63946;
+      color: #fff;
+      border: none;
+      border-radius: 50px;
+      padding: 11px 36px;
+      font-size: 0.95rem;
+      font-family: inherit;
+      font-weight: 700;
+      cursor: pointer;
+      letter-spacing: 0.5px;
+      transition: background 0.2s;
+    }
+
+    #next-btn:hover { background: #c1121f; }
+
+    /* ── SCORE BAR ── */
+    #score-bar {
+      max-width: 680px;
+      margin: 0 auto 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.88rem;
+      color: #666;
+      padding: 0 2px;
+    }
+
+    #score-bar strong { color: #e63946; }
+
+    #progress-dots {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .dot {
+      width: 11px; height: 11px;
+      border-radius: 50%;
+      background: #333;
+      transition: background 0.3s;
+    }
+
+    .dot.correct { background: #43a047; }
+    .dot.wrong   { background: #e53935; }
+
+    /* ── INSTRUCTION ── */
+    #instruction {
+      text-align: center;
+      font-size: 0.88rem;
+      color: #555;
+      margin-bottom: 16px;
+      font-style: italic;
+    }
+
+    /* ── CHARACTER GRID ── */
+    #character-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 14px;
+      max-width: 900px;
+      margin: 0 auto 48px;
+    }
+
+    .char-card {
+      background: #242424;
+      border: 2px solid #333;
+      border-radius: 14px;
+      cursor: pointer;
+      text-align: center;
+      padding: 16px 10px 14px;
+      transition: border-color 0.15s, transform 0.15s, box-shadow 0.15s;
+      user-select: none;
+    }
+
+    .char-card:hover:not(.disabled) {
+      border-color: #e63946;
+      transform: translateY(-3px);
+      box-shadow: 0 6px 20px rgba(230,57,70,0.2);
+    }
+
+    /* avatar silhouette */
+    .avatar {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      margin: 0 auto 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.2rem;
+      font-weight: 900;
+      color: #fff;
+      letter-spacing: -1px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* jumpsuit silhouette overlay */
+    .avatar::after {
+      content: "";
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 60px;
+      height: 32px;
+      background: rgba(0,0,0,0.25);
+      border-radius: 50% 50% 0 0 / 20px 20px 0 0;
+    }
+
+    .char-name {
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: #ccc;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    /* answer states */
+    .char-card.correct-answer { border-color: #43a047; background: #1a2e1a; }
+    .char-card.correct-answer .char-name { color: #66bb6a; }
+    .char-card.wrong-answer   { border-color: #e53935; background: #2e1a1a; }
+    .char-card.wrong-answer   .char-name { color: #ef5350; }
+    .char-card.reveal-correct { border-color: #43a047; background: #1a2e1a; }
+    .char-card.reveal-correct .char-name { color: #66bb6a; }
+    .char-card.disabled       { cursor: default; }
+
+    /* ── RESULTS ── */
+    #results-screen {
+      display: none;
+      max-width: 480px;
+      margin: 40px auto;
+      background: #242424;
+      border-radius: 20px;
+      border: 1px solid #333;
+      padding: 40px 32px;
+      text-align: center;
+    }
+
+    #results-screen h2 { font-size: 1.6rem; color: #e63946; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; }
+    #results-screen .score-big { font-size: 3rem; font-weight: 800; color: #e63946; margin: 16px 0; }
+    #results-screen p { color: #888; font-size: 1rem; line-height: 1.5; }
+
+    #restart-btn {
+      margin-top: 24px;
+      background: #e63946;
+      color: #fff;
+      border: none;
+      border-radius: 50px;
+      padding: 13px 44px;
+      font-size: 1rem;
+      font-family: inherit;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    #restart-btn:hover { background: #c1121f; }
+
+    @media (max-width: 500px) {
+      header h1 { font-size: 1.3rem; }
+      #riddle-text { font-size: 1rem; }
+      #character-grid { grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 10px; }
+      .avatar { width: 64px; height: 64px; font-size: 1.6rem; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <a href="index.html">← Volver a ejercicios</a>
+  <h1>La Casa de Papel <span class="badge-b2">B2</span></h1>
+  <p class="subtitle">Personajes — Temporada 1, Episodios 1 y 2</p>
+</header>
+
+<div id="score-bar">
+  <div>Correctas: <strong id="correct-count">0</strong></div>
+  <div id="progress-dots"></div>
+  <div>Pregunta <strong id="q-current">1</strong> / <strong id="q-total">10</strong></div>
+</div>
+
+<div id="riddle-section">
+  <div id="riddle-number"></div>
+  <div id="riddle-text"></div>
+  <div id="feedback"></div>
+  <button id="next-btn" onclick="nextRiddle()">Siguiente &rarr;</button>
+</div>
+
+<p id="instruction">Haz clic en el personaje que corresponde a la descripcion</p>
+
+<div id="character-grid"></div>
+
+<div id="results-screen">
+  <h2>Fin del ejercicio</h2>
+  <div class="score-big" id="final-score"></div>
+  <p id="result-msg"></p>
+  <button id="restart-btn" onclick="restartGame()">Jugar otra vez</button>
+</div>
+
+<script>
+  // ── CHARACTER DATA ──────────────────────────────────────────────────────────
+  // Each character gets a color and initials for their avatar.
+  // Images from Wikipedia Commons (free/CC-licensed press stills are not reliably available),
+  // so we use styled illustrated avatars instead.
+  const characters = [
+    { id: "profesor",  label: "El Profesor",     color: "#5c6bc0", initials: "P"  },
+    { id: "tokio",     label: "Tokio",            color: "#e63946", initials: "TK" },
+    { id: "berlin",    label: "Berlin",           color: "#455a64", initials: "B"  },
+    { id: "nairobi",   label: "Nairobi",          color: "#d4a017", initials: "NB" },
+    { id: "moscu",     label: "Moscu",            color: "#6d4c41", initials: "M"  },
+    { id: "denver",    label: "Denver",           color: "#2e7d32", initials: "D"  },
+    { id: "rio",       label: "Rio",              color: "#0288d1", initials: "R"  },
+    { id: "helsinki",  label: "Helsinki",         color: "#4a148c", initials: "HK" },
+    { id: "oslo",      label: "Oslo",             color: "#37474f", initials: "O"  },
+    { id: "raquel",    label: "Raquel Murillo",   color: "#ad1457", initials: "RM" },
+  ];
+
+  // ── RIDDLES ─────────────────────────────────────────────────────────────────
+  const riddles = [
+    {
+      answer: "profesor",
+      text: "Es el cerebro de la operacion. Dirige el atraco desde fuera de la fabrica y ha planeado cada detalle con una precision obsesiva. Sin el, el robo no existiria."
+    },
+    {
+      answer: "tokio",
+      text: "Ella misma nos cuenta la historia. Antes del atraco ya era una fugitiva buscada por la policia. Actua sin pensar demasiado y eso la mete en problemas."
+    },
+    {
+      answer: "berlin",
+      text: "Dentro de la fabrica, nadie tiene mas autoridad que el. Toma decisiones sin dudar y no tolera que los rehenes o sus propios companeros lo desafien."
+    },
+    {
+      answer: "nairobi",
+      text: "Forma parte del equipo que se ocupa del dinero dentro del edificio. Esta comprometida con el plan y tiene una energia que se nota en cada momento."
+    },
+    {
+      answer: "moscu",
+      text: "Es un hombre con mucha experiencia en trabajos con las manos. Dentro del edificio colabora en las tareas fisicas que el plan necesita. Es tranquilo y confiable."
+    },
+    {
+      answer: "denver",
+      text: "Participa en el control de los rehenes pero no siempre mantiene la calma. Es impulsivo y en algunos momentos pierde el control de sus emociones."
+    },
+    {
+      answer: "rio",
+      text: "Es el mas joven de todos. Su rol tiene que ver con la tecnologia. Todavia le falta la experiencia que tienen los demas miembros del grupo."
+    },
+    {
+      answer: "helsinki",
+      text: "Su trabajo es vigilar a los rehenes. Obedece las ordenes sin cuestionarlas y siempre actua en coordinacion con su companero mas cercano."
+    },
+    {
+      answer: "oslo",
+      text: "Esta junto a Helsinki en todo momento. Habla poco y hace lo que le dicen. Su presencia es tranquila pero imponente."
+    },
+    {
+      answer: "raquel",
+      text: "No esta dentro de la fabrica, sino fuera. Es la inspectora que coordina la respuesta policial al atraco. Trabaja con calma y se enfoca en resolver la situacion."
+    },
+  ];
+
+  // ── STATE ───────────────────────────────────────────────────────────────────
+  let shuffledRiddles = [];
+  let currentIndex    = 0;
+  let correctCount    = 0;
+  let answered        = false;
+  let dotEls          = [];
+
+  // ── BUILD ────────────────────────────────────────────────────────────────────
+  function buildGrid() {
+    const grid = document.getElementById("character-grid");
+    grid.innerHTML = "";
+    characters.forEach(c => {
+      const card = document.createElement("div");
+      card.className = "char-card";
+      card.id = "card-" + c.id;
+      card.innerHTML = `
+        <div class="avatar" style="background:${c.color}">${c.initials}</div>
+        <div class="char-name">${c.label}</div>`;
+      card.addEventListener("click", () => handleAnswer(c.id));
+      grid.appendChild(card);
+    });
+  }
+
+  function buildDots(total) {
+    const container = document.getElementById("progress-dots");
+    container.innerHTML = "";
+    dotEls = [];
+    for (let i = 0; i < total; i++) {
+      const d = document.createElement("div");
+      d.className = "dot";
+      container.appendChild(d);
+      dotEls.push(d);
+    }
+  }
+
+  function shuffle(arr) {
+    const a = [...arr];
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  // ── GAME LOGIC ───────────────────────────────────────────────────────────────
+  function startGame() {
+    shuffledRiddles = shuffle(riddles);
+    currentIndex    = 0;
+    correctCount    = 0;
+    answered        = false;
+
+    document.getElementById("correct-count").textContent = 0;
+    document.getElementById("q-total").textContent       = shuffledRiddles.length;
+    document.getElementById("results-screen").style.display = "none";
+    document.getElementById("riddle-section").style.display = "";
+    document.getElementById("character-grid").style.display = "";
+    document.getElementById("instruction").style.display    = "";
+    document.getElementById("score-bar").style.display      = "";
+
+    buildGrid();
+    buildDots(shuffledRiddles.length);
+    showRiddle();
+  }
+
+  function showRiddle() {
+    answered = false;
+
+    document.querySelectorAll(".char-card").forEach(c => {
+      c.className = "char-card";
+    });
+
+    const fb = document.getElementById("feedback");
+    fb.style.display = "none";
+    fb.className     = "";
+    document.getElementById("next-btn").style.display = "none";
+
+    const r = shuffledRiddles[currentIndex];
+    document.getElementById("riddle-number").textContent =
+      "Personaje " + (currentIndex + 1) + " de " + shuffledRiddles.length;
+    document.getElementById("riddle-text").textContent = r.text;
+    document.getElementById("q-current").textContent   = currentIndex + 1;
+  }
+
+  function handleAnswer(selectedId) {
+    if (answered) return;
+    answered = true;
+
+    const r           = shuffledRiddles[currentIndex];
+    const correct     = r.answer === selectedId;
+    const correctChar = characters.find(c => c.id === r.answer);
+    const fb          = document.getElementById("feedback");
+
+    document.querySelectorAll(".char-card").forEach(c => c.classList.add("disabled"));
+
+    if (correct) {
+      correctCount++;
+      document.getElementById("correct-count").textContent = correctCount;
+      document.getElementById("card-" + selectedId).classList.add("correct-answer");
+      fb.className   = "correct";
+      fb.textContent = "Correcto. Es " + correctChar.label;
+      dotEls[currentIndex].classList.add("correct");
+    } else {
+      document.getElementById("card-" + selectedId).classList.add("wrong-answer");
+      document.getElementById("card-" + r.answer).classList.add("reveal-correct");
+      fb.className   = "wrong";
+      fb.textContent = "Incorrecto. La respuesta correcta es " + correctChar.label;
+      dotEls[currentIndex].classList.add("wrong");
+    }
+
+    fb.style.display = "block";
+
+    const nextBtn = document.getElementById("next-btn");
+    nextBtn.textContent = currentIndex < shuffledRiddles.length - 1
+      ? "Siguiente \u2192"
+      : "Ver resultado";
+    nextBtn.style.display = "inline-block";
+  }
+
+  function nextRiddle() {
+    currentIndex++;
+    if (currentIndex >= shuffledRiddles.length) {
+      showResults();
+    } else {
+      showRiddle();
+    }
+  }
+
+  function showResults() {
+    document.getElementById("riddle-section").style.display   = "none";
+    document.getElementById("character-grid").style.display   = "none";
+    document.getElementById("instruction").style.display      = "none";
+
+    const total = shuffledRiddles.length;
+    const pct   = correctCount / total;
+    let msg     = "";
+
+    if (pct === 1)      msg = "Perfecto. Conoces muy bien a los personajes.";
+    else if (pct >= .8) msg = "Muy bien. Casi perfecto.";
+    else if (pct >= .6) msg = "Bien. Sigue practicando.";
+    else if (pct >= .4) msg = "Buen intento. Vuelve a ver los episodios.";
+    else                msg = "Sigue estudiando. Tu puedes.";
+
+    document.getElementById("final-score").textContent = correctCount + " / " + total;
+    document.getElementById("result-msg").textContent  = msg;
+    document.getElementById("results-screen").style.display = "block";
+  }
+
+  function restartGame() { startGame(); }
+
+  startGame();
+</script>
+</body>
+</html>
