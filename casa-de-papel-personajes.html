@@ -85,6 +85,31 @@
 
     .dot.correct { background: #43a047; }
     .dot.wrong   { background: #e53935; }
+    .dot.active  { outline: 2px solid #e63946; outline-offset: 2px; }
+    .dot { cursor: pointer; }
+
+    /* ── NAV ROW ── */
+    .nav-row {
+      max-width: 680px;
+      margin: 0 auto 16px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .nav-btn {
+      background: none;
+      border: 1px solid #444;
+      border-radius: 50px;
+      padding: 7px 20px;
+      font-size: 0.88rem;
+      color: #777;
+      cursor: pointer;
+      font-family: inherit;
+      transition: border-color 0.15s, color 0.15s;
+    }
+
+    .nav-btn:hover:not(:disabled) { border-color: #e63946; color: #e63946; }
+    .nav-btn:disabled { opacity: 0.25; cursor: default; }
 
     /* ── RIDDLE CARD ── */
     #riddle-section {
@@ -285,6 +310,11 @@
   <button id="next-btn" onclick="nextRiddle()">Siguiente &rarr;</button>
 </div>
 
+<div class="nav-row">
+  <button class="nav-btn" id="prev-btn" onclick="go(-1)" disabled>&#8592; Anterior</button>
+  <button class="nav-btn" id="next-btn-nav" onclick="go(1)" disabled>Siguiente &#8594;</button>
+</div>
+
 <p id="instruction">Haz clic en el personaje que corresponde a la descripcion</p>
 
 <div id="character-grid"></div>
@@ -298,77 +328,70 @@
 
 <script>
   const characters = [
-    { id: "profesor", label: "El Profesor", photo: "profesor.jpeg" },
-    { id: "tokio",    label: "Tokio",       photo: "tokio.jpeg"    },
-    { id: "berlin",   label: "Berlin",      photo: "berlin.jpeg"   },
-    { id: "nairobi",  label: "Nairobi",     photo: "nairobi.jpeg"  },
-    { id: "moscu",    label: "Moscu",       photo: "moscu.jpeg"    },
-    { id: "denver",   label: "Denver",      photo: "denver.jpeg"   },
-    { id: "rio",      label: "Rio",         photo: "rio.jpeg"      },
-    { id: "helsinki", label: "Helsinki",    photo: "helsinki.jpeg" },
-    { id: "oslo",     label: "Oslo",        photo: "oslo.jpeg"     },
-    { id: "raquel",   label: "Raquel Murillo", photo: "raquel.jpeg"},
+    { id: "profesor", label: "El Profesor",    photo: "profesor.jpg" },
+    { id: "tokio",    label: "Tokio",          photo: "tokio.jpg"    },
+    { id: "berlin",   label: "Berlin",         photo: "berlin.jpg"   },
+    { id: "nairobi",  label: "Nairobi",        photo: "nairobi.jpg"  },
+    { id: "moscu",    label: "Moscu",          photo: "moscu.jpg"    },
+    { id: "denver",   label: "Denver",         photo: "denver.jpg"   },
+    { id: "rio",      label: "Rio",            photo: "rio.jpg"      },
+    { id: "helsinki", label: "Helsinki",       photo: "helsinki.jpg" },
+    { id: "oslo",     label: "Oslo",           photo: "oslo.jpg"     },
+    { id: "raquel",   label: "Raquel Murillo", photo: "raquel.jpg"   },
   ];
 
   const riddles = [
-    {
-      answer: "profesor",
-      text: "Recluta a los miembros del atraco y dirige toda la operacion desde el exterior. Es meticuloso, organizado y explica el plan general del robo.",
-      tag: "Es hombre. No es joven."
-    },
-    {
-      answer: "tokio",
-      text: "Narradora de la historia. Era fugitiva con antecedentes delictivos antes del atraco. Tiene un caracter impulsivo y es reclutada por el Profesor.",
-      tag: "Es mujer. Es joven."
-    },
-    {
-      answer: "berlin",
-      text: "El miembro con mayor autoridad dentro de la fabrica. Actua como lider, tiene una personalidad dominante y toma decisiones firmes frente a los rehenes.",
-      tag: "Es hombre. No es joven."
-    },
-    {
-      answer: "nairobi",
-      text: "Forma parte del equipo encargado del dinero dentro de la fabrica. Es participativa, comprometida con el plan y tiene una actitud muy energica.",
-      tag: "Es mujer. Es joven."
-    },
-    {
-      answer: "moscu",
-      text: "Atracador con experiencia en trabajos manuales. Colabora en las tareas fisicas necesarias para el plan. Mantiene una actitud tranquila y colaborativa.",
-      tag: "Es hombre. No es joven."
-    },
-    {
-      answer: "denver",
-      text: "Participa en el control de los rehenes. Se muestra nervioso en varios momentos y tiene una actitud impulsiva dentro del grupo.",
-      tag: "Es hombre. Es joven."
-    },
-    {
-      answer: "rio",
-      text: "El miembro mas joven del equipo. Se encarga de las tareas tecnicas del plan. Le falta la experiencia del resto del grupo.",
-      tag: "Es hombre. Es muy joven."
-    },
-    {
-      answer: "helsinki",
-      text: "Uno de los encargados de vigilar a los rehenes. Se muestra firme y obediente. Siempre actua en coordinacion con su companero.",
-      tag: "Es hombre. No es joven."
-    },
-    {
-      answer: "oslo",
-      text: "Acompana a Helsinki en el control de los rehenes. Tiene una presencia silenciosa e imponente. Cumple ordenes sin cuestionarlas.",
-      tag: "Es hombre. No es joven."
-    },
-    {
-      answer: "raquel",
-      text: "Inspectora encargada de liderar la respuesta policial al atraco. Coordina el operativo desde el exterior. Es profesional y centrada.",
-      tag: "Es mujer. No es joven."
-    },
+    { answer: "profesor", text: "Recluta a los miembros del atraco y dirige toda la operacion desde el exterior. Es meticuloso, organizado y explica el plan general del robo.", tag: "Es hombre. No es joven." },
+    { answer: "tokio",    text: "Narradora de la historia. Era fugitiva con antecedentes delictivos antes del atraco. Tiene un caracter impulsivo y es reclutada por el Profesor.", tag: "Es mujer. Es joven." },
+    { answer: "berlin",   text: "El miembro con mayor autoridad dentro de la fabrica. Actua como lider, tiene una personalidad dominante y toma decisiones firmes frente a los rehenes.", tag: "Es hombre. No es joven." },
+    { answer: "nairobi",  text: "Forma parte del equipo encargado del dinero dentro de la fabrica. Es participativa, comprometida con el plan y tiene una actitud muy energica.", tag: "Es mujer. Es joven." },
+    { answer: "moscu",    text: "Atracador con experiencia en trabajos manuales. Colabora en las tareas fisicas necesarias para el plan. Mantiene una actitud tranquila y colaborativa.", tag: "Es hombre. No es joven." },
+    { answer: "denver",   text: "Participa en el control de los rehenes. Se muestra nervioso en varios momentos y tiene una actitud impulsiva dentro del grupo.", tag: "Es hombre. Es joven." },
+    { answer: "rio",      text: "El miembro mas joven del equipo. Se encarga de las tareas tecnicas del plan. Le falta la experiencia del resto del grupo.", tag: "Es hombre. Es muy joven." },
+    { answer: "helsinki", text: "Uno de los encargados de vigilar a los rehenes. Se muestra firme y obediente. Siempre actua en coordinacion con su companero.", tag: "Es hombre. No es joven." },
+    { answer: "oslo",     text: "Acompana a Helsinki en el control de los rehenes. Tiene una presencia silenciosa e imponente. Cumple ordenes sin cuestionarlas.", tag: "Es hombre. No es joven." },
+    { answer: "raquel",   text: "Inspectora encargada de liderar la respuesta policial al atraco. Coordina el operativo desde el exterior. Es profesional y centrada.", tag: "Es mujer. No es joven." },
   ];
 
+  // ── STATE ──────────────────────────────────────────────────────────────────
   let shuffledRiddles = [];
   let currentIndex    = 0;
   let correctCount    = 0;
-  let answered        = false;
   let dotEls          = [];
+  // results[i] = { correct, selectedId } once answered, else null
+  let results         = [];
 
+  // ── INIT ───────────────────────────────────────────────────────────────────
+  function startGame() {
+    shuffledRiddles = shuffle(riddles);
+    currentIndex    = 0;
+    correctCount    = 0;
+    results         = shuffledRiddles.map(() => null);
+
+    document.getElementById("correct-count").textContent    = 0;
+    document.getElementById("q-total").textContent          = shuffledRiddles.length;
+    document.getElementById("results-screen").style.display = "none";
+    document.getElementById("riddle-section").style.display = "";
+    document.getElementById("character-grid").style.display = "";
+    document.getElementById("instruction").style.display    = "";
+    document.getElementById("score-bar").style.display      = "";
+    document.querySelector(".nav-row").style.display        = "";
+
+    buildGrid();
+    buildDots(shuffledRiddles.length);
+    showRiddle();
+  }
+
+  function shuffle(arr) {
+    const a = [...arr];
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  // ── GRID ───────────────────────────────────────────────────────────────────
   function buildGrid() {
     const grid = document.getElementById("character-grid");
     grid.innerHTML = "";
@@ -384,6 +407,7 @@
     });
   }
 
+  // ── DOTS ───────────────────────────────────────────────────────────────────
   function buildDots(total) {
     const container = document.getElementById("progress-dots");
     container.innerHTML = "";
@@ -391,98 +415,131 @@
     for (let i = 0; i < total; i++) {
       const d = document.createElement("div");
       d.className = "dot";
+      d.title = "Personaje " + (i + 1);
+      d.onclick = () => { currentIndex = i; showRiddle(); };
       container.appendChild(d);
       dotEls.push(d);
     }
   }
 
-  function shuffle(arr) {
-    const a = [...arr];
-    for (let i = a.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [a[i], a[j]] = [a[j], a[i]];
-    }
-    return a;
+  function refreshDots() {
+    dotEls.forEach((d, i) => {
+      d.className = "dot";
+      if (results[i] !== null) d.classList.add(results[i].correct ? "correct" : "wrong");
+      if (i === currentIndex)  d.classList.add("active");
+    });
   }
 
-  function startGame() {
-    shuffledRiddles = shuffle(riddles);
-    currentIndex    = 0;
-    correctCount    = 0;
-    answered        = false;
-
-    document.getElementById("correct-count").textContent    = 0;
-    document.getElementById("q-total").textContent          = shuffledRiddles.length;
-    document.getElementById("results-screen").style.display = "none";
-    document.getElementById("riddle-section").style.display = "";
-    document.getElementById("character-grid").style.display = "";
-    document.getElementById("instruction").style.display    = "";
-    document.getElementById("score-bar").style.display      = "";
-
-    buildGrid();
-    buildDots(shuffledRiddles.length);
+  // ── NAV ────────────────────────────────────────────────────────────────────
+  function go(dir) {
+    const next = currentIndex + dir;
+    if (next < 0 || next >= shuffledRiddles.length) return;
+    currentIndex = next;
     showRiddle();
   }
 
+  function updateNavButtons() {
+    document.getElementById("prev-btn").disabled     = currentIndex === 0;
+    document.getElementById("next-btn-nav").disabled = currentIndex >= shuffledRiddles.length - 1;
+    document.getElementById("q-current").textContent = currentIndex + 1;
+  }
+
+  // ── SHOW ───────────────────────────────────────────────────────────────────
   function showRiddle() {
-    answered = false;
+    refreshDots();
+    updateNavButtons();
 
-    document.querySelectorAll(".char-card").forEach(c => { c.className = "char-card"; });
+    const r    = shuffledRiddles[currentIndex];
+    const done = results[currentIndex] !== null;
 
-    document.getElementById("feedback").style.display  = "none";
-    document.getElementById("feedback").className      = "";
-    document.getElementById("next-btn").style.display  = "none";
-
-    const r = shuffledRiddles[currentIndex];
     document.getElementById("riddle-number").textContent = "Personaje " + (currentIndex + 1) + " de " + shuffledRiddles.length;
     document.getElementById("riddle-text").textContent   = r.text;
     document.getElementById("riddle-tag").textContent    = r.tag;
-    document.getElementById("q-current").textContent    = currentIndex + 1;
+
+    // reset cards
+    document.querySelectorAll(".char-card").forEach(c => { c.className = "char-card"; });
+
+    const fb = document.getElementById("feedback");
+
+    if (done) {
+      const res         = results[currentIndex];
+      const correctChar = characters.find(c => c.id === r.answer);
+
+      document.querySelectorAll(".char-card").forEach(c => c.classList.add("disabled"));
+      document.getElementById("card-" + res.selectedId).classList.add(res.correct ? "correct-answer" : "wrong-answer");
+      if (!res.correct) document.getElementById("card-" + r.answer).classList.add("reveal-correct");
+
+      fb.className   = res.correct ? "correct" : "wrong";
+      fb.textContent = res.correct
+        ? "Correcto. Es " + correctChar.label
+        : "Incorrecto. La respuesta correcta es " + correctChar.label;
+      fb.style.display = "block";
+
+      const nextBtn = document.getElementById("next-btn");
+      const allDone = results.every(r => r !== null);
+      if (currentIndex === shuffledRiddles.length - 1 && allDone) {
+        nextBtn.textContent   = "Ver resultado";
+        nextBtn.style.display = "inline-block";
+      } else if (currentIndex < shuffledRiddles.length - 1) {
+        nextBtn.textContent   = "Siguiente \u2192";
+        nextBtn.style.display = "inline-block";
+      } else {
+        nextBtn.style.display = "none";
+      }
+    } else {
+      fb.style.display = "none";
+      fb.className     = "";
+      document.getElementById("next-btn").style.display = "none";
+    }
   }
 
+  // ── ANSWER ─────────────────────────────────────────────────────────────────
   function handleAnswer(selectedId) {
-    if (answered) return;
-    answered = true;
+    if (results[currentIndex] !== null) return;
 
     const r           = shuffledRiddles[currentIndex];
     const correct     = r.answer === selectedId;
     const correctChar = characters.find(c => c.id === r.answer);
-    const fb          = document.getElementById("feedback");
 
-    document.querySelectorAll(".char-card").forEach(c => c.classList.add("disabled"));
-
+    results[currentIndex] = { correct, selectedId };
     if (correct) {
       correctCount++;
       document.getElementById("correct-count").textContent = correctCount;
-      document.getElementById("card-" + selectedId).classList.add("correct-answer");
-      fb.className   = "correct";
-      fb.textContent = "Correcto. Es " + correctChar.label;
-      dotEls[currentIndex].classList.add("correct");
-    } else {
-      document.getElementById("card-" + selectedId).classList.add("wrong-answer");
-      document.getElementById("card-" + r.answer).classList.add("reveal-correct");
-      fb.className   = "wrong";
-      fb.textContent = "Incorrecto. La respuesta correcta es " + correctChar.label;
-      dotEls[currentIndex].classList.add("wrong");
     }
 
+    refreshDots();
+    document.querySelectorAll(".char-card").forEach(c => c.classList.add("disabled"));
+    document.getElementById("card-" + selectedId).classList.add(correct ? "correct-answer" : "wrong-answer");
+    if (!correct) document.getElementById("card-" + r.answer).classList.add("reveal-correct");
+
+    const fb = document.getElementById("feedback");
+    fb.className   = correct ? "correct" : "wrong";
+    fb.textContent = correct
+      ? "Correcto. Es " + correctChar.label
+      : "Incorrecto. La respuesta correcta es " + correctChar.label;
     fb.style.display = "block";
 
-    const nextBtn = document.getElementById("next-btn");
-    nextBtn.textContent   = currentIndex < shuffledRiddles.length - 1 ? "Siguiente \u2192" : "Ver resultado";
+    const nextBtn   = document.getElementById("next-btn");
+    const allDone   = results.every(r => r !== null);
+    nextBtn.textContent   = (currentIndex === shuffledRiddles.length - 1 && allDone) ? "Ver resultado" : "Siguiente \u2192";
     nextBtn.style.display = "inline-block";
   }
 
   function nextRiddle() {
-    currentIndex++;
-    if (currentIndex >= shuffledRiddles.length) showResults();
-    else showRiddle();
+    const allDone = results.every(r => r !== null);
+    if (currentIndex === shuffledRiddles.length - 1 && allDone) {
+      showResults();
+    } else {
+      go(1);
+    }
   }
 
+  // ── RESULTS ────────────────────────────────────────────────────────────────
   function showResults() {
-    document.getElementById("riddle-section").style.display   = "none";
-    document.getElementById("character-grid").style.display   = "none";
-    document.getElementById("instruction").style.display      = "none";
+    document.getElementById("riddle-section").style.display = "none";
+    document.getElementById("character-grid").style.display = "none";
+    document.getElementById("instruction").style.display    = "none";
+    document.querySelector(".nav-row").style.display        = "none";
 
     const total = shuffledRiddles.length;
     const pct   = correctCount / total;
@@ -493,9 +550,9 @@
     else if (pct >= .4) msg = "Buen intento. Vuelve a ver los episodios.";
     else                msg = "Sigue estudiando. Tu puedes.";
 
-    document.getElementById("final-score").textContent         = correctCount + " / " + total;
-    document.getElementById("result-msg").textContent          = msg;
-    document.getElementById("results-screen").style.display    = "block";
+    document.getElementById("final-score").textContent      = correctCount + " / " + total;
+    document.getElementById("result-msg").textContent       = msg;
+    document.getElementById("results-screen").style.display = "block";
   }
 
   function restartGame() { startGame(); }
