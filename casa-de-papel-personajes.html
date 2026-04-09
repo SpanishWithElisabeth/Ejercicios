@@ -16,7 +16,7 @@
     }
 
     header {
-      max-width: 900px;
+      max-width: 960px;
       margin: 0 auto 28px;
     }
 
@@ -39,7 +39,7 @@
 
     header .subtitle {
       font-size: 0.88rem;
-      color: #777;
+      color: #666;
       letter-spacing: 0.5px;
     }
 
@@ -56,75 +56,15 @@
       vertical-align: middle;
     }
 
-    /* ── RIDDLE CARD ── */
-    #riddle-section {
-      max-width: 680px;
-      margin: 0 auto 24px;
-      background: #242424;
-      border-radius: 16px;
-      border: 1px solid #333;
-      padding: 28px 32px;
-      text-align: center;
-    }
-
-    #riddle-number {
-      font-size: 0.72rem;
-      color: #666;
-      letter-spacing: 1.5px;
-      text-transform: uppercase;
-      margin-bottom: 10px;
-    }
-
-    #riddle-text {
-      font-size: 1.2rem;
-      color: #ddd;
-      line-height: 1.7;
-      min-height: 72px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    #feedback {
-      margin-top: 16px;
-      padding: 11px 20px;
-      border-radius: 10px;
-      font-size: 1rem;
-      font-weight: 600;
-      display: none;
-    }
-
-    #feedback.correct { background: #1e3a21; color: #66bb6a; display: block; }
-    #feedback.wrong   { background: #3a1e1e; color: #ef5350; display: block; }
-
-    #next-btn {
-      margin-top: 16px;
-      display: none;
-      background: #e63946;
-      color: #fff;
-      border: none;
-      border-radius: 50px;
-      padding: 11px 36px;
-      font-size: 0.95rem;
-      font-family: inherit;
-      font-weight: 700;
-      cursor: pointer;
-      letter-spacing: 0.5px;
-      transition: background 0.2s;
-    }
-
-    #next-btn:hover { background: #c1121f; }
-
     /* ── SCORE BAR ── */
     #score-bar {
       max-width: 680px;
-      margin: 0 auto 18px;
+      margin: 0 auto 16px;
       display: flex;
       justify-content: space-between;
       align-items: center;
       font-size: 0.88rem;
       color: #666;
-      padding: 0 2px;
     }
 
     #score-bar strong { color: #e63946; }
@@ -146,10 +86,75 @@
     .dot.correct { background: #43a047; }
     .dot.wrong   { background: #e53935; }
 
+    /* ── RIDDLE CARD ── */
+    #riddle-section {
+      max-width: 680px;
+      margin: 0 auto 20px;
+      background: #242424;
+      border-radius: 16px;
+      border: 1px solid #333;
+      padding: 26px 30px;
+      text-align: center;
+    }
+
+    #riddle-number {
+      font-size: 0.72rem;
+      color: #555;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+
+    #riddle-text {
+      font-size: 1.1rem;
+      color: #ddd;
+      line-height: 1.75;
+      min-height: 80px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #riddle-tag {
+      margin-top: 12px;
+      font-size: 0.82rem;
+      color: #888;
+      font-style: italic;
+    }
+
+    #feedback {
+      margin-top: 14px;
+      padding: 10px 18px;
+      border-radius: 10px;
+      font-size: 0.97rem;
+      font-weight: 600;
+      display: none;
+    }
+
+    #feedback.correct { background: #1e3a21; color: #66bb6a; display: block; }
+    #feedback.wrong   { background: #3a1e1e; color: #ef5350; display: block; }
+
+    #next-btn {
+      margin-top: 14px;
+      display: none;
+      background: #e63946;
+      color: #fff;
+      border: none;
+      border-radius: 50px;
+      padding: 10px 34px;
+      font-size: 0.93rem;
+      font-family: inherit;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    #next-btn:hover { background: #c1121f; }
+
     /* ── INSTRUCTION ── */
     #instruction {
       text-align: center;
-      font-size: 0.88rem;
+      font-size: 0.85rem;
       color: #555;
       margin-bottom: 16px;
       font-style: italic;
@@ -158,9 +163,9 @@
     /* ── CHARACTER GRID ── */
     #character-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
       gap: 14px;
-      max-width: 900px;
+      max-width: 960px;
       margin: 0 auto 48px;
     }
 
@@ -170,7 +175,7 @@
       border-radius: 14px;
       cursor: pointer;
       text-align: center;
-      padding: 16px 10px 14px;
+      overflow: hidden;
       transition: border-color 0.15s, transform 0.15s, box-shadow 0.15s;
       user-select: none;
     }
@@ -181,57 +186,36 @@
       box-shadow: 0 6px 20px rgba(230,57,70,0.2);
     }
 
-    /* avatar silhouette */
-    .avatar {
-      width: 80px;
-      height: 80px;
-      border-radius: 50%;
-      margin: 0 auto 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 2.2rem;
-      font-weight: 900;
-      color: #fff;
-      letter-spacing: -1px;
-      position: relative;
-      overflow: hidden;
-    }
-
-    /* jumpsuit silhouette overlay */
-    .avatar::after {
-      content: "";
-      position: absolute;
-      bottom: 0;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 60px;
-      height: 32px;
-      background: rgba(0,0,0,0.25);
-      border-radius: 50% 50% 0 0 / 20px 20px 0 0;
+    .char-photo {
+      width: 100%;
+      aspect-ratio: 3 / 4;
+      object-fit: cover;
+      object-position: top center;
+      display: block;
     }
 
     .char-name {
-      font-size: 0.88rem;
+      font-size: 0.8rem;
       font-weight: 700;
-      color: #ccc;
-      letter-spacing: 0.5px;
+      color: #bbb;
+      letter-spacing: 0.8px;
       text-transform: uppercase;
+      padding: 10px 6px;
     }
 
     /* answer states */
-    .char-card.correct-answer { border-color: #43a047; background: #1a2e1a; }
+    .char-card.correct-answer { border-color: #43a047; }
     .char-card.correct-answer .char-name { color: #66bb6a; }
-    .char-card.wrong-answer   { border-color: #e53935; background: #2e1a1a; }
+    .char-card.wrong-answer   { border-color: #e53935; }
     .char-card.wrong-answer   .char-name { color: #ef5350; }
-    .char-card.reveal-correct { border-color: #43a047; background: #1a2e1a; }
+    .char-card.reveal-correct { border-color: #43a047; }
     .char-card.reveal-correct .char-name { color: #66bb6a; }
     .char-card.disabled       { cursor: default; }
 
     /* ── RESULTS ── */
     #results-screen {
       display: none;
-      max-width: 480px;
+      max-width: 460px;
       margin: 40px auto;
       background: #242424;
       border-radius: 20px;
@@ -240,18 +224,31 @@
       text-align: center;
     }
 
-    #results-screen h2 { font-size: 1.6rem; color: #e63946; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; }
-    #results-screen .score-big { font-size: 3rem; font-weight: 800; color: #e63946; margin: 16px 0; }
-    #results-screen p { color: #888; font-size: 1rem; line-height: 1.5; }
+    #results-screen h2 {
+      font-size: 1.5rem;
+      color: #e63946;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    #results-screen .score-big {
+      font-size: 3rem;
+      font-weight: 800;
+      color: #e63946;
+      margin: 14px 0;
+    }
+
+    #results-screen p { color: #777; font-size: 1rem; line-height: 1.5; }
 
     #restart-btn {
-      margin-top: 24px;
+      margin-top: 22px;
       background: #e63946;
       color: #fff;
       border: none;
       border-radius: 50px;
-      padding: 13px 44px;
-      font-size: 1rem;
+      padding: 12px 42px;
+      font-size: 0.97rem;
       font-family: inherit;
       font-weight: 700;
       cursor: pointer;
@@ -260,11 +257,9 @@
 
     #restart-btn:hover { background: #c1121f; }
 
-    @media (max-width: 500px) {
-      header h1 { font-size: 1.3rem; }
+    @media (max-width: 520px) {
+      #character-grid { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; }
       #riddle-text { font-size: 1rem; }
-      #character-grid { grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 10px; }
-      .avatar { width: 64px; height: 64px; font-size: 1.6rem; }
     }
   </style>
 </head>
@@ -285,6 +280,7 @@
 <div id="riddle-section">
   <div id="riddle-number"></div>
   <div id="riddle-text"></div>
+  <div id="riddle-tag"></div>
   <div id="feedback"></div>
   <button id="next-btn" onclick="nextRiddle()">Siguiente &rarr;</button>
 </div>
@@ -301,75 +297,78 @@
 </div>
 
 <script>
-  // ── CHARACTER DATA ──────────────────────────────────────────────────────────
-  // Each character gets a color and initials for their avatar.
-  // Images from Wikipedia Commons (free/CC-licensed press stills are not reliably available),
-  // so we use styled illustrated avatars instead.
   const characters = [
-    { id: "profesor",  label: "El Profesor",     color: "#5c6bc0", initials: "P"  },
-    { id: "tokio",     label: "Tokio",            color: "#e63946", initials: "TK" },
-    { id: "berlin",    label: "Berlin",           color: "#455a64", initials: "B"  },
-    { id: "nairobi",   label: "Nairobi",          color: "#d4a017", initials: "NB" },
-    { id: "moscu",     label: "Moscu",            color: "#6d4c41", initials: "M"  },
-    { id: "denver",    label: "Denver",           color: "#2e7d32", initials: "D"  },
-    { id: "rio",       label: "Rio",              color: "#0288d1", initials: "R"  },
-    { id: "helsinki",  label: "Helsinki",         color: "#4a148c", initials: "HK" },
-    { id: "oslo",      label: "Oslo",             color: "#37474f", initials: "O"  },
-    { id: "raquel",    label: "Raquel Murillo",   color: "#ad1457", initials: "RM" },
+    { id: "profesor", label: "El Profesor", photo: "profesor.jpg" },
+    { id: "tokio",    label: "Tokio",       photo: "tokio.jpg"    },
+    { id: "berlin",   label: "Berlin",      photo: "berlin.jpg"   },
+    { id: "nairobi",  label: "Nairobi",     photo: "nairobi.jpg"  },
+    { id: "moscu",    label: "Moscu",       photo: "moscu.jpg"    },
+    { id: "denver",   label: "Denver",      photo: "denver.jpg"   },
+    { id: "rio",      label: "Rio",         photo: "rio.jpg"      },
+    { id: "helsinki", label: "Helsinki",    photo: "helsinki.jpg" },
+    { id: "oslo",     label: "Oslo",        photo: "oslo.jpg"     },
+    { id: "raquel",   label: "Raquel Murillo", photo: "raquel.jpg"},
   ];
 
-  // ── RIDDLES ─────────────────────────────────────────────────────────────────
   const riddles = [
     {
       answer: "profesor",
-      text: "Es el cerebro de la operacion. Dirige el atraco desde fuera de la fabrica y ha planeado cada detalle con una precision obsesiva. Sin el, el robo no existiria."
+      text: "Recluta a los miembros del atraco y dirige toda la operacion desde el exterior. Es meticuloso, organizado y explica el plan general del robo.",
+      tag: "Es hombre. No es joven."
     },
     {
       answer: "tokio",
-      text: "Ella misma nos cuenta la historia. Antes del atraco ya era una fugitiva buscada por la policia. Actua sin pensar demasiado y eso la mete en problemas."
+      text: "Narradora de la historia. Era fugitiva con antecedentes delictivos antes del atraco. Tiene un caracter impulsivo y es reclutada por el Profesor.",
+      tag: "Es mujer. Es joven."
     },
     {
       answer: "berlin",
-      text: "Dentro de la fabrica, nadie tiene mas autoridad que el. Toma decisiones sin dudar y no tolera que los rehenes o sus propios companeros lo desafien."
+      text: "El miembro con mayor autoridad dentro de la fabrica. Actua como lider, tiene una personalidad dominante y toma decisiones firmes frente a los rehenes.",
+      tag: "Es hombre. No es joven."
     },
     {
       answer: "nairobi",
-      text: "Forma parte del equipo que se ocupa del dinero dentro del edificio. Esta comprometida con el plan y tiene una energia que se nota en cada momento."
+      text: "Forma parte del equipo encargado del dinero dentro de la fabrica. Es participativa, comprometida con el plan y tiene una actitud muy energica.",
+      tag: "Es mujer. Es joven."
     },
     {
       answer: "moscu",
-      text: "Es un hombre con mucha experiencia en trabajos con las manos. Dentro del edificio colabora en las tareas fisicas que el plan necesita. Es tranquilo y confiable."
+      text: "Atracador con experiencia en trabajos manuales. Colabora en las tareas fisicas necesarias para el plan. Mantiene una actitud tranquila y colaborativa.",
+      tag: "Es hombre. No es joven."
     },
     {
       answer: "denver",
-      text: "Participa en el control de los rehenes pero no siempre mantiene la calma. Es impulsivo y en algunos momentos pierde el control de sus emociones."
+      text: "Participa en el control de los rehenes. Se muestra nervioso en varios momentos y tiene una actitud impulsiva dentro del grupo.",
+      tag: "Es hombre. Es joven."
     },
     {
       answer: "rio",
-      text: "Es el mas joven de todos. Su rol tiene que ver con la tecnologia. Todavia le falta la experiencia que tienen los demas miembros del grupo."
+      text: "El miembro mas joven del equipo. Se encarga de las tareas tecnicas del plan. Le falta la experiencia del resto del grupo.",
+      tag: "Es hombre. Es muy joven."
     },
     {
       answer: "helsinki",
-      text: "Su trabajo es vigilar a los rehenes. Obedece las ordenes sin cuestionarlas y siempre actua en coordinacion con su companero mas cercano."
+      text: "Uno de los encargados de vigilar a los rehenes. Se muestra firme y obediente. Siempre actua en coordinacion con su companero.",
+      tag: "Es hombre. No es joven."
     },
     {
       answer: "oslo",
-      text: "Esta junto a Helsinki en todo momento. Habla poco y hace lo que le dicen. Su presencia es tranquila pero imponente."
+      text: "Acompana a Helsinki en el control de los rehenes. Tiene una presencia silenciosa e imponente. Cumple ordenes sin cuestionarlas.",
+      tag: "Es hombre. No es joven."
     },
     {
       answer: "raquel",
-      text: "No esta dentro de la fabrica, sino fuera. Es la inspectora que coordina la respuesta policial al atraco. Trabaja con calma y se enfoca en resolver la situacion."
+      text: "Inspectora encargada de liderar la respuesta policial al atraco. Coordina el operativo desde el exterior. Es profesional y centrada.",
+      tag: "Es mujer. No es joven."
     },
   ];
 
-  // ── STATE ───────────────────────────────────────────────────────────────────
   let shuffledRiddles = [];
   let currentIndex    = 0;
   let correctCount    = 0;
   let answered        = false;
   let dotEls          = [];
 
-  // ── BUILD ────────────────────────────────────────────────────────────────────
   function buildGrid() {
     const grid = document.getElementById("character-grid");
     grid.innerHTML = "";
@@ -378,7 +377,7 @@
       card.className = "char-card";
       card.id = "card-" + c.id;
       card.innerHTML = `
-        <div class="avatar" style="background:${c.color}">${c.initials}</div>
+        <img class="char-photo" src="${c.photo}" alt="${c.label}" onerror="this.style.height='140px';this.style.background='#333'">
         <div class="char-name">${c.label}</div>`;
       card.addEventListener("click", () => handleAnswer(c.id));
       grid.appendChild(card);
@@ -406,15 +405,14 @@
     return a;
   }
 
-  // ── GAME LOGIC ───────────────────────────────────────────────────────────────
   function startGame() {
     shuffledRiddles = shuffle(riddles);
     currentIndex    = 0;
     correctCount    = 0;
     answered        = false;
 
-    document.getElementById("correct-count").textContent = 0;
-    document.getElementById("q-total").textContent       = shuffledRiddles.length;
+    document.getElementById("correct-count").textContent    = 0;
+    document.getElementById("q-total").textContent          = shuffledRiddles.length;
     document.getElementById("results-screen").style.display = "none";
     document.getElementById("riddle-section").style.display = "";
     document.getElementById("character-grid").style.display = "";
@@ -429,20 +427,17 @@
   function showRiddle() {
     answered = false;
 
-    document.querySelectorAll(".char-card").forEach(c => {
-      c.className = "char-card";
-    });
+    document.querySelectorAll(".char-card").forEach(c => { c.className = "char-card"; });
 
-    const fb = document.getElementById("feedback");
-    fb.style.display = "none";
-    fb.className     = "";
-    document.getElementById("next-btn").style.display = "none";
+    document.getElementById("feedback").style.display  = "none";
+    document.getElementById("feedback").className      = "";
+    document.getElementById("next-btn").style.display  = "none";
 
     const r = shuffledRiddles[currentIndex];
-    document.getElementById("riddle-number").textContent =
-      "Personaje " + (currentIndex + 1) + " de " + shuffledRiddles.length;
-    document.getElementById("riddle-text").textContent = r.text;
-    document.getElementById("q-current").textContent   = currentIndex + 1;
+    document.getElementById("riddle-number").textContent = "Personaje " + (currentIndex + 1) + " de " + shuffledRiddles.length;
+    document.getElementById("riddle-text").textContent   = r.text;
+    document.getElementById("riddle-tag").textContent    = r.tag;
+    document.getElementById("q-current").textContent    = currentIndex + 1;
   }
 
   function handleAnswer(selectedId) {
@@ -474,19 +469,14 @@
     fb.style.display = "block";
 
     const nextBtn = document.getElementById("next-btn");
-    nextBtn.textContent = currentIndex < shuffledRiddles.length - 1
-      ? "Siguiente \u2192"
-      : "Ver resultado";
+    nextBtn.textContent   = currentIndex < shuffledRiddles.length - 1 ? "Siguiente \u2192" : "Ver resultado";
     nextBtn.style.display = "inline-block";
   }
 
   function nextRiddle() {
     currentIndex++;
-    if (currentIndex >= shuffledRiddles.length) {
-      showResults();
-    } else {
-      showRiddle();
-    }
+    if (currentIndex >= shuffledRiddles.length) showResults();
+    else showRiddle();
   }
 
   function showResults() {
@@ -496,17 +486,16 @@
 
     const total = shuffledRiddles.length;
     const pct   = correctCount / total;
-    let msg     = "";
-
+    let msg = "";
     if (pct === 1)      msg = "Perfecto. Conoces muy bien a los personajes.";
     else if (pct >= .8) msg = "Muy bien. Casi perfecto.";
     else if (pct >= .6) msg = "Bien. Sigue practicando.";
     else if (pct >= .4) msg = "Buen intento. Vuelve a ver los episodios.";
     else                msg = "Sigue estudiando. Tu puedes.";
 
-    document.getElementById("final-score").textContent = correctCount + " / " + total;
-    document.getElementById("result-msg").textContent  = msg;
-    document.getElementById("results-screen").style.display = "block";
+    document.getElementById("final-score").textContent         = correctCount + " / " + total;
+    document.getElementById("result-msg").textContent          = msg;
+    document.getElementById("results-screen").style.display    = "block";
   }
 
   function restartGame() { startGame(); }
