@@ -118,7 +118,7 @@
       background: #1c2733;
       border-radius: 16px;
       border: 1px solid #2a3a4a;
-      border-top: 4px solid #5e9ed7;
+      border-bottom: 4px solid #5e9ed7;
       padding: 26px 30px;
       text-align: center;
     }
@@ -308,10 +308,6 @@
   <button class="nav-btn" id="next-btn-nav" onclick="go(1)" disabled>Siguiente &#8594;</button>
 </div>
 
-<p id="instruction">Haz clic en el personaje que corresponde a la descripcion</p>
-
-<div id="character-grid"></div>
-
 <div id="riddle-section">
   <div id="riddle-number"></div>
   <div id="riddle-text"></div>
@@ -319,6 +315,10 @@
   <div id="feedback"></div>
   <button id="next-btn" onclick="nextRiddle()">Siguiente &rarr;</button>
 </div>
+
+<p id="instruction">Haz clic en el personaje que corresponde a la descripcion</p>
+
+<div id="character-grid"></div>
 
 <div id="results-screen">
   <h2>Fin del ejercicio</h2>

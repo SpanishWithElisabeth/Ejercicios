@@ -34,10 +34,10 @@
     /* ── RIDDLE CARD ───────────────────────────────── */
     #riddle-section {
       max-width: 680px;
-      margin: 28px auto 20px;
+      margin: 0 auto 20px;
       background: #fff;
       border-radius: 16px;
-      border-top: 4px solid #5e9ed7;
+      border-bottom: 4px solid #5e9ed7;
       box-shadow: 0 4px 18px rgba(0,0,0,0.08);
       padding: 24px 32px;
       text-align: center;
@@ -282,11 +282,6 @@
   <div>Pregunta <span id="q-current">1</span> / <span id="q-total">20</span></div>
 </div>
 
-<p id="instruction">Haz clic en el animal que corresponde a la adivinanza</p>
-
-<!-- ANIMAL GRID -->
-<div id="animal-grid"></div>
-
 <!-- RIDDLE -->
 <div id="riddle-section">
   <div id="riddle-number">ADIVINANZA</div>
@@ -294,6 +289,11 @@
   <div id="feedback"></div>
   <button id="next-btn" onclick="nextRiddle()">Siguiente ➜</button>
 </div>
+
+<p id="instruction">Haz clic en el animal que corresponde a la adivinanza</p>
+
+<!-- ANIMAL GRID -->
+<div id="animal-grid"></div>
 
 <!-- RESULTS -->
 <div id="results-screen">
