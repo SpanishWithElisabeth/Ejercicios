@@ -9,7 +9,7 @@
 
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, #e0f7fa 0%, #f9fbe7 100%);
+      background: linear-gradient(135deg, #e8f3fd 0%, #f4f8fd 100%);
       min-height: 100vh;
       padding: 20px;
     }
@@ -21,7 +21,7 @@
 
     header h1 {
       font-size: 2rem;
-      color: #2e7d32;
+      color: #5e9ed7;
       letter-spacing: 1px;
     }
 
@@ -34,11 +34,12 @@
     /* ── RIDDLE CARD ───────────────────────────────── */
     #riddle-section {
       max-width: 680px;
-      margin: 24px auto 20px;
+      margin: 28px auto 20px;
       background: #fff;
-      border-radius: 20px;
-      box-shadow: 0 4px 18px rgba(0,0,0,0.10);
-      padding: 28px 32px;
+      border-radius: 16px;
+      border-top: 4px solid #5e9ed7;
+      box-shadow: 0 4px 18px rgba(0,0,0,0.08);
+      padding: 24px 32px;
       text-align: center;
       position: relative;
     }
@@ -80,21 +81,21 @@
     }
 
     #feedback.correct {
-      background: #e8f5e9;
-      color: #2e7d32;
+      background: #e8f3fd;
+      color: #5e9ed7;
       display: flex;
     }
 
     #feedback.wrong {
-      background: #fce4ec;
-      color: #c62828;
+      background: #fdf0eb;
+      color: #c05a3a;
       display: flex;
     }
 
     #next-btn {
       margin-top: 16px;
       display: none;
-      background: #2e7d32;
+      background: #5e9ed7;
       color: #fff;
       border: none;
       border-radius: 50px;
@@ -104,7 +105,7 @@
       transition: background 0.2s;
     }
 
-    #next-btn:hover { background: #1b5e20; }
+    #next-btn:hover { background: #3a7fbf; }
 
     /* score bar */
     #score-bar {
@@ -118,7 +119,7 @@
       padding: 0 4px;
     }
 
-    #score-bar span { font-weight: 700; color: #2e7d32; }
+    #score-bar span { font-weight: 700; color: #5e9ed7; }
 
     /* progress dots */
     #progress-dots {
@@ -134,8 +135,8 @@
       background: #ddd;
       transition: background 0.3s;
     }
-    .dot.correct { background: #43a047; }
-    .dot.wrong   { background: #e53935; }
+    .dot.correct { background: #5e9ed7; }
+    .dot.wrong   { background: #d77a5e; }
 
     /* ── ANIMAL GRID ───────────────────────────────── */
     #animal-grid {
@@ -161,7 +162,7 @@
     .animal-card:hover:not(.disabled) {
       transform: translateY(-4px);
       box-shadow: 0 6px 18px rgba(0,0,0,0.13);
-      border-color: #81c784;
+      border-color: #89c2f1;
     }
 
     .animal-card .emoji {
@@ -179,18 +180,18 @@
 
     /* states after answer */
     .animal-card.correct-answer {
-      border-color: #43a047;
-      background: #e8f5e9;
+      border-color: #5e9ed7;
+      background: #e8f3fd;
     }
 
     .animal-card.wrong-answer {
-      border-color: #e53935;
-      background: #fce4ec;
+      border-color: #d77a5e;
+      background: #fdf0eb;
     }
 
     .animal-card.reveal-correct {
-      border-color: #43a047;
-      background: #e8f5e9;
+      border-color: #5e9ed7;
+      background: #e8f3fd;
     }
 
     .animal-card.disabled {
@@ -211,7 +212,7 @@
 
     #results-screen h2 {
       font-size: 2rem;
-      color: #2e7d32;
+      color: #5e9ed7;
       margin-bottom: 10px;
     }
 
@@ -231,13 +232,13 @@
     #results-screen .score-big {
       font-size: 3rem;
       font-weight: 700;
-      color: #2e7d32;
+      color: #5e9ed7;
       margin: 16px 0;
     }
 
     #restart-btn {
       margin-top: 24px;
-      background: #2e7d32;
+      background: #5e9ed7;
       color: #fff;
       border: none;
       border-radius: 50px;
@@ -247,7 +248,7 @@
       transition: background 0.2s;
     }
 
-    #restart-btn:hover { background: #1b5e20; }
+    #restart-btn:hover { background: #3a7fbf; }
 
     /* instruction strip */
     #instruction {
@@ -281,6 +282,11 @@
   <div>Pregunta <span id="q-current">1</span> / <span id="q-total">20</span></div>
 </div>
 
+<p id="instruction">Haz clic en el animal que corresponde a la adivinanza</p>
+
+<!-- ANIMAL GRID -->
+<div id="animal-grid"></div>
+
 <!-- RIDDLE -->
 <div id="riddle-section">
   <div id="riddle-number">ADIVINANZA</div>
@@ -288,11 +294,6 @@
   <div id="feedback"></div>
   <button id="next-btn" onclick="nextRiddle()">Siguiente ➜</button>
 </div>
-
-<p id="instruction">👇 Haz clic en el animal que corresponde a la adivinanza</p>
-
-<!-- ANIMAL GRID -->
-<div id="animal-grid"></div>
 
 <!-- RESULTS -->
 <div id="results-screen">

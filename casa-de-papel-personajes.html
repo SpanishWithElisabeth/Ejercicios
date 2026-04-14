@@ -9,7 +9,7 @@
 
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: #1a1a1a;
+      background: #12181f;
       color: #f0f0f0;
       min-height: 100vh;
       padding: 28px 16px 60px;
@@ -26,12 +26,12 @@
       text-decoration: none;
     }
 
-    header a:hover { color: #e63946; }
+    header a:hover { color: #5e9ed7; }
 
     header h1 {
       font-size: 1.7rem;
       font-weight: 800;
-      color: #e63946;
+      color: #5e9ed7;
       margin: 8px 0 2px;
       letter-spacing: 1px;
       text-transform: uppercase;
@@ -45,7 +45,7 @@
 
     .badge-b2 {
       display: inline-block;
-      background: #e63946;
+      background: #5e9ed7;
       color: #fff;
       font-size: 0.7rem;
       font-weight: 700;
@@ -67,7 +67,7 @@
       color: #666;
     }
 
-    #score-bar strong { color: #e63946; }
+    #score-bar strong { color: #5e9ed7; }
 
     #progress-dots {
       display: flex;
@@ -79,13 +79,13 @@
     .dot {
       width: 11px; height: 11px;
       border-radius: 50%;
-      background: #333;
+      background: #2a3a4a;
       transition: background 0.3s;
     }
 
-    .dot.correct { background: #43a047; }
-    .dot.wrong   { background: #e53935; }
-    .dot.active  { outline: 2px solid #e63946; outline-offset: 2px; }
+    .dot.correct { background: #5e9ed7; }
+    .dot.wrong   { background: #d77a5e; }
+    .dot.active  { outline: 2px solid #5e9ed7; outline-offset: 2px; }
     .dot { cursor: pointer; }
 
     /* ── NAV ROW ── */
@@ -108,16 +108,17 @@
       transition: border-color 0.15s, color 0.15s;
     }
 
-    .nav-btn:hover:not(:disabled) { border-color: #e63946; color: #e63946; }
+    .nav-btn:hover:not(:disabled) { border-color: #5e9ed7; color: #5e9ed7; }
     .nav-btn:disabled { opacity: 0.25; cursor: default; }
 
     /* ── RIDDLE CARD ── */
     #riddle-section {
       max-width: 680px;
-      margin: 0 auto 20px;
-      background: #242424;
+      margin: 28px auto 20px;
+      background: #1c2733;
       border-radius: 16px;
-      border: 1px solid #333;
+      border: 1px solid #2a3a4a;
+      border-top: 4px solid #5e9ed7;
       padding: 26px 30px;
       text-align: center;
     }
@@ -156,13 +157,13 @@
       display: none;
     }
 
-    #feedback.correct { background: #1e3a21; color: #66bb6a; display: block; }
-    #feedback.wrong   { background: #3a1e1e; color: #ef5350; display: block; }
+    #feedback.correct { background: #1a2e40; color: #89c2f1; display: block; }
+    #feedback.wrong   { background: #3a2218; color: #d77a5e; display: block; }
 
     #next-btn {
       margin-top: 14px;
       display: none;
-      background: #e63946;
+      background: #5e9ed7;
       color: #fff;
       border: none;
       border-radius: 50px;
@@ -174,7 +175,7 @@
       transition: background 0.2s;
     }
 
-    #next-btn:hover { background: #c1121f; }
+    #next-btn:hover { background: #3a7fbf; }
 
     /* ── INSTRUCTION ── */
     #instruction {
@@ -195,8 +196,8 @@
     }
 
     .char-card {
-      background: #242424;
-      border: 2px solid #333;
+      background: #1c2733;
+      border: 2px solid #2a3a4a;
       border-radius: 14px;
       cursor: pointer;
       text-align: center;
@@ -206,7 +207,7 @@
     }
 
     .char-card:hover:not(.disabled) {
-      border-color: #e63946;
+      border-color: #5e9ed7;
       transform: translateY(-3px);
       box-shadow: 0 6px 20px rgba(230,57,70,0.2);
     }
@@ -229,12 +230,12 @@
     }
 
     /* answer states */
-    .char-card.correct-answer { border-color: #43a047; }
-    .char-card.correct-answer .char-name { color: #66bb6a; }
-    .char-card.wrong-answer   { border-color: #e53935; }
-    .char-card.wrong-answer   .char-name { color: #ef5350; }
-    .char-card.reveal-correct { border-color: #43a047; }
-    .char-card.reveal-correct .char-name { color: #66bb6a; }
+    .char-card.correct-answer { border-color: #5e9ed7; }
+    .char-card.correct-answer .char-name { color: #89c2f1; }
+    .char-card.wrong-answer   { border-color: #d77a5e; }
+    .char-card.wrong-answer   .char-name { color: #d77a5e; }
+    .char-card.reveal-correct { border-color: #5e9ed7; }
+    .char-card.reveal-correct .char-name { color: #89c2f1; }
     .char-card.disabled       { cursor: default; }
 
     /* ── RESULTS ── */
@@ -242,16 +243,16 @@
       display: none;
       max-width: 460px;
       margin: 40px auto;
-      background: #242424;
+      background: #1c2733;
       border-radius: 20px;
-      border: 1px solid #333;
+      border: 1px solid #2a3a4a;
       padding: 40px 32px;
       text-align: center;
     }
 
     #results-screen h2 {
       font-size: 1.5rem;
-      color: #e63946;
+      color: #5e9ed7;
       margin-bottom: 8px;
       text-transform: uppercase;
       letter-spacing: 1px;
@@ -260,7 +261,7 @@
     #results-screen .score-big {
       font-size: 3rem;
       font-weight: 800;
-      color: #e63946;
+      color: #5e9ed7;
       margin: 14px 0;
     }
 
@@ -268,7 +269,7 @@
 
     #restart-btn {
       margin-top: 22px;
-      background: #e63946;
+      background: #5e9ed7;
       color: #fff;
       border: none;
       border-radius: 50px;
@@ -280,7 +281,7 @@
       transition: background 0.2s;
     }
 
-    #restart-btn:hover { background: #c1121f; }
+    #restart-btn:hover { background: #3a7fbf; }
 
     @media (max-width: 520px) {
       #character-grid { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; }
@@ -302,14 +303,6 @@
   <div>Pregunta <strong id="q-current">1</strong> / <strong id="q-total">10</strong></div>
 </div>
 
-<div id="riddle-section">
-  <div id="riddle-number"></div>
-  <div id="riddle-text"></div>
-  <div id="riddle-tag"></div>
-  <div id="feedback"></div>
-  <button id="next-btn" onclick="nextRiddle()">Siguiente &rarr;</button>
-</div>
-
 <div class="nav-row">
   <button class="nav-btn" id="prev-btn" onclick="go(-1)" disabled>&#8592; Anterior</button>
   <button class="nav-btn" id="next-btn-nav" onclick="go(1)" disabled>Siguiente &#8594;</button>
@@ -318,6 +311,14 @@
 <p id="instruction">Haz clic en el personaje que corresponde a la descripcion</p>
 
 <div id="character-grid"></div>
+
+<div id="riddle-section">
+  <div id="riddle-number"></div>
+  <div id="riddle-text"></div>
+  <div id="riddle-tag"></div>
+  <div id="feedback"></div>
+  <button id="next-btn" onclick="nextRiddle()">Siguiente &rarr;</button>
+</div>
 
 <div id="results-screen">
   <h2>Fin del ejercicio</h2>
@@ -400,7 +401,7 @@
       card.className = "char-card";
       card.id = "card-" + c.id;
       card.innerHTML = `
-        <img class="char-photo" src="${c.photo}" alt="${c.label}" onerror="this.style.height='140px';this.style.background='#333'">
+        <img class="char-photo" src="${c.photo}" alt="${c.label}" onerror="this.style.height='140px';this.style.background='#2a3a4a'">
         <div class="char-name">${c.label}</div>`;
       card.addEventListener("click", () => handleAnswer(c.id));
       grid.appendChild(card);
