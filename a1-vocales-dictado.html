@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>A1 — Vocales en español</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f4f8fd;
+      color: #1a1a1a;
+      min-height: 100vh;
+      padding: 0 0 48px;
+    }
+
+    header {
+      background: #5e9ed7;
+      color: #fff;
+      padding: 20px 24px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    header h1 { font-size: 1.25rem; font-weight: 700; }
+    header p { font-size: 0.85rem; opacity: 0.88; margin-top: 2px; }
+    .cefr-badge {
+      background: #f5ca64;
+      color: #1a1a1a;
+      font-weight: 700;
+      font-size: 0.8rem;
+      padding: 3px 10px;
+      border-radius: 20px;
+      flex-shrink: 0;
+    }
+
+    .container {
+      max-width: 560px;
+      margin: 32px auto 0;
+      padding: 0 20px;
+    }
+
+    .nav-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+    .score-label { font-size: 0.85rem; color: #555; min-width: 80px; }
+    .dots { display: flex; gap: 8px; }
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #d0e4f5;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+      transition: background 0.2s;
+    }
+    .dot.active  { background: #5e9ed7; }
+    .dot.correct { background: #5e9ed7; }
+    .dot.wrong   { background: #d77a5e; }
+    .progress-label { font-size: 0.85rem; color: #555; text-align: right; min-width: 80px; }
+
+    .arrow-nav { display: flex; gap: 8px; justify-content: center; margin-bottom: 20px; }
+    .arrow-btn {
+      background: #5e9ed7;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 6px 18px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .arrow-btn:hover    { background: #89c2f1; }
+    .arrow-btn:disabled { background: #d0e4f5; color: #999; cursor: not-allowed; }
+
+    .question-card {
+      background: #fff;
+      border: 1px solid #d0e4f5;
+      border-radius: 12px;
+      padding: 28px 24px 24px;
+    }
+    .question-number {
+      font-size: 0.8rem;
+      color: #888;
+      margin-bottom: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .instruction { font-size: 0.95rem; color: #444; margin-bottom: 20px; line-height: 1.5; }
+
+    .play-row { display: flex; gap: 10px; margin-bottom: 20px; }
+    .play-btn {
+      background: #5e9ed7;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 20px;
+      font-size: 0.95rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: background 0.2s;
+    }
+    .play-btn:hover   { background: #89c2f1; }
+    .play-btn.playing { background: #89c2f1; }
+    .play-slow-btn {
+      background: #e8f3fd;
+      color: #5e9ed7;
+      border: 1px solid #d0e4f5;
+      border-radius: 8px;
+      padding: 10px 16px;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .play-slow-btn:hover { background: #d0e4f5; }
+
+    .input-row { display: flex; gap: 10px; align-items: center; }
+    .vowel-input {
+      border: 2px solid #d0e4f5;
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 1.2rem;
+      width: 72px;
+      text-align: center;
+      text-transform: uppercase;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .vowel-input:focus   { border-color: #5e9ed7; }
+    .vowel-input.correct { border-color: #5e9ed7; background: #e8f3fd; }
+    .vowel-input.wrong   { border-color: #d77a5e; background: #fdf0eb; }
+    .vowel-input:disabled { cursor: not-allowed; }
+
+    .check-btn {
+      background: #5e9ed7;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 20px;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .check-btn:hover    { background: #89c2f1; }
+    .check-btn:disabled { background: #d0e4f5; color: #999; cursor: not-allowed; }
+
+    .feedback { margin-top: 14px; font-size: 0.9rem; min-height: 22px; }
+    .feedback.correct { color: #2a72b5; }
+    .feedback.wrong   { color: #d77a5e; }
+
+    .next-btn {
+      display: none;
+      margin-top: 16px;
+      background: #5e9ed7;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 24px;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .next-btn:hover { background: #89c2f1; }
+
+    .see-result-btn {
+      display: none;
+      margin-top: 16px;
+      background: #f5ca64;
+      color: #1a1a1a;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 24px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .see-result-btn:hover { background: #f0bd3e; }
+
+    .results-screen {
+      display: none;
+      background: #fff;
+      border: 1px solid #d0e4f5;
+      border-radius: 12px;
+      padding: 36px 24px;
+      text-align: center;
+    }
+    .results-screen h2 { font-size: 1.2rem; margin-bottom: 16px; }
+    .score-display { font-size: 3rem; font-weight: 700; color: #5e9ed7; margin-bottom: 8px; }
+    .score-msg { font-size: 0.95rem; color: #555; margin-bottom: 28px; }
+    .replay-btn {
+      background: #5e9ed7;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 28px;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .replay-btn:hover { background: #89c2f1; }
+  </style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>Vocales en español</h1>
+    <p>Escucha y escribe la vocal que oyes</p>
+  </div>
+  <span class="cefr-badge">A1</span>
+</header>
+
+<div class="container">
+
+  <div class="nav-bar">
+    <span class="score-label" id="correctCount">Correctas: 0</span>
+    <div class="dots" id="dotsContainer"></div>
+    <span class="progress-label" id="progressLabel">Pregunta 1 / 5</span>
+  </div>
+
+  <div class="arrow-nav">
+    <button class="arrow-btn" id="prevBtn" onclick="navigate(-1)" disabled>&#8592; Anterior</button>
+    <button class="arrow-btn" id="nextNavBtn" onclick="navigate(1)">Siguiente &#8594;</button>
+  </div>
+
+  <div class="question-card" id="questionCard">
+    <div class="question-number" id="questionNumber">Pregunta 1</div>
+    <p class="instruction">Escucha con atenci&oacute;n y escribe la vocal que escuchas.</p>
+
+    <div class="play-row">
+      <button class="play-btn" id="playBtn" onclick="playAudio()">&#9654; Escuchar</button>
+      <button class="play-slow-btn" onclick="playAudioSlow()">Escuchar despacio</button>
+    </div>
+
+    <div class="input-row">
+      <input
+        class="vowel-input"
+        type="text"
+        id="vowelInput"
+        maxlength="1"
+        placeholder="?"
+        autocomplete="off"
+        onkeydown="handleKey(event)"
+      />
+      <button class="check-btn" id="checkBtn" onclick="checkAnswer()">Verificar</button>
+    </div>
+
+    <div class="feedback" id="feedback"></div>
+    <button class="next-btn" id="nextBtn" onclick="goNext()">Siguiente &#8594;</button>
+    <button class="see-result-btn" id="seeResultBtn" onclick="showResults()">Ver resultado</button>
+  </div>
+
+  <div class="results-screen" id="resultsScreen">
+    <h2>Resultado final</h2>
+    <div class="score-display" id="scoreDisplay"></div>
+    <p class="score-msg" id="scoreMsg"></p>
+    <button class="replay-btn" onclick="resetGame()">Jugar otra vez</button>
+  </div>
+
+</div>
+
+<script>
+const AUDIO_FILES = {
+  "O": "audios/o.wav",
+  "A": "audios/a.wav",
+  "E": "audios/e.wav",
+  "U": "audios/u.wav",
+  "I": "audios/i.wav"
+};
+
+const QUESTIONS = [
+  { vowel: "O", accept: ["O", "o"] },
+  { vowel: "A", accept: ["A", "a"] },
+  { vowel: "E", accept: ["E", "e"] },
+  { vowel: "U", accept: ["U", "u"] },
+  { vowel: "I", accept: ["I", "i"] },
+];
+
+let order = [];
+let current = 0;
+let results = [];
+let currentAudio = null;
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function init() {
+  order = shuffle([0, 1, 2, 3, 4]);
+  current = 0;
+  results = new Array(QUESTIONS.length).fill(null);
+  buildDots();
+  render();
+}
+
+function buildDots() {
+  const container = document.getElementById('dotsContainer');
+  container.innerHTML = '';
+  for (let i = 0; i < QUESTIONS.length; i++) {
+    const btn = document.createElement('button');
+    btn.className = 'dot';
+    btn.setAttribute('aria-label', 'Pregunta ' + (i + 1));
+    btn.onclick = () => jumpTo(i);
+    container.appendChild(btn);
+  }
+}
+
+function updateDots() {
+  const dots = document.querySelectorAll('.dot');
+  dots.forEach((dot, i) => {
+    dot.className = 'dot';
+    if (results[i] === true)  dot.classList.add('correct');
+    if (results[i] === false) dot.classList.add('wrong');
+    if (i === current)        dot.classList.add('active');
+  });
+}
+
+function render() {
+  const qIndex = order[current];
+  const q = QUESTIONS[qIndex];
+
+  document.getElementById('questionNumber').textContent = 'Pregunta ' + (current + 1);
+  document.getElementById('progressLabel').textContent  = 'Pregunta ' + (current + 1) + ' / ' + QUESTIONS.length;
+  document.getElementById('correctCount').textContent   = 'Correctas: ' + results.filter(r => r === true).length;
+
+  const input        = document.getElementById('vowelInput');
+  const checkBtn     = document.getElementById('checkBtn');
+  const feedback     = document.getElementById('feedback');
+  const nextBtn      = document.getElementById('nextBtn');
+  const seeResultBtn = document.getElementById('seeResultBtn');
+
+  input.className = 'vowel-input';
+  input.disabled  = false;
+  checkBtn.disabled = false;
+  nextBtn.style.display = 'none';
+  seeResultBtn.style.display = 'none';
+  feedback.className = 'feedback';
+  feedback.textContent = '';
+
+  if (results[current] !== null) {
+    const wasCorrect = results[current];
+    input.value    = wasCorrect ? q.vowel : '';
+    input.disabled = true;
+    checkBtn.disabled = true;
+    if (wasCorrect) {
+      input.classList.add('correct');
+      feedback.classList.add('correct');
+      feedback.textContent = 'Correcto.';
+    } else {
+      input.classList.add('wrong');
+      feedback.classList.add('wrong');
+      feedback.textContent = 'Incorrecto. La respuesta correcta es "' + q.vowel + '".';
+    }
+    if (current < QUESTIONS.length - 1) {
+      nextBtn.style.display = 'inline-block';
+    } else if (results.every(r => r !== null)) {
+      seeResultBtn.style.display = 'inline-block';
+    }
+  } else {
+    input.value = '';
+    input.focus();
+  }
+
+  document.getElementById('prevBtn').disabled    = current === 0;
+  document.getElementById('nextNavBtn').disabled = current === QUESTIONS.length - 1;
+
+  updateDots();
+}
+
+function navigate(dir) {
+  const next = current + dir;
+  if (next < 0 || next >= QUESTIONS.length) return;
+  current = next;
+  render();
+}
+
+function jumpTo(i) {
+  current = i;
+  render();
+}
+
+function goNext() {
+  if (current < QUESTIONS.length - 1) { current++; render(); }
+}
+
+function playAudio(rate) {
+  const qIndex = order[current];
+  const q = QUESTIONS[qIndex];
+  if (currentAudio) { currentAudio.pause(); currentAudio.currentTime = 0; }
+  currentAudio = new Audio(AUDIO_FILES[q.vowel]);
+  if (rate) currentAudio.playbackRate = rate;
+  currentAudio.play();
+  const btn = document.getElementById('playBtn');
+  btn.classList.add('playing');
+  currentAudio.onended = () => btn.classList.remove('playing');
+}
+
+function playAudioSlow() { playAudio(0.6); }
+
+function handleKey(e) { if (e.key === 'Enter') checkAnswer(); }
+
+function checkAnswer() {
+  const input = document.getElementById('vowelInput');
+  const val   = input.value.trim().toUpperCase();
+  if (!val) return;
+
+  const qIndex    = order[current];
+  const q         = QUESTIONS[qIndex];
+  const isCorrect = q.accept.map(a => a.toUpperCase()).includes(val);
+
+  results[current]  = isCorrect;
+  input.disabled    = true;
+  document.getElementById('checkBtn').disabled = true;
+
+  const feedback = document.getElementById('feedback');
+  feedback.className = 'feedback';
+
+  if (isCorrect) {
+    input.classList.add('correct');
+    feedback.classList.add('correct');
+    feedback.textContent = 'Correcto.';
+  } else {
+    input.classList.add('wrong');
+    input.value = '';
+    feedback.classList.add('wrong');
+    feedback.textContent = 'Incorrecto. La respuesta correcta es "' + q.vowel + '".';
+  }
+
+  updateDots();
+  document.getElementById('correctCount').textContent = 'Correctas: ' + results.filter(r => r === true).length;
+
+  if (current < QUESTIONS.length - 1) {
+    document.getElementById('nextBtn').style.display = 'inline-block';
+  } else if (results.every(r => r !== null)) {
+    document.getElementById('seeResultBtn').style.display = 'inline-block';
+  }
+}
+
+function showResults() {
+  document.getElementById('questionCard').style.display = 'none';
+  const correct = results.filter(r => r === true).length;
+  const total   = QUESTIONS.length;
+  document.getElementById('scoreDisplay').textContent = correct + ' / ' + total;
+  const msgs = [
+    [5, "Excelente. Dominas las vocales."],
+    [4, "Muy bien. Sigue practicando."],
+    [3, "Bien. Escucha con más atención."],
+    [0, "Sigue intentando. Las vocales son la base."],
+  ];
+  for (const [min, msg] of msgs) {
+    if (correct >= min) { document.getElementById('scoreMsg').textContent = msg; break; }
+  }
+  document.getElementById('resultsScreen').style.display = 'block';
+}
+
+function resetGame() {
+  document.getElementById('resultsScreen').style.display = 'none';
+  document.getElementById('questionCard').style.display  = 'block';
+  init();
+}
+
+init();
+</script>
+</body>
+</html>
