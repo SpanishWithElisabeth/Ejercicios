@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>¿Es subjuntivo o no? — Spanish with Elisabeth</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f4f8fd;
+      color: #222;
+      min-height: 100vh;
+    }
+
+    header {
+      background: #5e9ed7;
+      padding: 24px 20px;
+      margin-bottom: 32px;
+    }
+    header .inner {
+      max-width: 740px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    header h1 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #fff;
+    }
+    header p {
+      font-size: 0.85rem;
+      color: rgba(255,255,255,0.8);
+      margin-top: 3px;
+    }
+    .badge {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      background: #f5ca64;
+      color: #1a1a1a;
+      border-radius: 20px;
+      padding: 4px 10px;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    main {
+      max-width: 740px;
+      margin: 0 auto;
+      padding: 0 20px 60px;
+    }
+
+    .instructions {
+      font-size: 0.9rem;
+      color: #555;
+      margin-bottom: 24px;
+      line-height: 1.5;
+    }
+
+    /* Chips bank */
+    #chip-bank {
+      background: #fff;
+      border: 1px solid #d0e4f5;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 28px;
+      min-height: 80px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-content: flex-start;
+    }
+
+    .chip {
+      background: #e8f3fd;
+      border: 2px solid #b8d8f5;
+      border-radius: 8px;
+      padding: 8px 14px;
+      font-size: 0.9rem;
+      cursor: grab;
+      user-select: none;
+      transition: background 0.12s, border-color 0.12s, transform 0.1s, opacity 0.1s;
+      touch-action: none;
+    }
+    .chip:hover { background: #d4eaf9; border-color: #89c2f1; }
+    .chip.dragging { opacity: 0.45; transform: scale(0.97); cursor: grabbing; }
+    .chip.selected { background: #c8e0f5; border-color: #5e9ed7; box-shadow: 0 0 0 2px #5e9ed7; }
+    .chip.correct-chip {
+      background: #e8f3fd;
+      border-color: #5e9ed7;
+      color: #1a4a6e;
+      cursor: default;
+    }
+    .chip.wrong-chip {
+      background: #fdf0eb;
+      border-color: #d77a5e;
+      color: #7a2e10;
+      cursor: default;
+    }
+
+    /* Drop zones */
+    .zones {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 28px;
+    }
+
+    @media (max-width: 540px) {
+      .zones { grid-template-columns: 1fr; }
+    }
+
+    .drop-zone {
+      background: #fff;
+      border: 2px dashed #b8d8f5;
+      border-radius: 12px;
+      padding: 16px;
+      min-height: 200px;
+      transition: border-color 0.15s, background 0.15s;
+    }
+    .drop-zone.drag-over {
+      border-color: #5e9ed7;
+      background: #eef6fd;
+    }
+    .drop-zone-label {
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      color: #5e9ed7;
+      margin-bottom: 14px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #d0e4f5;
+    }
+    .drop-zone-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      min-height: 60px;
+      align-content: flex-start;
+    }
+    .drop-zone.checked { border-style: solid; }
+    .drop-zone.all-correct { border-color: #5e9ed7; background: #f0f8ff; }
+    .drop-zone.has-errors { border-color: #d77a5e; background: #fff8f5; }
+
+    /* Buttons */
+    .btn-row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+    button {
+      background: #5e9ed7;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 22px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.12s;
+    }
+    button:hover { background: #89c2f1; }
+    button:disabled { background: #c5dff0; cursor: default; }
+    button.secondary {
+      background: #fff;
+      color: #5e9ed7;
+      border: 2px solid #5e9ed7;
+    }
+    button.secondary:hover { background: #eef6fd; }
+
+    /* Score / feedback */
+    #feedback-bar {
+      display: none;
+      background: #fff;
+      border: 1px solid #d0e4f5;
+      border-radius: 10px;
+      padding: 16px 20px;
+      margin-bottom: 20px;
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+    #feedback-bar .score {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #5e9ed7;
+      margin-bottom: 6px;
+    }
+    #feedback-bar .msg { color: #444; }
+
+    footer {
+      max-width: 740px;
+      margin: 0 auto;
+      padding: 0 20px 40px;
+      font-size: 0.82rem;
+      color: #bbb;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="inner">
+    <div>
+      <h1>¿Es subjuntivo o no? — conjugaciones</h1>
+      <p>Arrastra cada oración a la categoría correcta</p>
+    </div>
+    <span class="badge">B1</span>
+  </div>
+</header>
+
+<main>
+
+  <p class="instructions">
+    Arrastra cada oración al grupo al que pertenece: <strong>Subjuntivo</strong> o <strong>Indicativo / infinitivo</strong>.
+    Cuando termines, haz clic en <strong>Verificar</strong>.
+  </p>
+
+  <div id="chip-bank"
+       ondragover="bankDragOver(event)"
+       ondrop="bankDrop(event)">
+  </div>
+
+  <div class="zones">
+    <div class="drop-zone" id="zone-subjuntivo"
+         ondragover="zoneDragOver(event)"
+         ondragleave="zoneDragLeave(event)"
+         ondrop="zoneDrop(event, 'subjuntivo')">
+      <div class="drop-zone-label">Subjuntivo</div>
+      <div class="drop-zone-chips" id="chips-subjuntivo"></div>
+    </div>
+    <div class="drop-zone" id="zone-indicativo"
+         ondragover="zoneDragOver(event)"
+         ondragleave="zoneDragLeave(event)"
+         ondrop="zoneDrop(event, 'indicativo')">
+      <div class="drop-zone-label">Indicativo / infinitivo</div>
+      <div class="drop-zone-chips" id="chips-indicativo"></div>
+    </div>
+  </div>
+
+  <div class="btn-row">
+    <button id="btn-check" onclick="checkAnswers()">Verificar</button>
+    <button id="btn-retry" class="secondary" onclick="resetAll()" style="display:none">Intentar otra vez</button>
+  </div>
+
+  <div id="feedback-bar">
+    <div class="score" id="score-text"></div>
+    <div class="msg" id="msg-text"></div>
+  </div>
+
+</main>
+
+<footer>Spanish with Elisabeth &mdash; spanishwithelisabeth.com</footer>
+
+<script>
+  const SENTENCES = [
+    { id: 's0',  text: 'Quiero ir',                    correct: 'indicativo' },
+    { id: 's1',  text: 'No quieren verte',              correct: 'indicativo' },
+    { id: 's2',  text: 'No quiero que nos visiten',     correct: 'subjuntivo' },
+    { id: 's3',  text: 'No sé si ella viene',           correct: 'indicativo' },
+    { id: 's4',  text: 'Le dijeron que no pueden ir',   correct: 'indicativo' },
+    { id: 's5',  text: 'Dudo que venga',                correct: 'subjuntivo' },
+    { id: 's6',  text: 'Te pido que lo llames',         correct: 'subjuntivo' },
+    { id: 's7',  text: 'Ojalá nos visiten',             correct: 'subjuntivo' },
+    { id: 's8',  text: 'No quiere que la llames',       correct: 'subjuntivo' },
+    { id: 's9',  text: 'No quieren que los veas',       correct: 'subjuntivo' },
+    { id: 's10', text: 'No puedo ir',                   correct: 'indicativo' },
+    { id: 's11', text: '¿Quieres salir conmigo?',       correct: 'indicativo' },
+    { id: 's12', text: 'No tengo que ir',               correct: 'indicativo' },
+  ];
+
+  let draggedId = null;
+  let selectedId = null; // for tap-to-place on mobile
+  let checked = false;
+
+  function shuffle(arr) {
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  }
+
+  function buildChip(sentence) {
+    const chip = document.createElement('div');
+    chip.className = 'chip';
+    chip.id = 'chip-' + sentence.id;
+    chip.dataset.sid = sentence.id;
+    chip.textContent = sentence.text;
+    chip.draggable = true;
+
+    chip.addEventListener('dragstart', e => {
+      draggedId = sentence.id;
+      chip.classList.add('dragging');
+      e.dataTransfer.effectAllowed = 'move';
+    });
+    chip.addEventListener('dragend', () => {
+      chip.classList.remove('dragging');
+      draggedId = null;
+    });
+
+    // Tap-to-select + tap-to-place
+    chip.addEventListener('click', () => {
+      if (checked) return;
+      if (selectedId === sentence.id) {
+        // deselect
+        chip.classList.remove('selected');
+        selectedId = null;
+      } else {
+        // deselect old
+        if (selectedId) {
+          const old = document.getElementById('chip-' + selectedId);
+          if (old) old.classList.remove('selected');
+        }
+        selectedId = sentence.id;
+        chip.classList.add('selected');
+      }
+    });
+
+    return chip;
+  }
+
+  function initBoard() {
+    const bank = document.getElementById('chip-bank');
+    bank.innerHTML = '';
+    document.getElementById('chips-subjuntivo').innerHTML = '';
+    document.getElementById('chips-indicativo').innerHTML = '';
+
+    const shuffled = shuffle([...SENTENCES]);
+    shuffled.forEach(s => bank.appendChild(buildChip(s)));
+
+    checked = false;
+    selectedId = null;
+    draggedId = null;
+
+    document.getElementById('feedback-bar').style.display = 'none';
+    document.getElementById('btn-check').disabled = false;
+    document.getElementById('btn-retry').style.display = 'none';
+
+    ['zone-subjuntivo', 'zone-indicativo'].forEach(id => {
+      const z = document.getElementById(id);
+      z.classList.remove('checked', 'all-correct', 'has-errors');
+    });
+  }
+
+  // ---- Drag & Drop ----
+
+  function zoneDragOver(e) {
+    e.preventDefault();
+    e.currentTarget.classList.add('drag-over');
+  }
+  function zoneDragLeave(e) {
+    e.currentTarget.classList.remove('drag-over');
+  }
+  function zoneDrop(e, zoneName) {
+    e.preventDefault();
+    e.currentTarget.classList.remove('drag-over');
+    if (!draggedId || checked) return;
+    placeChip(draggedId, zoneName);
+  }
+  function bankDragOver(e) { e.preventDefault(); }
+  function bankDrop(e) {
+    e.preventDefault();
+    if (!draggedId || checked) return;
+    returnToBank(draggedId);
+  }
+
+  // ---- Click-to-zone (for mobile) ----
+  function placeInZone(zoneName) {
+    if (!selectedId || checked) return;
+    placeChip(selectedId, zoneName);
+    selectedId = null;
+  }
+
+  // Clicking on a zone label/background places the selected chip
+  document.addEventListener('DOMContentLoaded', () => {
+    initBoard();
+    document.getElementById('zone-subjuntivo').addEventListener('click', e => {
+      if (e.target.closest('.chip')) return; // clicking a chip already there → handled by chip listener
+      if (selectedId) placeInZone('subjuntivo');
+    });
+    document.getElementById('zone-indicativo').addEventListener('click', e => {
+      if (e.target.closest('.chip')) return;
+      if (selectedId) placeInZone('indicativo');
+    });
+    document.getElementById('chip-bank').addEventListener('click', e => {
+      if (e.target.closest('.chip')) return;
+      // clicking empty bank deselects
+      if (selectedId) {
+        const old = document.getElementById('chip-' + selectedId);
+        if (old) old.classList.remove('selected');
+        selectedId = null;
+      }
+    });
+  });
+
+  function placeChip(sid, zoneName) {
+    const chip = document.getElementById('chip-' + sid);
+    if (!chip) return;
+    chip.classList.remove('selected');
+    document.getElementById('chips-' + zoneName).appendChild(chip);
+  }
+
+  function returnToBank(sid) {
+    const chip = document.getElementById('chip-' + sid);
+    if (!chip) return;
+    document.getElementById('chip-bank').appendChild(chip);
+  }
+
+  // ---- Check ----
+  function checkAnswers() {
+    if (checked) return;
+
+    // Check all chips are placed
+    const bankChips = document.getElementById('chip-bank').querySelectorAll('.chip');
+    if (bankChips.length > 0) {
+      // Prompt user gently — not all placed yet
+      document.getElementById('feedback-bar').style.display = 'block';
+      document.getElementById('score-text').textContent = '';
+      document.getElementById('msg-text').textContent = 'Todavía hay oraciones sin clasificar. Coloca todas las oraciones antes de verificar.';
+      return;
+    }
+
+    checked = true;
+    let correct = 0;
+    const total = SENTENCES.length;
+
+    SENTENCES.forEach(s => {
+      const chip = document.getElementById('chip-' + s.id);
+      const inSubj = document.getElementById('chips-subjuntivo').contains(chip);
+      const inInd  = document.getElementById('chips-indicativo').contains(chip);
+      const placed = inSubj ? 'subjuntivo' : inInd ? 'indicativo' : null;
+
+      if (placed === s.correct) {
+        correct++;
+        chip.classList.add('correct-chip');
+      } else {
+        chip.classList.add('wrong-chip');
+      }
+      chip.draggable = false;
+    });
+
+    // Zone styling
+    const subjChips = document.getElementById('chips-subjuntivo').querySelectorAll('.chip');
+    const indChips  = document.getElementById('chips-indicativo').querySelectorAll('.chip');
+
+    const subjErrors = [...subjChips].some(c => c.classList.contains('wrong-chip'));
+    const indErrors  = [...indChips].some(c => c.classList.contains('wrong-chip'));
+
+    const zoneSubj = document.getElementById('zone-subjuntivo');
+    const zoneInd  = document.getElementById('zone-indicativo');
+
+    zoneSubj.classList.add('checked', subjErrors ? 'has-errors' : 'all-correct');
+    zoneInd.classList.add('checked', indErrors ? 'has-errors' : 'all-correct');
+
+    // Feedback
+    const pct = Math.round((correct / total) * 100);
+    let msg;
+    if (correct === total)  msg = 'Perfecto. Todo correcto.';
+    else if (pct >= 70)     msg = 'Buen trabajo. Revisa las oraciones en rojo.';
+    else if (pct >= 40)     msg = 'Sigue practicando. Revisa las oraciones en rojo.';
+    else                    msg = 'Hay varios errores. Revisa las oraciones en rojo e intenta otra vez.';
+
+    document.getElementById('feedback-bar').style.display = 'block';
+    document.getElementById('score-text').textContent = correct + ' / ' + total + ' correctas';
+    document.getElementById('msg-text').textContent = msg;
+
+    document.getElementById('btn-check').disabled = true;
+    document.getElementById('btn-retry').style.display = 'inline-block';
+  }
+
+  function resetAll() {
+    initBoard();
+  }
+</script>
+
+</body>
+</html>
