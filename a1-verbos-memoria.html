@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Verbos — Matching Game</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #f4f8fd;
+    color: #222;
+    min-height: 100vh;
+    padding: 24px 16px 48px;
+  }
+  header {
+    max-width: 900px;
+    margin: 0 auto 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  h1 { font-size: 1.5rem; color: #5e9ed7; }
+  .badge {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    background: #f5ca64;
+    color: #1a1a1a;
+    border-radius: 20px;
+    padding: 4px 10px;
+  }
+  .instructions {
+    max-width: 900px;
+    margin: 0 auto 18px;
+    font-size: 0.95rem;
+    color: #555;
+    line-height: 1.45;
+  }
+  .score-bar {
+    max-width: 900px;
+    margin: 0 auto 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 10px 14px;
+    background: #fff;
+    border: 1px solid #d0e4f5;
+    border-radius: 10px;
+    font-size: 0.88rem;
+    color: #555;
+    flex-wrap: wrap;
+  }
+  .score-bar strong { color: #5e9ed7; }
+  .btn {
+    background: #5e9ed7;
+    color: #fff;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .btn:hover:not(:disabled) { background: #89c2f1; }
+  .btn:disabled { opacity: 0.5; cursor: default; }
+
+  .board {
+    max-width: 900px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+  .column h2 {
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: #aaa;
+    margin-bottom: 10px;
+    text-align: center;
+  }
+  .col-inner {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+  .tile {
+    background: #fff;
+    border: 2px solid #d0e4f5;
+    border-radius: 12px;
+    padding: 10px 8px;
+    cursor: pointer;
+    transition: border-color 0.15s, transform 0.15s, background 0.15s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 96px;
+    text-align: center;
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: #222;
+    user-select: none;
+  }
+  .tile:hover:not(.matched):not(.selected) {
+    border-color: #89c2f1;
+    transform: translateY(-1px);
+  }
+  .tile.selected {
+    border-color: #5e9ed7;
+    background: #e8f3fd;
+  }
+  .tile.wrong {
+    border-color: #d77a5e;
+    background: #fdf0eb;
+    animation: shake 0.35s;
+  }
+  .tile.matched {
+    opacity: 0.35;
+    cursor: default;
+    border-color: #d0e4f5;
+    background: #fff;
+  }
+  .tile img {
+    max-width: 100%;
+    max-height: 84px;
+    object-fit: contain;
+    pointer-events: none;
+  }
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-4px); }
+    75% { transform: translateX(4px); }
+  }
+
+  .result {
+    max-width: 900px;
+    margin: 20px auto 0;
+    padding: 22px;
+    background: #fff;
+    border: 1px solid #d0e4f5;
+    border-radius: 12px;
+    text-align: center;
+    display: none;
+  }
+  .result.show { display: block; }
+  .result h3 { color: #5e9ed7; margin-bottom: 8px; font-size: 1.2rem; }
+  .result p { color: #555; margin-bottom: 14px; }
+
+  @media (max-width: 620px) {
+    .board { grid-template-columns: 1fr; gap: 14px; }
+    .col-inner { grid-template-columns: repeat(2, 1fr); }
+    .tile { min-height: 88px; font-size: 0.9rem; }
+    .tile img { max-height: 72px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Verbos — Matching</h1>
+  <span class="badge">A1</span>
+</header>
+
+<p class="instructions">
+  Match each picture with its verb. Click a picture, then click the verb that goes with it.
+  Correct matches fade out. Keep going until the board is empty.
+</p>
+
+<div class="score-bar">
+  <div><strong id="matched">0</strong> / <span id="total">12</span> matches</div>
+  <div>Attempts: <strong id="attempts">0</strong></div>
+  <button class="btn" id="restart">New round</button>
+</div>
+
+<div class="board">
+  <div class="column">
+    <h2>Pictures</h2>
+    <div class="col-inner" id="images"></div>
+  </div>
+  <div class="column">
+    <h2>Verbs</h2>
+    <div class="col-inner" id="words"></div>
+  </div>
+</div>
+
+<div class="result" id="result">
+  <h3 id="result-title">Nice work</h3>
+  <p id="result-text">You matched all 12 verbs.</p>
+  <button class="btn" id="play-again">Play again</button>
+</div>
+
+<script>
+  const VERBS = [
+    { slug: 'trabajar',         label: 'Trabajar' },
+    { slug: 'leer',             label: 'Leer' },
+    { slug: 'descansar',        label: 'Descansar' },
+    { slug: 'tomar-cafe',       label: 'Tomar un café' },
+    { slug: 'salir-comer',      label: 'Salir a comer' },
+    { slug: 'ir-compras',       label: 'Ir de compras' },
+    { slug: 'bailar',           label: 'Bailar' },
+    { slug: 'ver-peli',         label: 'Ver una peli/serie' },
+    { slug: 'limpiar',          label: 'Limpiar' },
+    { slug: 'tocar-musica',     label: 'Tocar música' },
+    { slug: 'escuchar-musica',  label: 'Escuchar música' },
+    { slug: 'dibujar',          label: 'Dibujar' },
+    { slug: 'pasear',           label: 'Pasear' },
+    { slug: 'organizar',        label: 'Organizar' },
+    { slug: 'viajar',           label: 'Viajar' },
+    { slug: 'salir-amigos',     label: 'Salir con amigos' },
+    { slug: 'quedarse-casa',    label: 'Quedarse en casa' },
+    { slug: 'pasear-perro',     label: 'Pasear al perro' },
+    { slug: 'estudiar',         label: 'Estudiar' },
+    { slug: 'pintar',           label: 'Pintar' },
+    { slug: 'ir-camping',       label: 'Ir de camping' },
+    { slug: 'ir-gimnasio',      label: 'Ir al gimnasio' },
+    { slug: 'andar-bici',       label: 'Andar en bici' },
+    { slug: 'correr',           label: 'Correr' },
+    { slug: 'hacer-yoga',       label: 'Hacer yoga' }
+  ];
+
+  const ROUND_SIZE = 12;
+  const imagesEl  = document.getElementById('images');
+  const wordsEl   = document.getElementById('words');
+  const matchedEl = document.getElementById('matched');
+  const totalEl   = document.getElementById('total');
+  const attemptsEl = document.getElementById('attempts');
+  const resultEl  = document.getElementById('result');
+  const resultText = document.getElementById('result-text');
+  const resultTitle = document.getElementById('result-title');
+
+  let selectedImg = null;
+  let selectedWord = null;
+  let matched = 0;
+  let attempts = 0;
+  let locked = false;
+  let round = [];
+
+  function shuffle(arr) {
+    const a = arr.slice();
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  function render() {
+    imagesEl.innerHTML = '';
+    wordsEl.innerHTML = '';
+
+    const imgOrder = shuffle(round);
+    const wordOrder = shuffle(round);
+
+    imgOrder.forEach(v => {
+      const tile = document.createElement('div');
+      tile.className = 'tile';
+      tile.dataset.slug = v.slug;
+      tile.dataset.kind = 'img';
+      const img = document.createElement('img');
+      img.src = `images/verbos/${v.slug}.png`;
+      img.alt = v.label;
+      tile.appendChild(img);
+      tile.addEventListener('click', () => onTile(tile));
+      imagesEl.appendChild(tile);
+    });
+
+    wordOrder.forEach(v => {
+      const tile = document.createElement('div');
+      tile.className = 'tile';
+      tile.dataset.slug = v.slug;
+      tile.dataset.kind = 'word';
+      tile.textContent = v.label;
+      tile.addEventListener('click', () => onTile(tile));
+      wordsEl.appendChild(tile);
+    });
+  }
+
+  function onTile(tile) {
+    if (locked || tile.classList.contains('matched')) return;
+    const kind = tile.dataset.kind;
+
+    if (tile.classList.contains('selected')) {
+      tile.classList.remove('selected');
+      if (kind === 'img') selectedImg = null;
+      else selectedWord = null;
+      return;
+    }
+
+    if (kind === 'img') {
+      if (selectedImg) selectedImg.classList.remove('selected');
+      selectedImg = tile;
+    } else {
+      if (selectedWord) selectedWord.classList.remove('selected');
+      selectedWord = tile;
+    }
+    tile.classList.add('selected');
+
+    if (selectedImg && selectedWord) {
+      attempts++;
+      attemptsEl.textContent = attempts;
+      if (selectedImg.dataset.slug === selectedWord.dataset.slug) {
+        const a = selectedImg, b = selectedWord;
+        setTimeout(() => {
+          a.classList.remove('selected');
+          b.classList.remove('selected');
+          a.classList.add('matched');
+          b.classList.add('matched');
+          matched++;
+          matchedEl.textContent = matched;
+          if (matched === round.length) finish();
+        }, 250);
+        selectedImg = null;
+        selectedWord = null;
+      } else {
+        locked = true;
+        const a = selectedImg, b = selectedWord;
+        a.classList.add('wrong');
+        b.classList.add('wrong');
+        setTimeout(() => {
+          a.classList.remove('wrong', 'selected');
+          b.classList.remove('wrong', 'selected');
+          selectedImg = null;
+          selectedWord = null;
+          locked = false;
+        }, 650);
+      }
+    }
+  }
+
+  function finish() {
+    const perfect = attempts === round.length;
+    resultTitle.textContent = perfect ? 'Perfect round' : 'Nice work';
+    resultText.textContent = perfect
+      ? `You matched all ${round.length} verbs on the first try.`
+      : `You matched all ${round.length} verbs in ${attempts} attempts.`;
+    resultEl.classList.add('show');
+    resultEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  function start() {
+    round = shuffle(VERBS).slice(0, ROUND_SIZE);
+    matched = 0;
+    attempts = 0;
+    selectedImg = null;
+    selectedWord = null;
+    locked = false;
+    matchedEl.textContent = '0';
+    attemptsEl.textContent = '0';
+    totalEl.textContent = round.length;
+    resultEl.classList.remove('show');
+    render();
+  }
+
+  document.getElementById('restart').addEventListener('click', start);
+  document.getElementById('play-again').addEventListener('click', start);
+  start();
+</script>
+
+</body>
+</html>
