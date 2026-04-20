@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>A1 — El día de Mateo (completar)</title>
+  <title>A1 — El día de Mateo</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -36,28 +36,9 @@
     }
 
     .container {
-      max-width: 640px;
+      max-width: 720px;
       margin: 28px auto 0;
       padding: 0 20px;
-    }
-
-    .story-card {
-      background: #fff;
-      border: 1px solid #d0e4f5;
-      border-radius: 12px;
-      padding: 16px 20px;
-      margin-bottom: 20px;
-      font-size: 0.95rem;
-      line-height: 1.6;
-      color: #333;
-    }
-    .story-card h2 {
-      font-size: 0.78rem;
-      font-weight: 700;
-      color: #5e9ed7;
-      margin-bottom: 8px;
-      letter-spacing: 0.5px;
-      text-transform: uppercase;
     }
 
     .instructions {
@@ -67,159 +48,141 @@
       line-height: 1.5;
     }
 
-    .verb-bank {
+    #chip-bank {
       background: #fff;
       border: 1px solid #d0e4f5;
       border-radius: 12px;
-      padding: 14px 18px;
+      padding: 16px;
       margin-bottom: 28px;
+      min-height: 70px;
       display: flex;
       flex-wrap: wrap;
       gap: 10px;
-      align-items: center;
-    }
-    .verb-bank-label {
-      font-size: 0.75rem;
-      font-weight: 700;
-      letter-spacing: 0.8px;
-      text-transform: uppercase;
-      color: #5e9ed7;
-      margin-right: 6px;
-    }
-    .verb-bank .verb {
-      background: #e8f3fd;
-      border: 1px solid #b8d8f5;
-      color: #1a4a6e;
-      border-radius: 6px;
-      padding: 4px 10px;
-      font-size: 0.88rem;
+      align-content: flex-start;
     }
 
-    .q-card {
+    .chip {
+      background: #e8f3fd;
+      border: 2px solid #b8d8f5;
+      border-radius: 8px;
+      padding: 6px 12px;
+      font-size: 0.9rem;
+      color: #1a4a6e;
+      cursor: grab;
+      user-select: none;
+      transition: background 0.12s, border-color 0.12s, transform 0.1s, opacity 0.1s;
+      touch-action: none;
+    }
+    .chip:hover { background: #d4eaf9; border-color: #89c2f1; }
+    .chip.dragging { opacity: 0.45; transform: scale(0.97); cursor: grabbing; }
+    .chip.selected {
+      background: #c8e0f5;
+      border-color: #5e9ed7;
+      box-shadow: 0 0 0 2px #5e9ed7;
+    }
+    .chip.placed-correct {
+      background: #e8f3fd;
+      border-color: #5e9ed7;
+      color: #1a4a6e;
+      cursor: default;
+    }
+
+    .story {
       background: #fff;
       border: 1px solid #d0e4f5;
       border-radius: 12px;
-      padding: 16px 20px;
-      margin-bottom: 14px;
-    }
-    .q-num {
-      font-size: 0.78rem;
-      font-weight: 700;
-      color: #5e9ed7;
-      margin-bottom: 6px;
-      letter-spacing: 0.5px;
-    }
-    .q-sentence {
+      padding: 20px 22px;
+      margin-bottom: 20px;
       font-size: 1rem;
-      line-height: 1.7;
+      line-height: 2;
       color: #1a1a1a;
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 6px;
     }
-    .q-sentence input {
-      border: 2px solid #d0e4f5;
-      border-radius: 6px;
-      padding: 4px 10px;
-      font-size: 0.95rem;
-      font-family: inherit;
+
+    .blank {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 120px;
+      min-height: 32px;
+      border: 2px dashed #b8d8f5;
+      border-radius: 8px;
+      padding: 2px 8px;
       background: #f8fbfe;
-      width: 160px;
-      transition: border-color 0.15s, background 0.15s;
-      outline: none;
-    }
-    .q-sentence input:focus { border-color: #89c2f1; background: #fff; }
-    .q-sentence input.correct {
-      border-color: #5e9ed7;
-      background: #e8f3fd;
-      color: #1a4a6e;
-    }
-    .q-sentence input.wrong {
-      border-color: #d77a5e;
-      background: #fdf0eb;
-      color: #7a2e10;
-    }
-
-    .feedback {
-      margin-top: 8px;
-      font-size: 0.85rem;
-      line-height: 1.4;
-      display: none;
-    }
-    .feedback.ok { color: #1a4a6e; }
-    .feedback.err { color: #7a2e10; }
-    .feedback.show { display: block; }
-
-    .check-btn {
-      background: #5e9ed7;
-      color: #fff;
-      border: none;
-      border-radius: 6px;
-      padding: 6px 14px;
-      font-size: 0.82rem;
-      font-weight: 600;
       cursor: pointer;
-      margin-top: 10px;
+      vertical-align: middle;
+      transition: border-color 0.15s, background 0.15s;
     }
-    .check-btn:hover { background: #89c2f1; }
-    .check-btn:disabled { background: #c5dff0; cursor: default; }
+    .blank:hover { border-color: #89c2f1; background: #eef6fd; }
+    .blank.drag-over { border-color: #5e9ed7; background: #e8f3fd; }
+    .blank.filled {
+      border-style: solid;
+      background: #e8f3fd;
+      border-color: #5e9ed7;
+      color: #1a4a6e;
+      font-weight: 600;
+      padding: 4px 10px;
+    }
+    .blank.checked-correct {
+      border-style: solid;
+      background: #e8f3fd;
+      border-color: #5e9ed7;
+      color: #1a4a6e;
+      font-weight: 600;
+    }
+    .blank.checked-wrong {
+      border-style: solid;
+      background: #fdf0eb;
+      border-color: #d77a5e;
+      color: #7a2e10;
+      font-weight: 600;
+    }
 
-    .results-bar {
-      position: sticky;
-      bottom: 0;
-      background: #fff;
-      border-top: 1px solid #d0e4f5;
-      padding: 14px 20px;
-      margin-top: 20px;
+    .btn-row {
       display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
+      gap: 10px;
       flex-wrap: wrap;
-      border-radius: 12px 12px 0 0;
-      box-shadow: 0 -2px 10px rgba(0,0,0,0.04);
+      margin-bottom: 20px;
     }
-    .progress-text { font-size: 0.88rem; color: #555; }
-    .results-btn {
+    button.main-btn {
       background: #5e9ed7;
       color: #fff;
       border: none;
       border-radius: 8px;
-      padding: 10px 18px;
-      font-size: 0.88rem;
+      padding: 10px 20px;
+      font-size: 0.9rem;
       font-weight: 600;
       cursor: pointer;
+      transition: background 0.12s;
     }
-    .results-btn:disabled { background: #c5dff0; cursor: default; }
-    .results-btn:not(:disabled):hover { background: #89c2f1; }
-    .results-btn.secondary {
+    button.main-btn:hover { background: #89c2f1; }
+    button.main-btn:disabled { background: #c5dff0; cursor: default; }
+    button.secondary {
       background: #fff;
       color: #5e9ed7;
       border: 2px solid #5e9ed7;
     }
-    .results-btn.secondary:hover { background: #eef6fd; }
+    button.secondary:hover { background: #eef6fd; }
 
-    .score-panel {
+    #feedback-bar {
       display: none;
       background: #fff;
       border: 1px solid #d0e4f5;
       border-radius: 12px;
-      padding: 22px;
-      margin-top: 24px;
+      padding: 18px 22px;
+      margin-bottom: 16px;
       text-align: center;
     }
-    .score-panel.show { display: block; }
-    .score-num {
-      font-size: 2rem;
+    #feedback-bar.show { display: block; }
+    #feedback-bar .score {
+      font-size: 1.8rem;
       font-weight: 700;
       color: #5e9ed7;
-      margin-bottom: 8px;
+      margin-bottom: 6px;
     }
-    .score-msg { font-size: 0.95rem; color: #444; margin-bottom: 16px; }
+    #feedback-bar .msg { color: #444; font-size: 0.92rem; }
 
     footer {
-      max-width: 640px;
+      max-width: 720px;
       margin: 32px auto 0;
       padding: 0 20px;
       font-size: 0.8rem;
@@ -233,50 +196,32 @@
 <header>
   <div>
     <h1>El día de Mateo</h1>
-    <p>Completa cada oración con el verbo correcto</p>
+    <p>Arrastra cada verbo al espacio correcto</p>
   </div>
   <span class="cefr-badge">A1</span>
 </header>
 
 <div class="container">
 
-  <div class="story-card">
-    <h2>La historia</h2>
-    <p>Todos los días Mateo sale de casa a las seis de la tarde y pasea a su perro. Sale a caminar porque quiere hacer ejercicio. Pero hoy sale más temprano, sale a las cinco. Cuando llega al parque ve a Lucía, su nueva compañera de clase. Mateo se pone muy nervioso porque le gusta Lucía. La saluda y conversa un poco con ella. Le pide su correo electrónico, pero ella no le da su correo. Mateo se pone triste, ya no tiene ganas de caminar y va a su casa.</p>
-  </div>
-
   <p class="instructions">
-    Escribe el verbo correcto en cada espacio. Usa los verbos del banco. Algunos verbos se usan más de una vez.
+    Arrastra cada verbo al espacio correcto dentro de la historia. En móvil, toca una ficha y luego toca el espacio. Cuando termines, haz clic en <strong>Verificar</strong>.
   </p>
 
-  <div class="verb-bank">
-    <span class="verb-bank-label">Verbos</span>
-    <span class="verb">sale de</span>
-    <span class="verb">sale</span>
-    <span class="verb">hace</span>
-    <span class="verb">ve</span>
-    <span class="verb">saluda</span>
-    <span class="verb">le pide</span>
-    <span class="verb">le da</span>
-    <span class="verb">se pone</span>
-    <span class="verb">tiene</span>
-    <span class="verb">va a</span>
+  <div id="chip-bank"
+       ondragover="bankDragOver(event)"
+       ondrop="bankDrop(event)">
   </div>
 
-  <div id="questions"></div>
+  <div class="story" id="story"></div>
 
-  <div class="results-bar">
-    <span class="progress-text"><span id="answered">0</span> / 12 respondidas</span>
-    <div style="display:flex; gap:10px; flex-wrap:wrap;">
-      <button class="results-btn secondary" id="reset-btn" onclick="resetAll()">Intentar otra vez</button>
-      <button class="results-btn" id="see-results" onclick="showResults()" disabled>Ver resultado</button>
-    </div>
+  <div class="btn-row">
+    <button class="main-btn" id="btn-check" onclick="checkAnswers()">Verificar</button>
+    <button class="main-btn secondary" id="btn-retry" onclick="resetAll()" style="display:none">Jugar otra vez</button>
   </div>
 
-  <div class="score-panel" id="score-panel">
-    <div class="score-num" id="score-num"></div>
-    <div class="score-msg" id="score-msg"></div>
-    <button class="results-btn secondary" onclick="resetAll()">Jugar otra vez</button>
+  <div id="feedback-bar">
+    <div class="score" id="score-text"></div>
+    <div class="msg" id="msg-text"></div>
   </div>
 
 </div>
@@ -284,108 +229,238 @@
 <footer>Spanish with Elisabeth &mdash; spanishwithelisabeth.com</footer>
 
 <script>
-  const QUESTIONS = [
-    { before: 'Todos los días Mateo',   answer: 'sale de',  after: 'casa a las seis de la tarde.' },
-    { before: 'Mateo',                  answer: 'hace',     after: 'ejercicio con su perro en el parque.' },
-    { before: 'Hoy Mateo',              answer: 'sale',     after: 'más temprano, a las cinco.' },
-    { before: 'En el parque, Mateo',    answer: 've',       after: 'a Lucía, su nueva compañera de clase.' },
-    { before: 'Mateo',                  answer: 'se pone',  after: 'nervioso porque le gusta Lucía.' },
-    { before: 'Mateo',                  answer: 'saluda',   after: 'a Lucía y conversa con ella.' },
-    { before: 'Mateo',                  answer: 'le pide',  after: 'su correo electrónico a Lucía.' },
-    { before: 'Pero Lucía no',          answer: 'le da',    after: 'su correo a Mateo.' },
-    { before: 'Mateo',                  answer: 'se pone',  after: 'triste.' },
-    { before: 'Ya no',                  answer: 'tiene',    after: 'ganas de caminar.' },
-    { before: 'Mateo',                  answer: 'va a',     after: 'su casa.' },
-    { before: 'En casa, Mateo',         answer: 've',       after: 'la tele con su perro.' }
+  // Six blanks embedded in the story, each with its correct verb.
+  // The surrounding prose is rendered exactly as written.
+  const STORY_PARTS = [
+    { text: 'Todos los días Mateo ' },
+    { blank: true, answer: 'sale de' },
+    { text: ' casa a las seis de la tarde y pasea a su perro. Sale a caminar porque quiere ' },
+    { blank: true, answer: 'hacer' },
+    { text: ' ejercicio. Pero hoy sale más temprano, sale a las cinco. Cuando llega al parque ' },
+    { blank: true, answer: 've' },
+    { text: ' a Lucía, su nueva compañera de clase. Mateo ' },
+    { blank: true, answer: 'se pone' },
+    { text: ' muy nervioso porque le gusta Lucía. La saluda y conversa un poco con ella. ' },
+    { blank: true, answer: 'Le pide' },
+    { text: ' su correo electrónico, pero ella no le da su correo. Mateo se pone triste, ya no tiene ganas de caminar y ' },
+    { blank: true, answer: 'va a' },
+    { text: ' su casa.' }
   ];
 
-  const state = QUESTIONS.map(() => ({ answered: false, correct: false }));
+  // Build the ordered list of answers and the chip bank.
+  const ANSWERS = STORY_PARTS.filter(p => p.blank).map(p => p.answer);
+  const CHIPS = ANSWERS.map((verb, i) => ({ id: 'c-' + i, verb }));
 
-  function stripAccents(s) {
-    return s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
-  }
+  let draggedId = null;
+  let selectedId = null;
+  let checked = false;
 
-  function render() {
-    const wrap = document.getElementById('questions');
-    wrap.innerHTML = '';
-    QUESTIONS.forEach((q, i) => {
-      const card = document.createElement('div');
-      card.className = 'q-card';
-      card.innerHTML = `
-        <div class="q-num">${i + 1}</div>
-        <div class="q-sentence">
-          <span>${q.before}</span>
-          <input type="text" id="input-${i}" autocomplete="off" spellcheck="false" />
-          <span>${q.after}</span>
-        </div>
-        <button class="check-btn" id="btn-${i}" onclick="checkOne(${i})">Verificar</button>
-        <div class="feedback" id="fb-${i}"></div>
-      `;
-      wrap.appendChild(card);
+  const placements = new Array(ANSWERS.length).fill(null);
 
-      const input = card.querySelector('input');
-      input.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') { e.preventDefault(); checkOne(i); }
-      });
-    });
-    updateProgress();
-  }
-
-  function checkOne(i) {
-    if (state[i].answered) return;
-    const input = document.getElementById('input-' + i);
-    const btn = document.getElementById('btn-' + i);
-    const fb = document.getElementById('fb-' + i);
-    const userVal = stripAccents(input.value);
-    const correctVal = stripAccents(QUESTIONS[i].answer);
-
-    if (!userVal) { input.focus(); return; }
-
-    state[i].answered = true;
-    input.disabled = true;
-    btn.disabled = true;
-
-    if (userVal === correctVal) {
-      state[i].correct = true;
-      input.classList.add('correct');
-      fb.textContent = 'Correcto.';
-      fb.className = 'feedback ok show';
-    } else {
-      state[i].correct = false;
-      input.classList.add('wrong');
-      fb.innerHTML = `Incorrecto. La respuesta correcta es <strong>${QUESTIONS[i].answer}</strong>.`;
-      fb.className = 'feedback err show';
+  function shuffle(arr) {
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
     }
-    updateProgress();
+    return arr;
   }
 
-  function updateProgress() {
-    const done = state.filter(s => s.answered).length;
-    document.getElementById('answered').textContent = done;
-    document.getElementById('see-results').disabled = done < QUESTIONS.length;
+  function buildChipEl(chip) {
+    const el = document.createElement('div');
+    el.className = 'chip';
+    el.id = chip.id;
+    el.dataset.verb = chip.verb;
+    el.textContent = chip.verb;
+    el.draggable = true;
+
+    el.addEventListener('dragstart', (e) => {
+      if (checked) return;
+      draggedId = chip.id;
+      el.classList.add('dragging');
+      e.dataTransfer.effectAllowed = 'move';
+      e.dataTransfer.setData('text/plain', chip.id);
+    });
+    el.addEventListener('dragend', () => {
+      el.classList.remove('dragging');
+      draggedId = null;
+    });
+
+    el.addEventListener('click', () => {
+      if (checked) return;
+      if (selectedId === chip.id) {
+        el.classList.remove('selected');
+        selectedId = null;
+      } else {
+        if (selectedId) {
+          const old = document.getElementById(selectedId);
+          if (old) old.classList.remove('selected');
+        }
+        selectedId = chip.id;
+        el.classList.add('selected');
+      }
+    });
+
+    return el;
   }
 
-  function showResults() {
-    const correct = state.filter(s => s.correct).length;
-    const total = QUESTIONS.length;
-    document.getElementById('score-num').textContent = correct + ' / ' + total;
+  let chipOrder = shuffle(CHIPS.slice());
+
+  function renderBank() {
+    const bank = document.getElementById('chip-bank');
+    bank.innerHTML = '';
+    const used = new Set(placements.filter(Boolean));
+    chipOrder.filter(c => !used.has(c.id)).forEach(chip => bank.appendChild(buildChipEl(chip)));
+  }
+
+  function renderStory() {
+    const wrap = document.getElementById('story');
+    wrap.innerHTML = '';
+    let blankIdx = 0;
+    STORY_PARTS.forEach(part => {
+      if (part.blank) {
+        const i = blankIdx++;
+        const span = document.createElement('span');
+        span.className = 'blank';
+        span.id = 'blank-' + i;
+        span.setAttribute('ondragover', `blankDragOver(event, ${i})`);
+        span.setAttribute('ondragleave', `blankDragLeave(event, ${i})`);
+        span.setAttribute('ondrop', `blankDrop(event, ${i})`);
+        span.setAttribute('onclick', `blankClick(${i})`);
+        wrap.appendChild(span);
+      } else {
+        wrap.appendChild(document.createTextNode(part.text));
+      }
+    });
+    refreshBlanks();
+  }
+
+  function refreshBlanks() {
+    ANSWERS.forEach((_, i) => {
+      const blank = document.getElementById('blank-' + i);
+      const chipId = placements[i];
+      blank.classList.remove('filled', 'drag-over', 'checked-correct', 'checked-wrong');
+      if (chipId) {
+        const chip = CHIPS.find(c => c.id === chipId);
+        blank.textContent = chip ? chip.verb : '';
+        blank.classList.add('filled');
+      } else {
+        blank.textContent = '';
+      }
+    });
+  }
+
+  window.bankDragOver = function(e) {
+    if (checked) return;
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+  };
+  window.bankDrop = function(e) {
+    if (checked) return;
+    e.preventDefault();
+    const id = draggedId || e.dataTransfer.getData('text/plain');
+    if (!id) return;
+    const idx = placements.indexOf(id);
+    if (idx !== -1) placements[idx] = null;
+    renderBank();
+    refreshBlanks();
+  };
+
+  window.blankDragOver = function(e, i) {
+    if (checked) return;
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    document.getElementById('blank-' + i).classList.add('drag-over');
+  };
+  window.blankDragLeave = function(e, i) {
+    document.getElementById('blank-' + i).classList.remove('drag-over');
+  };
+  window.blankDrop = function(e, i) {
+    if (checked) return;
+    e.preventDefault();
+    document.getElementById('blank-' + i).classList.remove('drag-over');
+    const id = draggedId || e.dataTransfer.getData('text/plain');
+    if (!id) return;
+    placeChip(id, i);
+  };
+
+  window.blankClick = function(i) {
+    if (checked) return;
+    if (selectedId) {
+      placeChip(selectedId, i);
+      selectedId = null;
+    } else if (placements[i]) {
+      placements[i] = null;
+      renderBank();
+      refreshBlanks();
+    }
+  };
+
+  function placeChip(chipId, targetIdx) {
+    const prevIdx = placements.indexOf(chipId);
+    if (prevIdx !== -1) placements[prevIdx] = null;
+    placements[targetIdx] = chipId;
+    renderBank();
+    refreshBlanks();
+  }
+
+  function checkAnswers() {
+    if (placements.some(p => p === null)) {
+      const bar = document.getElementById('feedback-bar');
+      bar.classList.add('show');
+      document.getElementById('score-text').textContent = 'Faltan respuestas';
+      document.getElementById('msg-text').textContent = 'Completa todos los espacios antes de verificar.';
+      return;
+    }
+
+    checked = true;
+    let correct = 0;
+    ANSWERS.forEach((ans, i) => {
+      const blank = document.getElementById('blank-' + i);
+      const chipId = placements[i];
+      const chip = CHIPS.find(c => c.id === chipId);
+      blank.classList.remove('filled');
+      if (chip && chip.verb === ans) {
+        blank.classList.add('checked-correct');
+        correct++;
+      } else {
+        blank.classList.add('checked-wrong');
+      }
+    });
+
+    document.querySelectorAll('.chip').forEach(el => {
+      el.draggable = false;
+      el.classList.add('placed-correct');
+    });
+
+    const bar = document.getElementById('feedback-bar');
+    bar.classList.add('show');
+    document.getElementById('score-text').textContent = correct + ' / ' + ANSWERS.length;
     let msg;
-    if (correct === total)      msg = 'Excelente. Conoces muy bien estos verbos.';
-    else if (correct >= total - 2) msg = 'Muy bien. Repasa las respuestas marcadas.';
-    else if (correct >= total / 2) msg = 'Buen intento. Revisa el banco de verbos y practica otra vez.';
-    else                         msg = 'Practica un poco más y vuelve a intentar.';
-    document.getElementById('score-msg').textContent = msg;
-    document.getElementById('score-panel').classList.add('show');
-    document.getElementById('score-panel').scrollIntoView({ behavior: 'smooth' });
+    if (correct === ANSWERS.length) msg = 'Excelente. Todas las respuestas son correctas.';
+    else if (correct >= ANSWERS.length - 1) msg = 'Muy bien. Revisa la marcada en rojo.';
+    else if (correct >= ANSWERS.length / 2) msg = 'Buen intento. Repasa los verbos e intenta de nuevo.';
+    else msg = 'Practica un poco más y vuelve a intentar.';
+    document.getElementById('msg-text').textContent = msg;
+
+    document.getElementById('btn-check').style.display = 'none';
+    document.getElementById('btn-retry').style.display = 'inline-block';
   }
 
   function resetAll() {
-    state.forEach(s => { s.answered = false; s.correct = false; });
-    document.getElementById('score-panel').classList.remove('show');
-    render();
+    checked = false;
+    selectedId = null;
+    draggedId = null;
+    for (let i = 0; i < placements.length; i++) placements[i] = null;
+    document.getElementById('feedback-bar').classList.remove('show');
+    document.getElementById('btn-check').style.display = 'inline-block';
+    document.getElementById('btn-retry').style.display = 'none';
+    chipOrder = shuffle(CHIPS.slice());
+    renderBank();
+    renderStory();
   }
 
-  render();
+  renderBank();
+  renderStory();
 </script>
 
 </body>
