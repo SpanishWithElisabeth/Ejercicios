@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>A1 — El día de Pablo (completar)</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f4f8fd;
+      color: #1a1a1a;
+      min-height: 100vh;
+      padding: 0 0 48px;
+    }
+
+    header {
+      background: #5e9ed7;
+      color: #fff;
+      padding: 20px 24px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    header h1 { font-size: 1.25rem; font-weight: 700; }
+    header p { font-size: 0.85rem; opacity: 0.88; margin-top: 2px; }
+    .cefr-badge {
+      background: #f5ca64;
+      color: #1a1a1a;
+      font-weight: 700;
+      font-size: 0.8rem;
+      padding: 3px 10px;
+      border-radius: 20px;
+      flex-shrink: 0;
+    }
+
+    .container {
+      max-width: 640px;
+      margin: 28px auto 0;
+      padding: 0 20px;
+    }
+
+    .instructions {
+      font-size: 0.9rem;
+      color: #555;
+      margin-bottom: 20px;
+      line-height: 1.5;
+    }
+
+    .verb-bank {
+      background: #fff;
+      border: 1px solid #d0e4f5;
+      border-radius: 12px;
+      padding: 14px 18px;
+      margin-bottom: 28px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+    }
+    .verb-bank-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      color: #5e9ed7;
+      margin-right: 6px;
+    }
+    .verb-bank .verb {
+      background: #e8f3fd;
+      border: 1px solid #b8d8f5;
+      color: #1a4a6e;
+      border-radius: 6px;
+      padding: 4px 10px;
+      font-size: 0.88rem;
+    }
+
+    .q-card {
+      background: #fff;
+      border: 1px solid #d0e4f5;
+      border-radius: 12px;
+      padding: 16px 20px;
+      margin-bottom: 14px;
+    }
+    .q-num {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: #5e9ed7;
+      margin-bottom: 6px;
+      letter-spacing: 0.5px;
+    }
+    .q-sentence {
+      font-size: 1rem;
+      line-height: 1.7;
+      color: #1a1a1a;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px;
+    }
+    .q-sentence input {
+      border: 2px solid #d0e4f5;
+      border-radius: 6px;
+      padding: 4px 10px;
+      font-size: 0.95rem;
+      font-family: inherit;
+      background: #f8fbfe;
+      width: 140px;
+      transition: border-color 0.15s, background 0.15s;
+      outline: none;
+    }
+    .q-sentence input:focus { border-color: #89c2f1; background: #fff; }
+    .q-sentence input.correct {
+      border-color: #5e9ed7;
+      background: #e8f3fd;
+      color: #1a4a6e;
+    }
+    .q-sentence input.wrong {
+      border-color: #d77a5e;
+      background: #fdf0eb;
+      color: #7a2e10;
+    }
+
+    .feedback {
+      margin-top: 8px;
+      font-size: 0.85rem;
+      line-height: 1.4;
+      display: none;
+    }
+    .feedback.ok { color: #1a4a6e; }
+    .feedback.err { color: #7a2e10; }
+    .feedback.show { display: block; }
+
+    .check-btn {
+      background: #5e9ed7;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 6px 14px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    .check-btn:hover { background: #89c2f1; }
+    .check-btn:disabled { background: #c5dff0; cursor: default; }
+
+    .results-bar {
+      position: sticky;
+      bottom: 0;
+      background: #fff;
+      border-top: 1px solid #d0e4f5;
+      padding: 14px 20px;
+      margin-top: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      border-radius: 12px 12px 0 0;
+      box-shadow: 0 -2px 10px rgba(0,0,0,0.04);
+    }
+    .progress-text { font-size: 0.88rem; color: #555; }
+    .results-btn {
+      background: #5e9ed7;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 18px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .results-btn:disabled { background: #c5dff0; cursor: default; }
+    .results-btn:not(:disabled):hover { background: #89c2f1; }
+    .results-btn.secondary {
+      background: #fff;
+      color: #5e9ed7;
+      border: 2px solid #5e9ed7;
+    }
+    .results-btn.secondary:hover { background: #eef6fd; }
+
+    .score-panel {
+      display: none;
+      background: #fff;
+      border: 1px solid #d0e4f5;
+      border-radius: 12px;
+      padding: 22px;
+      margin-top: 24px;
+      text-align: center;
+    }
+    .score-panel.show { display: block; }
+    .score-num {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #5e9ed7;
+      margin-bottom: 8px;
+    }
+    .score-msg { font-size: 0.95rem; color: #444; margin-bottom: 16px; }
+
+    footer {
+      max-width: 640px;
+      margin: 32px auto 0;
+      padding: 0 20px;
+      font-size: 0.8rem;
+      color: #bbb;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>El día de Pablo</h1>
+    <p>Completa cada oración con el verbo correcto</p>
+  </div>
+  <span class="cefr-badge">A1</span>
+</header>
+
+<div class="container">
+
+  <p class="instructions">
+    Escribe el verbo correcto en cada espacio. Usa los verbos del banco. Cada verbo se usa dos veces.
+  </p>
+
+  <div class="verb-bank">
+    <span class="verb-bank-label">Verbos</span>
+    <span class="verb">sale de</span>
+    <span class="verb">hace</span>
+    <span class="verb">le da</span>
+    <span class="verb">vuelve</span>
+    <span class="verb">ve</span>
+    <span class="verb">se pone contento</span>
+  </div>
+
+  <div id="questions"></div>
+
+  <div class="results-bar">
+    <span class="progress-text"><span id="answered">0</span> / 12 respondidas</span>
+    <div style="display:flex; gap:10px; flex-wrap:wrap;">
+      <button class="results-btn secondary" id="reset-btn" onclick="resetAll()">Intentar otra vez</button>
+      <button class="results-btn" id="see-results" onclick="showResults()" disabled>Ver resultado</button>
+    </div>
+  </div>
+
+  <div class="score-panel" id="score-panel">
+    <div class="score-num" id="score-num"></div>
+    <div class="score-msg" id="score-msg"></div>
+    <button class="results-btn secondary" onclick="resetAll()">Jugar otra vez</button>
+  </div>
+
+</div>
+
+<footer>Spanish with Elisabeth &mdash; spanishwithelisabeth.com</footer>
+
+<script>
+  const QUESTIONS = [
+    { before: 'Pablo',                 answer: 'sale de',          after: 'su casa a las ocho de la mañana.' },
+    { before: 'Pablo',                 answer: 'hace',             after: 'ejercicio en el parque.' },
+    { before: 'Su mamá',               answer: 'le da',            after: 'un beso antes de salir.' },
+    { before: 'Pablo',                 answer: 'vuelve',           after: 'a casa para desayunar.' },
+    { before: 'En el jardín, Pablo',   answer: 've',               after: 'a su perro.' },
+    { before: 'El perro',              answer: 'se pone contento', after: 'cuando ve a Pablo.' },
+    { before: 'Pablo',                 answer: 'hace',             after: 'la tarea con su hermana.' },
+    { before: 'Después, Pablo',        answer: 'sale de',          after: 'la casa otra vez para ir a la escuela.' }, /* kept as-is: 'sale de la casa' */
+    { before: 'En la escuela, Pablo',  answer: 've',               after: 'a su mejor amigo.' },
+    { before: 'Su amigo',              answer: 'le da',            after: 'un lápiz nuevo.' },
+    { before: 'A las tres, Pablo',     answer: 'vuelve',           after: 'a casa.' },
+    { before: 'Pablo',                 answer: 'se pone contento', after: 'cuando su mamá prepara tacos.' }
+  ];
+
+  const state = QUESTIONS.map(() => ({ answered: false, correct: false }));
+
+  function stripAccents(s) {
+    return s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
+  }
+
+  function render() {
+    const wrap = document.getElementById('questions');
+    wrap.innerHTML = '';
+    QUESTIONS.forEach((q, i) => {
+      const card = document.createElement('div');
+      card.className = 'q-card';
+      card.innerHTML = `
+        <div class="q-num">${i + 1}</div>
+        <div class="q-sentence">
+          <span>${q.before}</span>
+          <input type="text" id="input-${i}" autocomplete="off" spellcheck="false" />
+          <span>${q.after}</span>
+        </div>
+        <button class="check-btn" id="btn-${i}" onclick="checkOne(${i})">Verificar</button>
+        <div class="feedback" id="fb-${i}"></div>
+      `;
+      wrap.appendChild(card);
+
+      const input = card.querySelector('input');
+      input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') { e.preventDefault(); checkOne(i); }
+      });
+    });
+    updateProgress();
+  }
+
+  function checkOne(i) {
+    if (state[i].answered) return;
+    const input = document.getElementById('input-' + i);
+    const btn = document.getElementById('btn-' + i);
+    const fb = document.getElementById('fb-' + i);
+    const userVal = stripAccents(input.value);
+    const correctVal = stripAccents(QUESTIONS[i].answer);
+
+    if (!userVal) { input.focus(); return; }
+
+    state[i].answered = true;
+    input.disabled = true;
+    btn.disabled = true;
+
+    if (userVal === correctVal) {
+      state[i].correct = true;
+      input.classList.add('correct');
+      fb.textContent = 'Correcto.';
+      fb.className = 'feedback ok show';
+    } else {
+      state[i].correct = false;
+      input.classList.add('wrong');
+      fb.innerHTML = `Incorrecto. La respuesta correcta es <strong>${QUESTIONS[i].answer}</strong>.`;
+      fb.className = 'feedback err show';
+    }
+    updateProgress();
+  }
+
+  function updateProgress() {
+    const done = state.filter(s => s.answered).length;
+    document.getElementById('answered').textContent = done;
+    document.getElementById('see-results').disabled = done < QUESTIONS.length;
+  }
+
+  function showResults() {
+    const correct = state.filter(s => s.correct).length;
+    const total = QUESTIONS.length;
+    document.getElementById('score-num').textContent = correct + ' / ' + total;
+    let msg;
+    if (correct === total)      msg = 'Excelente. Conoces muy bien estos verbos.';
+    else if (correct >= total - 2) msg = 'Muy bien. Repasa las respuestas marcadas.';
+    else if (correct >= total / 2) msg = 'Buen intento. Revisa el banco de verbos y practica otra vez.';
+    else                         msg = 'Practica un poco más y vuelve a intentar.';
+    document.getElementById('score-msg').textContent = msg;
+    document.getElementById('score-panel').classList.add('show');
+    document.getElementById('score-panel').scrollIntoView({ behavior: 'smooth' });
+  }
+
+  function resetAll() {
+    state.forEach(s => { s.answered = false; s.correct = false; });
+    document.getElementById('score-panel').classList.remove('show');
+    render();
+  }
+
+  render();
+</script>
+
+</body>
+</html>

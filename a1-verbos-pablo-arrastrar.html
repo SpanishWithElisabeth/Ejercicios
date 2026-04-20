@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>A1 — El día de Pablo (arrastrar)</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f4f8fd;
+      color: #1a1a1a;
+      min-height: 100vh;
+      padding: 0 0 48px;
+    }
+
+    header {
+      background: #5e9ed7;
+      color: #fff;
+      padding: 20px 24px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    header h1 { font-size: 1.25rem; font-weight: 700; }
+    header p { font-size: 0.85rem; opacity: 0.88; margin-top: 2px; }
+    .cefr-badge {
+      background: #f5ca64;
+      color: #1a1a1a;
+      font-weight: 700;
+      font-size: 0.8rem;
+      padding: 3px 10px;
+      border-radius: 20px;
+      flex-shrink: 0;
+    }
+
+    .container {
+      max-width: 720px;
+      margin: 28px auto 0;
+      padding: 0 20px;
+    }
+
+    .instructions {
+      font-size: 0.9rem;
+      color: #555;
+      margin-bottom: 20px;
+      line-height: 1.5;
+    }
+
+    #chip-bank {
+      background: #fff;
+      border: 1px solid #d0e4f5;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 28px;
+      min-height: 70px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-content: flex-start;
+    }
+
+    .chip {
+      background: #e8f3fd;
+      border: 2px solid #b8d8f5;
+      border-radius: 8px;
+      padding: 6px 12px;
+      font-size: 0.9rem;
+      color: #1a4a6e;
+      cursor: grab;
+      user-select: none;
+      transition: background 0.12s, border-color 0.12s, transform 0.1s, opacity 0.1s;
+      touch-action: none;
+    }
+    .chip:hover { background: #d4eaf9; border-color: #89c2f1; }
+    .chip.dragging { opacity: 0.45; transform: scale(0.97); cursor: grabbing; }
+    .chip.selected {
+      background: #c8e0f5;
+      border-color: #5e9ed7;
+      box-shadow: 0 0 0 2px #5e9ed7;
+    }
+    .chip.placed-correct {
+      background: #e8f3fd;
+      border-color: #5e9ed7;
+      color: #1a4a6e;
+      cursor: default;
+    }
+    .chip.placed-wrong {
+      background: #fdf0eb;
+      border-color: #d77a5e;
+      color: #7a2e10;
+      cursor: default;
+    }
+
+    .sentences {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .s-row {
+      background: #fff;
+      border: 1px solid #d0e4f5;
+      border-radius: 10px;
+      padding: 12px 16px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px 10px;
+      font-size: 0.95rem;
+      line-height: 1.5;
+    }
+    .s-num {
+      font-weight: 700;
+      color: #5e9ed7;
+      min-width: 22px;
+      font-size: 0.85rem;
+    }
+
+    .blank {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 120px;
+      min-height: 34px;
+      border: 2px dashed #b8d8f5;
+      border-radius: 8px;
+      padding: 2px 8px;
+      background: #f8fbfe;
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s;
+    }
+    .blank:hover { border-color: #89c2f1; background: #eef6fd; }
+    .blank.drag-over { border-color: #5e9ed7; background: #e8f3fd; }
+    .blank.filled {
+      border-style: solid;
+      background: #e8f3fd;
+      border-color: #5e9ed7;
+      color: #1a4a6e;
+      font-weight: 600;
+      padding: 4px 10px;
+    }
+    .blank.checked-correct {
+      border-style: solid;
+      background: #e8f3fd;
+      border-color: #5e9ed7;
+      color: #1a4a6e;
+      font-weight: 600;
+    }
+    .blank.checked-wrong {
+      border-style: solid;
+      background: #fdf0eb;
+      border-color: #d77a5e;
+      color: #7a2e10;
+      font-weight: 600;
+    }
+
+    .btn-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+    button.main-btn {
+      background: #5e9ed7;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 20px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.12s;
+    }
+    button.main-btn:hover { background: #89c2f1; }
+    button.main-btn:disabled { background: #c5dff0; cursor: default; }
+    button.secondary {
+      background: #fff;
+      color: #5e9ed7;
+      border: 2px solid #5e9ed7;
+    }
+    button.secondary:hover { background: #eef6fd; }
+
+    #feedback-bar {
+      display: none;
+      background: #fff;
+      border: 1px solid #d0e4f5;
+      border-radius: 12px;
+      padding: 18px 22px;
+      margin-bottom: 16px;
+      text-align: center;
+    }
+    #feedback-bar.show { display: block; }
+    #feedback-bar .score {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #5e9ed7;
+      margin-bottom: 6px;
+    }
+    #feedback-bar .msg { color: #444; font-size: 0.92rem; }
+
+    footer {
+      max-width: 720px;
+      margin: 32px auto 0;
+      padding: 0 20px;
+      font-size: 0.8rem;
+      color: #bbb;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>El día de Pablo</h1>
+    <p>Arrastra cada verbo a la oración correcta</p>
+  </div>
+  <span class="cefr-badge">A1</span>
+</header>
+
+<div class="container">
+
+  <p class="instructions">
+    Arrastra cada verbo al espacio correcto. En el banco hay dos fichas de cada verbo porque algunos se usan dos veces. En móvil, toca una ficha y luego toca el espacio. Cuando termines, haz clic en <strong>Verificar</strong>.
+  </p>
+
+  <div id="chip-bank"
+       ondragover="bankDragOver(event)"
+       ondrop="bankDrop(event)">
+  </div>
+
+  <div class="sentences" id="sentences"></div>
+
+  <div class="btn-row">
+    <button class="main-btn" id="btn-check" onclick="checkAnswers()">Verificar</button>
+    <button class="main-btn secondary" id="btn-retry" onclick="resetAll()" style="display:none">Jugar otra vez</button>
+  </div>
+
+  <div id="feedback-bar">
+    <div class="score" id="score-text"></div>
+    <div class="msg" id="msg-text"></div>
+  </div>
+
+</div>
+
+<footer>Spanish with Elisabeth &mdash; spanishwithelisabeth.com</footer>
+
+<script>
+  const VERBS = ['sale de', 'hace', 'le da', 'vuelve', 've', 'se pone contento'];
+
+  const SENTENCES = [
+    { before: 'Pablo',                 answer: 'sale de',          after: 'su casa a las ocho de la mañana.' },
+    { before: 'Pablo',                 answer: 'hace',             after: 'ejercicio en el parque.' },
+    { before: 'Su mamá',               answer: 'le da',            after: 'un beso antes de salir.' },
+    { before: 'Pablo',                 answer: 'vuelve',           after: 'a casa para desayunar.' },
+    { before: 'En el jardín, Pablo',   answer: 've',               after: 'a su perro.' },
+    { before: 'El perro',              answer: 'se pone contento', after: 'cuando ve a Pablo.' },
+    { before: 'Pablo',                 answer: 'hace',             after: 'la tarea con su hermana.' },
+    { before: 'Después, Pablo',        answer: 'sale de',          after: 'la casa otra vez para ir a la escuela.' },
+    { before: 'En la escuela, Pablo',  answer: 've',               after: 'a su mejor amigo.' },
+    { before: 'Su amigo',              answer: 'le da',            after: 'un lápiz nuevo.' },
+    { before: 'A las tres, Pablo',     answer: 'vuelve',           after: 'a casa.' },
+    { before: 'Pablo',                 answer: 'se pone contento', after: 'cuando su mamá prepara tacos.' }
+  ];
+
+  // Build 12 chips — two of each verb
+  let CHIPS = [];
+  VERBS.forEach(v => {
+    CHIPS.push({ id: 'c-' + v.replace(/\s+/g, '_') + '-a', verb: v });
+    CHIPS.push({ id: 'c-' + v.replace(/\s+/g, '_') + '-b', verb: v });
+  });
+
+  let draggedId = null;
+  let selectedId = null;
+  let checked = false;
+
+  // placements[blankIndex] = chipId or null
+  const placements = new Array(SENTENCES.length).fill(null);
+
+  function shuffle(arr) {
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  }
+
+  function buildChipEl(chip) {
+    const el = document.createElement('div');
+    el.className = 'chip';
+    el.id = chip.id;
+    el.dataset.verb = chip.verb;
+    el.textContent = chip.verb;
+    el.draggable = true;
+
+    el.addEventListener('dragstart', (e) => {
+      if (checked) return;
+      draggedId = chip.id;
+      el.classList.add('dragging');
+      e.dataTransfer.effectAllowed = 'move';
+      e.dataTransfer.setData('text/plain', chip.id);
+    });
+    el.addEventListener('dragend', () => {
+      el.classList.remove('dragging');
+      draggedId = null;
+    });
+
+    el.addEventListener('click', () => {
+      if (checked) return;
+      if (selectedId === chip.id) {
+        el.classList.remove('selected');
+        selectedId = null;
+      } else {
+        if (selectedId) {
+          const old = document.getElementById(selectedId);
+          if (old) old.classList.remove('selected');
+        }
+        selectedId = chip.id;
+        el.classList.add('selected');
+      }
+    });
+
+    return el;
+  }
+
+  function renderBank() {
+    const bank = document.getElementById('chip-bank');
+    bank.innerHTML = '';
+    const used = new Set(placements.filter(Boolean));
+    const available = CHIPS.filter(c => !used.has(c.id));
+    // keep a stable shuffled order per game
+    available.forEach(chip => bank.appendChild(buildChipEl(chip)));
+  }
+
+  function renderSentences() {
+    const wrap = document.getElementById('sentences');
+    wrap.innerHTML = '';
+    SENTENCES.forEach((s, i) => {
+      const row = document.createElement('div');
+      row.className = 's-row';
+      row.innerHTML = `
+        <span class="s-num">${i + 1}.</span>
+        <span>${s.before}</span>
+        <span class="blank" id="blank-${i}"
+              ondragover="blankDragOver(event, ${i})"
+              ondragleave="blankDragLeave(event, ${i})"
+              ondrop="blankDrop(event, ${i})"
+              onclick="blankClick(${i})"></span>
+        <span>${s.after}</span>
+      `;
+      wrap.appendChild(row);
+    });
+    refreshBlanks();
+  }
+
+  function refreshBlanks() {
+    SENTENCES.forEach((_, i) => {
+      const blank = document.getElementById('blank-' + i);
+      const chipId = placements[i];
+      blank.classList.remove('filled', 'drag-over', 'checked-correct', 'checked-wrong');
+      if (chipId) {
+        const chip = CHIPS.find(c => c.id === chipId);
+        blank.textContent = chip ? chip.verb : '';
+        blank.classList.add('filled');
+      } else {
+        blank.textContent = '';
+      }
+    });
+  }
+
+  // Drag over bank
+  window.bankDragOver = function(e) {
+    if (checked) return;
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+  };
+  window.bankDrop = function(e) {
+    if (checked) return;
+    e.preventDefault();
+    const id = draggedId || e.dataTransfer.getData('text/plain');
+    if (!id) return;
+    // remove from whatever blank it was in
+    const idx = placements.indexOf(id);
+    if (idx !== -1) placements[idx] = null;
+    renderBank();
+    refreshBlanks();
+  };
+
+  // Drag over blank
+  window.blankDragOver = function(e, i) {
+    if (checked) return;
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    document.getElementById('blank-' + i).classList.add('drag-over');
+  };
+  window.blankDragLeave = function(e, i) {
+    document.getElementById('blank-' + i).classList.remove('drag-over');
+  };
+  window.blankDrop = function(e, i) {
+    if (checked) return;
+    e.preventDefault();
+    document.getElementById('blank-' + i).classList.remove('drag-over');
+    const id = draggedId || e.dataTransfer.getData('text/plain');
+    if (!id) return;
+    placeChip(id, i);
+  };
+
+  // Tap-to-place
+  window.blankClick = function(i) {
+    if (checked) return;
+    if (selectedId) {
+      placeChip(selectedId, i);
+      selectedId = null;
+    } else if (placements[i]) {
+      // return the chip to the bank
+      placements[i] = null;
+      renderBank();
+      refreshBlanks();
+    }
+  };
+
+  function placeChip(chipId, targetIdx) {
+    // If this chip was already in another blank, clear that blank
+    const prevIdx = placements.indexOf(chipId);
+    if (prevIdx !== -1) placements[prevIdx] = null;
+    // If this blank already has a chip, bump it back to bank
+    placements[targetIdx] = chipId;
+    renderBank();
+    refreshBlanks();
+  }
+
+  function checkAnswers() {
+    // Require all placed
+    if (placements.some(p => p === null)) {
+      const bar = document.getElementById('feedback-bar');
+      bar.classList.add('show');
+      document.getElementById('score-text').textContent = 'Faltan respuestas';
+      document.getElementById('msg-text').textContent = 'Completa todos los espacios antes de verificar.';
+      return;
+    }
+
+    checked = true;
+    let correct = 0;
+    SENTENCES.forEach((s, i) => {
+      const blank = document.getElementById('blank-' + i);
+      const chipId = placements[i];
+      const chip = CHIPS.find(c => c.id === chipId);
+      blank.classList.remove('filled');
+      if (chip && chip.verb === s.answer) {
+        blank.classList.add('checked-correct');
+        correct++;
+      } else {
+        blank.classList.add('checked-wrong');
+      }
+    });
+
+    // Lock all chips
+    document.querySelectorAll('.chip').forEach(el => {
+      el.draggable = false;
+      el.classList.add('placed-correct'); // visual locked state
+    });
+
+    const bar = document.getElementById('feedback-bar');
+    bar.classList.add('show');
+    document.getElementById('score-text').textContent = correct + ' / ' + SENTENCES.length;
+    let msg;
+    if (correct === SENTENCES.length) msg = 'Excelente. Todas las respuestas son correctas.';
+    else if (correct >= SENTENCES.length - 2) msg = 'Muy bien. Revisa las marcadas en rojo.';
+    else if (correct >= SENTENCES.length / 2) msg = 'Buen intento. Repasa los verbos e intenta de nuevo.';
+    else msg = 'Practica un poco más y vuelve a intentar.';
+    document.getElementById('msg-text').textContent = msg;
+
+    document.getElementById('btn-check').style.display = 'none';
+    document.getElementById('btn-retry').style.display = 'inline-block';
+  }
+
+  function resetAll() {
+    checked = false;
+    selectedId = null;
+    draggedId = null;
+    for (let i = 0; i < placements.length; i++) placements[i] = null;
+    document.getElementById('feedback-bar').classList.remove('show');
+    document.getElementById('btn-check').style.display = 'inline-block';
+    document.getElementById('btn-retry').style.display = 'none';
+    // reshuffle chip order
+    CHIPS = shuffle(CHIPS.slice());
+    renderBank();
+    renderSentences();
+  }
+
+  // initial setup
+  CHIPS = shuffle(CHIPS);
+  renderBank();
+  renderSentences();
+</script>
+
+</body>
+</html>
