@@ -25,7 +25,7 @@
       flex-wrap: wrap;
     }
     .header-text h1 { font-size: 1.25rem; font-weight: 700; }
-    .header-text p { font-size: 0.85rem; opacity: 0.88; margin-top: 2px; }
+    .header-text p  { font-size: 0.85rem; opacity: 0.88; margin-top: 2px; }
     .cefr-badge {
       background: #f5ca64;
       color: #1a1a1a;
@@ -46,179 +46,11 @@
     .instructions {
       font-size: 0.9rem;
       color: #555;
-      margin-bottom: 20px;
+      margin-bottom: 24px;
       line-height: 1.5;
     }
 
-    /* Drop zones */
-    .drop-list {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      margin-bottom: 28px;
-    }
-
-    .drop-zone {
-      min-height: 70px;
-      border: 2px dashed #b8d8f5;
-      border-radius: 10px;
-      background: #fff;
-      display: flex;
-      align-items: center;
-      padding: 10px 14px;
-      gap: 12px;
-      transition: background 0.15s, border-color 0.15s;
-      position: relative;
-    }
-    .drop-zone.drag-over {
-      background: #e8f3fd;
-      border-color: #5e9ed7;
-    }
-    .drop-zone .zone-num {
-      font-size: 0.75rem;
-      font-weight: 700;
-      color: #5e9ed7;
-      letter-spacing: 0.5px;
-      text-transform: uppercase;
-      min-width: 20px;
-      flex-shrink: 0;
-    }
-    .drop-zone .placeholder {
-      font-size: 0.88rem;
-      color: #bbb;
-      font-style: italic;
-    }
-
-    /* Paragraph cards */
-    .paragraph-bank {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      margin-bottom: 28px;
-    }
-
-    .para-card {
-      background: #fff;
-      border: 1px solid #d0e4f5;
-      border-radius: 10px;
-      padding: 14px 16px;
-      font-size: 0.92rem;
-      line-height: 1.6;
-      color: #1a1a1a;
-      cursor: grab;
-      user-select: none;
-      transition: box-shadow 0.15s, border-color 0.15s, opacity 0.15s;
-      position: relative;
-    }
-    .para-card:hover {
-      border-color: #89c2f1;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.07);
-    }
-    .para-card.dragging {
-      opacity: 0.45;
-      cursor: grabbing;
-    }
-    .para-card.placed {
-      opacity: 0.4;
-      pointer-events: none;
-    }
-
-    /* drag handle hint */
-    .para-card::before {
-      content: '⠿';
-      color: #ccc;
-      font-size: 1.1rem;
-      position: absolute;
-      left: 6px;
-      top: 50%;
-      transform: translateY(-50%);
-    }
-    .para-card { padding-left: 26px; }
-
-    /* Placed card inside drop zone */
-    .drop-zone .placed-card {
-      flex: 1;
-      font-size: 0.92rem;
-      line-height: 1.6;
-      color: #1a1a1a;
-      cursor: grab;
-      padding: 4px 0;
-    }
-    .drop-zone .remove-btn {
-      background: none;
-      border: none;
-      color: #bbb;
-      font-size: 1.1rem;
-      cursor: pointer;
-      padding: 4px 6px;
-      flex-shrink: 0;
-      transition: color 0.15s;
-    }
-    .drop-zone .remove-btn:hover { color: #d77a5e; }
-
-    /* Result state */
-    .drop-zone.correct { border-color: #5e9ed7; background: #e8f3fd; border-style: solid; }
-    .drop-zone.wrong   { border-color: #d77a5e; background: #fdf0eb; border-style: solid; }
-    .drop-zone.correct .zone-num { color: #5e9ed7; }
-    .drop-zone.wrong   .zone-num { color: #d77a5e; }
-
-    .feedback-inline {
-      font-size: 0.78rem;
-      font-weight: 600;
-      padding: 2px 8px;
-      border-radius: 20px;
-      flex-shrink: 0;
-    }
-    .feedback-inline.ok  { background: #5e9ed7; color: #fff; }
-    .feedback-inline.err { background: #d77a5e; color: #fff; }
-
-    /* Buttons */
-    .btn {
-      display: inline-block;
-      background: #5e9ed7;
-      color: #fff;
-      border: none;
-      border-radius: 8px;
-      padding: 11px 24px;
-      font-size: 0.95rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background 0.15s;
-    }
-    .btn:hover { background: #89c2f1; }
-    .btn:disabled { background: #ccc; cursor: not-allowed; }
-
-    .btn-row {
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-      margin-top: 8px;
-    }
-
-    /* Results panel */
-    .results-panel {
-      display: none;
-      background: #fff;
-      border: 1px solid #d0e4f5;
-      border-radius: 12px;
-      padding: 24px 20px;
-      margin-top: 24px;
-      text-align: center;
-    }
-    .results-panel.visible { display: block; }
-    .score {
-      font-size: 2rem;
-      font-weight: 700;
-      color: #5e9ed7;
-      margin-bottom: 8px;
-    }
-    .score-msg {
-      font-size: 0.95rem;
-      color: #555;
-      margin-bottom: 20px;
-    }
-
-    .bank-label {
+    .bank-label, .slots-label {
       font-size: 0.75rem;
       font-weight: 700;
       letter-spacing: 0.8px;
@@ -227,9 +59,101 @@
       margin-bottom: 10px;
     }
 
+    .paragraph-bank {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 32px;
+    }
+
+    .para-card {
+      background: #fff;
+      border: 2px solid #d0e4f5;
+      border-radius: 10px;
+      padding: 14px 16px;
+      font-size: 0.92rem;
+      line-height: 1.65;
+      color: #1a1a1a;
+      cursor: pointer;
+      transition: border-color 0.15s, box-shadow 0.15s, opacity 0.15s;
+    }
+    .para-card:hover { border-color: #89c2f1; box-shadow: 0 2px 10px rgba(0,0,0,0.07); }
+    .para-card.selected { border-color: #5e9ed7; background: #e8f3fd; box-shadow: 0 0 0 3px rgba(94,158,215,0.25); }
+    .para-card.placed { opacity: 0.35; pointer-events: none; cursor: default; }
+
+    .slot-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 28px; }
+
+    .slot {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      min-height: 58px;
+      background: #fff;
+      border: 2px dashed #b8d8f5;
+      border-radius: 10px;
+      padding: 12px 14px;
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .slot:hover { border-color: #5e9ed7; background: #f0f7fd; }
+    .slot.has-content { border-style: solid; border-color: #d0e4f5; cursor: default; }
+    .slot.has-content:hover { background: #fff; border-color: #d0e4f5; }
+    .slot.drop-target { border-color: #5e9ed7; background: #e8f3fd; cursor: pointer; }
+    .slot.correct { border-color: #5e9ed7; background: #e8f3fd; border-style: solid; }
+    .slot.wrong   { border-color: #d77a5e; background: #fdf0eb; border-style: solid; }
+
+    .slot-num {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: #5e9ed7;
+      min-width: 18px;
+      padding-top: 2px;
+      flex-shrink: 0;
+    }
+    .slot.correct .slot-num { color: #5e9ed7; }
+    .slot.wrong   .slot-num { color: #d77a5e; }
+
+    .slot-body { flex: 1; font-size: 0.92rem; line-height: 1.65; color: #1a1a1a; }
+    .slot-placeholder { flex: 1; font-size: 0.88rem; color: #bbb; font-style: italic; padding-top: 2px; }
+
+    .slot-remove {
+      background: none; border: none; color: #ccc;
+      font-size: 1.1rem; cursor: pointer; padding: 0 2px;
+      flex-shrink: 0; line-height: 1; transition: color 0.15s;
+    }
+    .slot-remove:hover { color: #d77a5e; }
+
+    .slot-feedback {
+      font-size: 0.78rem; font-weight: 700;
+      padding: 2px 8px; border-radius: 20px;
+      flex-shrink: 0; align-self: flex-start; margin-top: 3px;
+    }
+    .slot-feedback.ok  { background: #5e9ed7; color: #fff; }
+    .slot-feedback.err { background: #d77a5e; color: #fff; }
+
+    .btn-row { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 8px; }
+    .btn {
+      background: #5e9ed7; color: #fff; border: none;
+      border-radius: 8px; padding: 11px 24px;
+      font-size: 0.95rem; font-weight: 600;
+      cursor: pointer; transition: background 0.15s;
+    }
+    .btn:hover { background: #89c2f1; }
+    .btn:disabled { background: #ccc; cursor: not-allowed; }
+    .btn-secondary { background: #aaa; }
+    .btn-secondary:hover { background: #bbb; }
+
+    .results-panel {
+      display: none; background: #fff;
+      border: 1px solid #d0e4f5; border-radius: 12px;
+      padding: 24px 20px; margin-top: 24px; text-align: center;
+    }
+    .results-panel.visible { display: block; }
+    .score { font-size: 2rem; font-weight: 700; color: #5e9ed7; margin-bottom: 8px; }
+    .score-msg { font-size: 0.95rem; color: #555; margin-bottom: 20px; }
+
     @media (max-width: 480px) {
-      .para-card { font-size: 0.88rem; }
-      .drop-zone .placed-card { font-size: 0.88rem; }
+      .para-card, .slot-body { font-size: 0.88rem; }
     }
   </style>
 </head>
@@ -246,47 +170,24 @@
 <div class="container">
 
   <p class="instructions">
-    Read the five paragraphs below, then drag each one into the correct position (1–5) to tell the story in order.
+    Read the five paragraphs, then click one to select it (it will highlight in blue) and click the slot where it belongs. To remove a placed paragraph, click the × button.
   </p>
 
-  <\!-- Drop zones -->
-  <div class="drop-list" id="dropList">
-    <div class="drop-zone" data-pos="0">
-      <span class="zone-num">1</span>
-      <span class="placeholder">Arrastra el párrafo aquí</span>
-    </div>
-    <div class="drop-zone" data-pos="1">
-      <span class="zone-num">2</span>
-      <span class="placeholder">Arrastra el párrafo aquí</span>
-    </div>
-    <div class="drop-zone" data-pos="2">
-      <span class="zone-num">3</span>
-      <span class="placeholder">Arrastra el párrafo aquí</span>
-    </div>
-    <div class="drop-zone" data-pos="3">
-      <span class="zone-num">4</span>
-      <span class="placeholder">Arrastra el párrafo aquí</span>
-    </div>
-    <div class="drop-zone" data-pos="4">
-      <span class="zone-num">5</span>
-      <span class="placeholder">Arrastra el párrafo aquí</span>
-    </div>
-  </div>
+  <div class="slots-label">Story order</div>
+  <div class="slot-list" id="slotList"></div>
 
   <div class="btn-row">
     <button class="btn" id="checkBtn" disabled>Verificar</button>
-    <button class="btn" id="resetBtn" style="background:#aaa;">Empezar de nuevo</button>
+    <button class="btn btn-secondary" id="resetBtn">Empezar de nuevo</button>
   </div>
 
-  <\!-- Results -->
   <div class="results-panel" id="resultsPanel">
     <div class="score" id="scoreText"></div>
     <div class="score-msg" id="scoreMsg"></div>
     <button class="btn" id="retryBtn">Intentar otra vez</button>
   </div>
 
-  <\!-- Paragraph bank -->
-  <div style="margin-top:32px;">
+  <div style="margin-top: 32px;">
     <div class="bank-label">Párrafos</div>
     <div class="paragraph-bank" id="paraBank"></div>
   </div>
@@ -294,232 +195,174 @@
 </div>
 
 <script>
-  // Paragraphs in correct order (index = correct position)
-  const PARAGRAPHS = [
-    {
-      id: 'p1',
-      text: 'Había un muchacho. Se llamaba Manolo Quito. Estaba en Montevideo. Pero había un problema: Manolo no tenía trabajo. Manolo quería un trabajo. Manolo no estaba contento.'
-    },
-    {
-      id: 'p2',
-      text: 'Manolo fue a Punta del Este. En Punta del Este había un hotel. En el hotel había una chica — era la recepcionista.'
-    },
-    {
-      id: 'p3',
-      text: 'Manolo le dijo: "¿Tienes un trabajo para mí?" Ella le dijo: "Lo siento, no tengo un trabajo para ti. No hay vacantes." Manolo no estaba contento.'
-    },
-    {
-      id: 'p4',
-      text: 'No tenía trabajo y quería un trabajo. Manolo fue a una agencia de empleo en Montevideo. Había un trabajo para él en una agencia de viajes.'
-    },
-    {
-      id: 'p5',
-      text: 'Él no tenía experiencia, pero sabía informática y sabía inglés. ¡Era perfecto\! Tenía todo para ser asistente administrativo en la agencia de viajes. Manolo estaba muy contento: "¡Buenísimo\! Tengo un trabajo, estoy contento."'
-    }
-  ];
+var PARAGRAPHS = [
+  { id: 'p1', text: 'Había un muchacho. Se llamaba Manolo Quito. Estaba en Montevideo. Pero había un problema: Manolo no tenía trabajo. Manolo quería un trabajo. Manolo no estaba contento.' },
+  { id: 'p2', text: 'Manolo fue a Punta del Este. En Punta del Este había un hotel. En el hotel había una chica — era la recepcionista.' },
+  { id: 'p3', text: 'Manolo le dijo: “¿Tienes un trabajo para mí?” Ella le dijo: “Lo siento, no tengo un trabajo para ti. No hay vacantes.” Manolo no estaba contento.' },
+  { id: 'p4', text: 'No tenía trabajo y quería un trabajo. Manolo fue a una agencia de empleo en Montevideo. Había un trabajo para él en una agencia de viajes.' },
+  { id: 'p5', text: 'Él no tenía experiencia, pero sabía informática y sabía inglés. Era perfecto. Tenía todo para ser asistente administrativo en la agencia de viajes. Manolo estaba muy contento: “Buenísimo, tengo un trabajo, estoy contento.”' }
+];
 
-  // State
-  let zoneContents = [null, null, null, null, null]; // each zone holds a paragraph id or null
-  let draggedId = null;
-  let dragSourceZone = null; // zone index if dragged from a zone, null if from bank
-  let checked = false;
+var slots = [null, null, null, null, null];
+var selectedId = null;
+var checked = false;
+var shuffledIds = [];
 
-  function shuffle(arr) {
-    const a = [...arr];
-    for (let i = a.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [a[i], a[j]] = [a[j], a[i]];
-    }
-    return a;
+function shuffle(arr) {
+  var a = arr.slice();
+  for (var i = a.length - 1; i > 0; i--) {
+    var j = Math.floor(Math.random() * (i + 1));
+    var tmp = a[i]; a[i] = a[j]; a[j] = tmp;
   }
+  return a;
+}
 
-  let shuffledOrder = shuffle(PARAGRAPHS.map(p => p.id));
-
-  function getPara(id) { return PARAGRAPHS.find(p => p.id === id); }
-
-  function render() {
-    renderBank();
-    renderZones();
-    updateCheckBtn();
+function getPara(id) {
+  for (var i = 0; i < PARAGRAPHS.length; i++) {
+    if (PARAGRAPHS[i].id === id) return PARAGRAPHS[i];
   }
+  return null;
+}
 
-  function renderBank() {
-    const bank = document.getElementById('paraBank');
-    bank.innerHTML = '';
-    // Show paragraphs not yet placed
-    const placedIds = zoneContents.filter(Boolean);
-    shuffledOrder.forEach(id => {
-      if (placedIds.includes(id)) return;
-      const p = getPara(id);
-      const card = document.createElement('div');
-      card.className = 'para-card';
-      card.draggable = true;
-      card.dataset.id = id;
-      card.textContent = p.text;
-      card.addEventListener('dragstart', onDragStartBank);
-      bank.appendChild(card);
-    });
-  }
-
-  function renderZones() {
-    const zones = document.querySelectorAll('.drop-zone');
-    zones.forEach((zone, i) => {
-      const id = zoneContents[i];
-      // Clear previous content (keep zone-num)
-      const numEl = zone.querySelector('.zone-num');
-      zone.innerHTML = '';
-      zone.appendChild(numEl);
-
-      // Remove result classes if re-rendering
-      if (\!checked) {
-        zone.classList.remove('correct', 'wrong');
+function renderSlots() {
+  var list = document.getElementById('slotList');
+  list.innerHTML = '';
+  for (var i = 0; i < 5; i++) {
+    (function(idx) {
+      var id = slots[idx];
+      var div = document.createElement('div');
+      div.className = 'slot';
+      if (id) div.classList.add('has-content');
+      if (\!id && selectedId && \!checked) div.classList.add('drop-target');
+      if (checked && id) {
+        div.classList.add(PARAGRAPHS[idx].id === id ? 'correct' : 'wrong');
       }
+
+      var numEl = document.createElement('span');
+      numEl.className = 'slot-num';
+      numEl.textContent = (idx + 1) + '.';
+      div.appendChild(numEl);
 
       if (id) {
-        const p = getPara(id);
-        const span = document.createElement('span');
-        span.className = 'placed-card';
-        span.textContent = p.text;
-        span.draggable = true;
-        span.dataset.id = id;
-        span.dataset.zone = i;
-        span.addEventListener('dragstart', onDragStartZone);
+        var bodyEl = document.createElement('span');
+        bodyEl.className = 'slot-body';
+        bodyEl.textContent = getPara(id).text;
+        div.appendChild(bodyEl);
 
-        const removeBtn = document.createElement('button');
-        removeBtn.className = 'remove-btn';
-        removeBtn.title = 'Quitar';
-        removeBtn.textContent = '×';
-        removeBtn.addEventListener('click', () => {
-          if (checked) return;
-          zoneContents[i] = null;
-          render();
-        });
-
-        zone.appendChild(span);
-        if (\!checked) zone.appendChild(removeBtn);
+        if (\!checked) {
+          var rb = document.createElement('button');
+          rb.className = 'slot-remove';
+          rb.textContent = '×';
+          rb.title = 'Quitar';
+          rb.addEventListener('click', function(e) {
+            e.stopPropagation();
+            slots[idx] = null;
+            renderAll();
+          });
+          div.appendChild(rb);
+        }
 
         if (checked) {
-          const correct = PARAGRAPHS[i].id === id;
-          zone.classList.add(correct ? 'correct' : 'wrong');
-          const fb = document.createElement('span');
-          fb.className = 'feedback-inline ' + (correct ? 'ok' : 'err');
-          fb.textContent = correct ? '✓' : '✗';
-          zone.appendChild(fb);
+          var fb = document.createElement('span');
+          fb.className = 'slot-feedback ' + (PARAGRAPHS[idx].id === id ? 'ok' : 'err');
+          fb.textContent = PARAGRAPHS[idx].id === id ? '✓' : '✗';
+          div.appendChild(fb);
         }
       } else {
-        const ph = document.createElement('span');
-        ph.className = 'placeholder';
-        ph.textContent = 'Arrastra el párrafo aquí';
-        zone.appendChild(ph);
+        var ph = document.createElement('span');
+        ph.className = 'slot-placeholder';
+        ph.textContent = 'Haz clic aquí para colocar el párrafo seleccionado';
+        div.appendChild(ph);
+
+        if (\!checked) {
+          div.addEventListener('click', function() {
+            if (\!selectedId) return;
+            slots[idx] = selectedId;
+            selectedId = null;
+            renderAll();
+          });
+        }
       }
 
-      if (\!checked) {
-        zone.addEventListener('dragover', onDragOver);
-        zone.addEventListener('dragleave', onDragLeave);
-        zone.addEventListener('drop', onDrop);
-      }
-    });
+      list.appendChild(div);
+    })(i);
   }
+}
 
-  function updateCheckBtn() {
-    const allFilled = zoneContents.every(v => v \!== null);
-    document.getElementById('checkBtn').disabled = \!allFilled || checked;
-  }
+function renderBank() {
+  var bank = document.getElementById('paraBank');
+  bank.innerHTML = '';
+  var placedIds = slots.filter(function(v) { return v \!== null; });
 
-  // Drag from bank
-  function onDragStartBank(e) {
-    if (checked) return;
-    draggedId = e.currentTarget.dataset.id;
-    dragSourceZone = null;
-    e.currentTarget.classList.add('dragging');
-    e.dataTransfer.effectAllowed = 'move';
-  }
+  shuffledIds.forEach(function(id) {
+    var card = document.createElement('div');
+    card.className = 'para-card';
+    card.textContent = getPara(id).text;
 
-  // Drag from zone
-  function onDragStartZone(e) {
-    if (checked) return;
-    draggedId = e.currentTarget.dataset.id;
-    dragSourceZone = parseInt(e.currentTarget.dataset.zone, 10);
-    e.dataTransfer.effectAllowed = 'move';
-  }
-
-  function onDragOver(e) {
-    if (checked) return;
-    e.preventDefault();
-    e.dataTransfer.dropEffect = 'move';
-    e.currentTarget.classList.add('drag-over');
-  }
-
-  function onDragLeave(e) {
-    e.currentTarget.classList.remove('drag-over');
-  }
-
-  function onDrop(e) {
-    if (checked) return;
-    e.preventDefault();
-    e.currentTarget.classList.remove('drag-over');
-    const targetPos = parseInt(e.currentTarget.dataset.pos, 10);
-    const existingId = zoneContents[targetPos];
-
-    // If zone already occupied, swap
-    if (existingId && dragSourceZone \!== null) {
-      // swap between two zones
-      zoneContents[dragSourceZone] = existingId;
-      zoneContents[targetPos] = draggedId;
-    } else if (existingId) {
-      // came from bank — push existing back to bank (just leave in bank by clearing zone)
-      zoneContents[targetPos] = draggedId;
-    } else {
-      zoneContents[targetPos] = draggedId;
-      if (dragSourceZone \!== null) {
-        zoneContents[dragSourceZone] = null;
-      }
+    if (placedIds.indexOf(id) >= 0) {
+      card.classList.add('placed');
+    } else if (id === selectedId) {
+      card.classList.add('selected');
     }
 
-    draggedId = null;
-    dragSourceZone = null;
-    render();
-  }
+    if (placedIds.indexOf(id) < 0 && \!checked) {
+      card.addEventListener('click', function() {
+        selectedId = (selectedId === id) ? null : id;
+        renderAll();
+      });
+    }
 
-  // Check button
-  document.getElementById('checkBtn').addEventListener('click', () => {
-    checked = true;
-    document.getElementById('checkBtn').disabled = true;
-    renderZones();
-    showResults();
+    bank.appendChild(card);
+  });
+}
+
+function updateCheckBtn() {
+  var allFilled = slots.every(function(v) { return v \!== null; });
+  document.getElementById('checkBtn').disabled = \!allFilled || checked;
+}
+
+function renderAll() {
+  renderSlots();
+  renderBank();
+  updateCheckBtn();
+}
+
+document.getElementById('checkBtn').addEventListener('click', function() {
+  checked = true;
+  selectedId = null;
+  renderAll();
+
+  var score = 0;
+  slots.forEach(function(id, i) {
+    if (id && PARAGRAPHS[i].id === id) score++;
   });
 
-  function showResults() {
-    let score = 0;
-    zoneContents.forEach((id, i) => {
-      if (PARAGRAPHS[i].id === id) score++;
-    });
-    const panel = document.getElementById('resultsPanel');
-    panel.classList.add('visible');
-    document.getElementById('scoreText').textContent = score + ' / 5';
-    let msg = '';
-    if (score === 5) msg = '¡Perfecto\! La historia está en el orden correcto.';
-    else if (score >= 3) msg = '¡Bien\! Revisa los párrafos marcados en rojo.';
-    else msg = 'Intenta otra vez. Lee bien cada párrafo.';
-    document.getElementById('scoreMsg').textContent = msg;
-    panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-  }
+  var panel = document.getElementById('resultsPanel');
+  panel.classList.add('visible');
+  document.getElementById('scoreText').textContent = score + ' / 5';
 
-  // Reset
-  function resetExercise() {
-    zoneContents = [null, null, null, null, null];
-    checked = false;
-    shuffledOrder = shuffle(PARAGRAPHS.map(p => p.id));
-    document.getElementById('resultsPanel').classList.remove('visible');
-    document.getElementById('checkBtn').disabled = true;
-    render();
-  }
+  var msg;
+  if (score === 5) msg = 'Perfecto. La historia está en el orden correcto.';
+  else if (score >= 3) msg = 'Bien. Revisa los párrafos marcados en rojo.';
+  else msg = 'Intenta otra vez. Lee bien cada párrafo.';
+  document.getElementById('scoreMsg').textContent = msg;
+  panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+});
 
-  document.getElementById('resetBtn').addEventListener('click', resetExercise);
-  document.getElementById('retryBtn').addEventListener('click', resetExercise);
+function resetExercise() {
+  slots = [null, null, null, null, null];
+  checked = false;
+  selectedId = null;
+  shuffledIds = shuffle(PARAGRAPHS.map(function(p) { return p.id; }));
+  document.getElementById('resultsPanel').classList.remove('visible');
+  renderAll();
+}
 
-  // Init
-  render();
+document.getElementById('resetBtn').addEventListener('click', resetExercise);
+document.getElementById('retryBtn').addEventListener('click', resetExercise);
+
+shuffledIds = shuffle(PARAGRAPHS.map(function(p) { return p.id; }));
+renderAll();
 </script>
 
 </body>
