@@ -1,4 +1,4 @@
-<\!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
@@ -6,93 +6,45 @@
   <title>A1 — Manolo Quito: pon la historia en orden</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: #f4f8fd;
-      color: #1a1a1a;
-      min-height: 100vh;
-      padding: 0 0 48px;
+      background: #f4f8fd; color: #1a1a1a;
+      min-height: 100vh; padding: 0 0 48px;
     }
-
     header {
-      background: #5e9ed7;
-      color: #fff;
+      background: #5e9ed7; color: #fff;
       padding: 20px 24px 16px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      flex-wrap: wrap;
+      display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
     }
     .header-text h1 { font-size: 1.25rem; font-weight: 700; }
     .header-text p  { font-size: 0.85rem; opacity: 0.88; margin-top: 2px; }
     .cefr-badge {
-      background: #f5ca64;
-      color: #1a1a1a;
-      font-weight: 700;
-      font-size: 0.8rem;
-      padding: 3px 10px;
-      border-radius: 20px;
-      flex-shrink: 0;
-      margin-left: auto;
+      background: #f5ca64; color: #1a1a1a; font-weight: 700;
+      font-size: 0.8rem; padding: 3px 10px; border-radius: 20px;
+      flex-shrink: 0; margin-left: auto;
     }
-
-    .container {
-      max-width: 640px;
-      margin: 28px auto 0;
-      padding: 0 20px;
-    }
-
-    .instructions {
-      font-size: 0.9rem;
-      color: #555;
-      margin-bottom: 24px;
-      line-height: 1.5;
-    }
-
+    .container { max-width: 640px; margin: 28px auto 0; padding: 0 20px; }
+    .instructions { font-size: 0.9rem; color: #555; margin-bottom: 24px; line-height: 1.5; }
     .bank-label, .slots-label {
-      font-size: 0.75rem;
-      font-weight: 700;
-      letter-spacing: 0.8px;
-      text-transform: uppercase;
-      color: #5e9ed7;
-      margin-bottom: 10px;
+      font-size: 0.75rem; font-weight: 700; letter-spacing: 0.8px;
+      text-transform: uppercase; color: #5e9ed7; margin-bottom: 10px;
     }
-
-    .paragraph-bank {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      margin-bottom: 32px;
-    }
-
+    .paragraph-bank { display: flex; flex-direction: column; gap: 10px; margin-bottom: 32px; }
     .para-card {
-      background: #fff;
-      border: 2px solid #d0e4f5;
-      border-radius: 10px;
-      padding: 14px 16px;
-      font-size: 0.92rem;
-      line-height: 1.65;
-      color: #1a1a1a;
-      cursor: pointer;
+      background: #fff; border: 2px solid #d0e4f5; border-radius: 10px;
+      padding: 14px 16px; font-size: 0.92rem; line-height: 1.65;
+      color: #1a1a1a; cursor: pointer;
       transition: border-color 0.15s, box-shadow 0.15s, opacity 0.15s;
     }
     .para-card:hover { border-color: #89c2f1; box-shadow: 0 2px 10px rgba(0,0,0,0.07); }
     .para-card.selected { border-color: #5e9ed7; background: #e8f3fd; box-shadow: 0 0 0 3px rgba(94,158,215,0.25); }
     .para-card.placed { opacity: 0.35; pointer-events: none; cursor: default; }
-
     .slot-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 28px; }
-
     .slot {
-      display: flex;
-      align-items: flex-start;
-      gap: 12px;
-      min-height: 58px;
-      background: #fff;
-      border: 2px dashed #b8d8f5;
-      border-radius: 10px;
-      padding: 12px 14px;
-      cursor: pointer;
+      display: flex; align-items: flex-start; gap: 12px;
+      min-height: 58px; background: #fff;
+      border: 2px dashed #b8d8f5; border-radius: 10px;
+      padding: 12px 14px; cursor: pointer;
       transition: background 0.15s, border-color 0.15s;
     }
     .slot:hover { border-color: #5e9ed7; background: #f0f7fd; }
@@ -101,60 +53,39 @@
     .slot.drop-target { border-color: #5e9ed7; background: #e8f3fd; cursor: pointer; }
     .slot.correct { border-color: #5e9ed7; background: #e8f3fd; border-style: solid; }
     .slot.wrong   { border-color: #d77a5e; background: #fdf0eb; border-style: solid; }
-
-    .slot-num {
-      font-size: 0.8rem;
-      font-weight: 700;
-      color: #5e9ed7;
-      min-width: 18px;
-      padding-top: 2px;
-      flex-shrink: 0;
-    }
-    .slot.correct .slot-num { color: #5e9ed7; }
-    .slot.wrong   .slot-num { color: #d77a5e; }
-
+    .slot-num { font-size: 0.8rem; font-weight: 700; color: #5e9ed7; min-width: 18px; padding-top: 2px; flex-shrink: 0; }
+    .slot.wrong .slot-num { color: #d77a5e; }
     .slot-body { flex: 1; font-size: 0.92rem; line-height: 1.65; color: #1a1a1a; }
     .slot-placeholder { flex: 1; font-size: 0.88rem; color: #bbb; font-style: italic; padding-top: 2px; }
-
     .slot-remove {
-      background: none; border: none; color: #ccc;
-      font-size: 1.1rem; cursor: pointer; padding: 0 2px;
-      flex-shrink: 0; line-height: 1; transition: color 0.15s;
+      background: none; border: none; color: #ccc; font-size: 1.1rem;
+      cursor: pointer; padding: 0 2px; flex-shrink: 0; line-height: 1; transition: color 0.15s;
     }
     .slot-remove:hover { color: #d77a5e; }
-
     .slot-feedback {
-      font-size: 0.78rem; font-weight: 700;
-      padding: 2px 8px; border-radius: 20px;
+      font-size: 0.78rem; font-weight: 700; padding: 2px 8px; border-radius: 20px;
       flex-shrink: 0; align-self: flex-start; margin-top: 3px;
     }
     .slot-feedback.ok  { background: #5e9ed7; color: #fff; }
     .slot-feedback.err { background: #d77a5e; color: #fff; }
-
     .btn-row { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 8px; }
     .btn {
-      background: #5e9ed7; color: #fff; border: none;
-      border-radius: 8px; padding: 11px 24px;
-      font-size: 0.95rem; font-weight: 600;
+      background: #5e9ed7; color: #fff; border: none; border-radius: 8px;
+      padding: 11px 24px; font-size: 0.95rem; font-weight: 600;
       cursor: pointer; transition: background 0.15s;
     }
     .btn:hover { background: #89c2f1; }
     .btn:disabled { background: #ccc; cursor: not-allowed; }
     .btn-secondary { background: #aaa; }
     .btn-secondary:hover { background: #bbb; }
-
     .results-panel {
-      display: none; background: #fff;
-      border: 1px solid #d0e4f5; border-radius: 12px;
-      padding: 24px 20px; margin-top: 24px; text-align: center;
+      display: none; background: #fff; border: 1px solid #d0e4f5;
+      border-radius: 12px; padding: 24px 20px; margin-top: 24px; text-align: center;
     }
     .results-panel.visible { display: block; }
     .score { font-size: 2rem; font-weight: 700; color: #5e9ed7; margin-bottom: 8px; }
     .score-msg { font-size: 0.95rem; color: #555; margin-bottom: 20px; }
-
-    @media (max-width: 480px) {
-      .para-card, .slot-body { font-size: 0.88rem; }
-    }
+    @media (max-width: 480px) { .para-card, .slot-body { font-size: 0.88rem; } }
   </style>
 </head>
 <body>
@@ -168,9 +99,8 @@
 </header>
 
 <div class="container">
-
   <p class="instructions">
-    Read the five paragraphs, then click one to select it (it will highlight in blue) and click the slot where it belongs. To remove a placed paragraph, click the × button.
+    Read the five paragraphs, then click one to select it (highlights in blue) and click the numbered slot where it belongs. Click × to remove a placed paragraph.
   </p>
 
   <div class="slots-label">Story order</div>
@@ -191,16 +121,15 @@
     <div class="bank-label">Párrafos</div>
     <div class="paragraph-bank" id="paraBank"></div>
   </div>
-
 </div>
 
 <script>
 var PARAGRAPHS = [
   { id: 'p1', text: 'Había un muchacho. Se llamaba Manolo Quito. Estaba en Montevideo. Pero había un problema: Manolo no tenía trabajo. Manolo quería un trabajo. Manolo no estaba contento.' },
   { id: 'p2', text: 'Manolo fue a Punta del Este. En Punta del Este había un hotel. En el hotel había una chica — era la recepcionista.' },
-  { id: 'p3', text: 'Manolo le dijo: “¿Tienes un trabajo para mí?” Ella le dijo: “Lo siento, no tengo un trabajo para ti. No hay vacantes.” Manolo no estaba contento.' },
+  { id: 'p3', text: 'Manolo le dijo: "¿Tienes un trabajo para mí?" Ella le dijo: "Lo siento, no tengo un trabajo para ti. No hay vacantes." Manolo no estaba contento.' },
   { id: 'p4', text: 'No tenía trabajo y quería un trabajo. Manolo fue a una agencia de empleo en Montevideo. Había un trabajo para él en una agencia de viajes.' },
-  { id: 'p5', text: 'Él no tenía experiencia, pero sabía informática y sabía inglés. Era perfecto. Tenía todo para ser asistente administrativo en la agencia de viajes. Manolo estaba muy contento: “Buenísimo, tengo un trabajo, estoy contento.”' }
+  { id: 'p5', text: 'Él no tenía experiencia, pero sabía informática y sabía inglés. Era perfecto. Tenía todo para ser asistente administrativo en la agencia de viajes. Manolo estaba muy contento: "Buenísimo, tengo un trabajo, estoy contento."' }
 ];
 
 var slots = [null, null, null, null, null];
@@ -232,8 +161,8 @@ function renderSlots() {
       var id = slots[idx];
       var div = document.createElement('div');
       div.className = 'slot';
-      if (id) div.classList.add('has-content');
-      if (\!id && selectedId && \!checked) div.classList.add('drop-target');
+      if (id) { div.classList.add('has-content'); }
+      if (!id && selectedId && !checked) { div.classList.add('drop-target'); }
       if (checked && id) {
         div.classList.add(PARAGRAPHS[idx].id === id ? 'correct' : 'wrong');
       }
@@ -249,7 +178,7 @@ function renderSlots() {
         bodyEl.textContent = getPara(id).text;
         div.appendChild(bodyEl);
 
-        if (\!checked) {
+        if (!checked) {
           var rb = document.createElement('button');
           rb.className = 'slot-remove';
           rb.textContent = '×';
@@ -260,12 +189,11 @@ function renderSlots() {
             renderAll();
           });
           div.appendChild(rb);
-        }
-
-        if (checked) {
+        } else {
+          var isCorrect = PARAGRAPHS[idx].id === id;
           var fb = document.createElement('span');
-          fb.className = 'slot-feedback ' + (PARAGRAPHS[idx].id === id ? 'ok' : 'err');
-          fb.textContent = PARAGRAPHS[idx].id === id ? '✓' : '✗';
+          fb.className = 'slot-feedback ' + (isCorrect ? 'ok' : 'err');
+          fb.textContent = isCorrect ? '✓' : '✗';
           div.appendChild(fb);
         }
       } else {
@@ -273,17 +201,15 @@ function renderSlots() {
         ph.className = 'slot-placeholder';
         ph.textContent = 'Haz clic aquí para colocar el párrafo seleccionado';
         div.appendChild(ph);
-
-        if (\!checked) {
+        if (!checked) {
           div.addEventListener('click', function() {
-            if (\!selectedId) return;
+            if (!selectedId) return;
             slots[idx] = selectedId;
             selectedId = null;
             renderAll();
           });
         }
       }
-
       list.appendChild(div);
     })(i);
   }
@@ -292,33 +218,29 @@ function renderSlots() {
 function renderBank() {
   var bank = document.getElementById('paraBank');
   bank.innerHTML = '';
-  var placedIds = slots.filter(function(v) { return v \!== null; });
-
+  var placedIds = slots.filter(function(v) { return v !== null; });
   shuffledIds.forEach(function(id) {
     var card = document.createElement('div');
     card.className = 'para-card';
     card.textContent = getPara(id).text;
-
     if (placedIds.indexOf(id) >= 0) {
       card.classList.add('placed');
     } else if (id === selectedId) {
       card.classList.add('selected');
     }
-
-    if (placedIds.indexOf(id) < 0 && \!checked) {
+    if (placedIds.indexOf(id) < 0 && !checked) {
       card.addEventListener('click', function() {
         selectedId = (selectedId === id) ? null : id;
         renderAll();
       });
     }
-
     bank.appendChild(card);
   });
 }
 
 function updateCheckBtn() {
-  var allFilled = slots.every(function(v) { return v \!== null; });
-  document.getElementById('checkBtn').disabled = \!allFilled || checked;
+  var allFilled = slots.every(function(v) { return v !== null; });
+  document.getElementById('checkBtn').disabled = !allFilled || checked;
 }
 
 function renderAll() {
@@ -331,20 +253,17 @@ document.getElementById('checkBtn').addEventListener('click', function() {
   checked = true;
   selectedId = null;
   renderAll();
-
   var score = 0;
-  slots.forEach(function(id, i) {
-    if (id && PARAGRAPHS[i].id === id) score++;
-  });
-
+  for (var i = 0; i < slots.length; i++) {
+    if (slots[i] && PARAGRAPHS[i].id === slots[i]) score++;
+  }
   var panel = document.getElementById('resultsPanel');
   panel.classList.add('visible');
   document.getElementById('scoreText').textContent = score + ' / 5';
-
   var msg;
-  if (score === 5) msg = 'Perfecto. La historia está en el orden correcto.';
-  else if (score >= 3) msg = 'Bien. Revisa los párrafos marcados en rojo.';
-  else msg = 'Intenta otra vez. Lee bien cada párrafo.';
+  if (score === 5) { msg = 'Perfecto. La historia está en el orden correcto.'; }
+  else if (score >= 3) { msg = 'Bien. Revisa los párrafos marcados en rojo.'; }
+  else { msg = 'Intenta otra vez. Lee bien cada párrafo.'; }
   document.getElementById('scoreMsg').textContent = msg;
   panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 });
