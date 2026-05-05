@@ -180,9 +180,19 @@
 
   .hidden { display: none !important; }
 
-  @media (max-width: 480px) {
-    h1 { font-size: 1.2rem; }
-    .word { font-size: 1.6rem; }
+  @media (max-width: 600px) {
+    body { padding: 16px 12px 32px; }
+    h1 { font-size: 1.3rem; }
+    .instructions { font-size: 0.9rem; }
+    .word { font-size: 1.7rem; }
+    .face img { max-height: 50%; margin-bottom: 12px; }
+    .btn { padding: 12px 18px; font-size: 0.95rem; min-height: 44px; }
+    .dot { width: 14px; height: 14px; }
+    .progress-bar { font-size: 0.82rem; gap: 8px; padding: 10px 12px; }
+    .nav { gap: 8px; }
+    .nav .btn { flex: 1; }
+    .card { aspect-ratio: 3 / 4; max-width: 100%; }
+    .flip-hint { font-size: 0.85rem; }
   }
 </style>
 </head>
