@@ -65,14 +65,17 @@
       background: #e8f3fd;
       border: 2px solid #b8d8f5;
       border-radius: 8px;
-      padding: 6px 12px;
+      padding: 10px 14px;
       font-size: 0.9rem;
+      line-height: 1.4;
       color: #1a4a6e;
       cursor: grab;
       user-select: none;
       transition: background 0.12s, border-color 0.12s, transform 0.1s, opacity 0.1s;
       touch-action: none;
+      max-width: 100%;
     }
+    .chip b { color: #0d2e44; }
     .chip:hover { background: #d4eaf9; border-color: #89c2f1; }
     .chip.dragging { opacity: 0.45; transform: scale(0.97); cursor: grabbing; }
     .chip.selected {
@@ -87,54 +90,98 @@
       cursor: default;
     }
 
-    .story {
+    .slots {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .slot-row {
       background: #fff;
       border: 1px solid #d0e4f5;
-      border-radius: 12px;
-      padding: 20px 22px;
-      margin-bottom: 20px;
-      font-size: 1rem;
-      line-height: 2;
-      color: #1a1a1a;
-    }
-
-    .blank {
-      display: inline-flex;
+      border-radius: 10px;
+      padding: 12px 16px;
+      display: flex;
       align-items: center;
-      justify-content: center;
-      min-width: 120px;
-      min-height: 32px;
+      gap: 12px;
+    }
+    .slot-num {
+      font-weight: 700;
+      color: #5e9ed7;
+      font-size: 0.95rem;
+      min-width: 22px;
+    }
+    .slot-blank {
+      flex: 1;
+      min-height: 44px;
       border: 2px dashed #b8d8f5;
       border-radius: 8px;
-      padding: 2px 8px;
+      padding: 8px 14px;
       background: #f8fbfe;
       cursor: pointer;
-      vertical-align: middle;
+      display: flex;
+      align-items: center;
+      font-size: 0.95rem;
+      line-height: 1.4;
       transition: border-color 0.15s, background 0.15s;
     }
-    .blank:hover { border-color: #89c2f1; background: #eef6fd; }
-    .blank.drag-over { border-color: #5e9ed7; background: #e8f3fd; }
-    .blank.filled {
+    .slot-blank:hover { border-color: #89c2f1; background: #eef6fd; }
+    .slot-blank.drag-over { border-color: #5e9ed7; background: #e8f3fd; }
+    .slot-blank.filled {
       border-style: solid;
       background: #e8f3fd;
       border-color: #5e9ed7;
       color: #1a4a6e;
-      font-weight: 600;
-      padding: 4px 10px;
     }
-    .blank.checked-correct {
+    .slot-blank.checked-correct {
       border-style: solid;
       background: #e8f3fd;
       border-color: #5e9ed7;
       color: #1a4a6e;
-      font-weight: 600;
     }
-    .blank.checked-wrong {
+    .slot-blank.checked-wrong {
       border-style: solid;
       background: #fdf0eb;
       border-color: #d77a5e;
       color: #7a2e10;
-      font-weight: 600;
+    }
+    .slot-blank b { color: inherit; }
+
+    .comic-strip {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    @media (max-width: 520px) {
+      .comic-strip { grid-template-columns: 1fr; }
+    }
+    .panel {
+      background: #fff;
+      border: 1px solid #d0e4f5;
+      border-radius: 10px;
+      padding: 10px 10px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .panel svg { width: 100%; height: auto; display: block; border-radius: 6px; }
+    .panel-num {
+      position: absolute;
+      top: 6px;
+      left: 10px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      color: #5e9ed7;
+      background: rgba(255,255,255,0.85);
+      padding: 1px 6px;
+      border-radius: 10px;
+    }
+    .panel-image { position: relative; }
+    .panel .slot-blank {
+      flex: none;
+      min-height: 56px;
     }
 
     .btn-row {
@@ -204,15 +251,45 @@
 <div class="container">
 
   <p class="instructions">
-    Drag each verb into the correct space in the story. On mobile, tap a chip and then tap a space. When you finish, click <strong>Verificar</strong>.
+    Look at each picture and drag the matching phrase into the numbered space. On mobile, tap a chip and then tap a space. When you finish, click <strong>Verificar</strong>.
   </p>
+
+  <!-- Reusable character symbols — defined once, used in every panel for consistency -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <!-- MATEO: blue shirt, dark hair cap, no face. Width ~28, height ~42. Anchor at top-left. -->
+      <symbol id="mateo" viewBox="0 0 28 42">
+        <rect x="6" y="18" width="16" height="24" fill="#5e9ed7"/>
+        <circle cx="14" cy="12" r="9" fill="#f0c8a8"/>
+        <path d="M5 12 Q5 3 14 3 Q23 3 23 12 Q23 13 22 14 L20 11 L17 14 L14 11 L11 14 L8 11 L6 14 Q5 13 5 12 Z" fill="#2a1f15"/>
+      </symbol>
+      <!-- LUCIA: coral shirt, brown shoulder hair, no face. Width ~28, height ~42. -->
+      <symbol id="lucia" viewBox="0 0 28 42">
+        <rect x="6" y="18" width="16" height="24" fill="#d77a5e"/>
+        <path d="M3 12 Q3 3 14 3 Q25 3 25 12 L25 24 Q22 22 22 18 L22 13 Q14 13 6 13 L6 18 Q6 22 3 24 Z" fill="#7a4a28"/>
+        <circle cx="14" cy="12" r="8" fill="#fbe0c4"/>
+      </symbol>
+      <!-- LABRADOR: same shape every panel. Yellow body, side profile. Width ~36, height ~22. -->
+      <symbol id="dog" viewBox="0 0 36 22">
+        <ellipse cx="14" cy="14" rx="11" ry="6" fill="#f5ca64"/>
+        <circle cx="27" cy="11" r="6" fill="#f5ca64"/>
+        <ellipse cx="24" cy="8" rx="2.5" ry="3.5" fill="#e0b554"/>
+        <circle cx="29" cy="11" r="0.9" fill="#1a1a1a"/>
+        <circle cx="31" cy="13" r="0.7" fill="#1a1a1a"/>
+        <line x1="3" y1="13" x2="0" y2="9" stroke="#e0b554" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="8" y1="20" x2="8" y2="22" stroke="#e0b554" stroke-width="2"/>
+        <line x1="20" y1="20" x2="20" y2="22" stroke="#e0b554" stroke-width="2"/>
+      </symbol>
+    </defs>
+  </svg>
+
+  <div class="comic-strip" id="comic-strip" aria-label="Story panels"></div>
 
   <div id="chip-bank"
        ondragover="bankDragOver(event)"
        ondrop="bankDrop(event)">
   </div>
 
-  <div class="story" id="story"></div>
 
   <div class="btn-row">
     <button class="main-btn" id="btn-check" onclick="checkAnswers()">Verificar</button>
@@ -229,27 +306,85 @@
 <footer>Spanish with Elisabeth &mdash; spanishwithelisabeth.com</footer>
 
 <script>
-  // Six blanks embedded in the story, each with its correct verb.
-  // The surrounding prose is rendered exactly as written.
-  const STORY_PARTS = [
-    { text: 'Todos los días Mateo ' },
-    { blank: true, answer: 'sale de' },
-    { text: ' casa a las seis de la tarde y pasea a su perro. Sale a caminar porque quiere ' },
-    { blank: true, answer: 'hacer' },
-    { text: ' ejercicio. Pero hoy sale más temprano, sale a las cinco. Cuando llega al parque ' },
-    { blank: true, answer: 've' },
-    { text: ' a Lucía, su nueva compañera de clase. Mateo ' },
-    { blank: true, answer: 'se pone' },
-    { text: ' muy nervioso porque le gusta Lucía. La saluda y conversa un poco con ella. ' },
-    { blank: true, answer: 'Le pide' },
-    { text: ' su correo electrónico, pero ella no le da su correo. Mateo se pone triste, ya no tiene ganas de caminar y ' },
-    { blank: true, answer: 'va a' },
-    { text: ' su casa.' }
+  // Six full sentences — one per panel. Each chip shows the whole sentence with the verb in bold.
+  // Students drag the matching sentence onto the panel that illustrates it.
+  const PHRASES = [
+    { id: 'p1', html: 'Todos los días Mateo <b>sale de</b> casa a las seis de la tarde y pasea a su perro.' },
+    { id: 'p2', html: 'Sale a caminar porque quiere <b>hacer</b> ejercicio.' },
+    { id: 'p3', html: 'Cuando llega al parque <b>ve</b> a Lucía, su nueva compañera de clase.' },
+    { id: 'p4', html: 'Mateo <b>se pone</b> muy nervioso porque le gusta Lucía.' },
+    { id: 'p5', html: '<b>Le pide</b> su correo electrónico, pero ella no le da su correo.' },
+    { id: 'p6', html: 'Mateo se pone triste, ya no tiene ganas de caminar y <b>va a</b> su casa.' }
   ];
 
-  // Build the ordered list of answers and the chip bank.
-  const ANSWERS = STORY_PARTS.filter(p => p.blank).map(p => p.answer);
-  const CHIPS = ANSWERS.map((verb, i) => ({ id: 'c-' + i, verb }));
+  // SVG markup for each panel. Mateo, Lucía, and the dog reuse the <symbol> defs in the page.
+  const PANEL_SVGS = [
+    `<svg viewBox="0 0 200 160" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Mateo sale de casa">
+      <rect width="200" height="160" fill="#f4f8fd"/>
+      <rect x="0" y="120" width="200" height="40" fill="#dbe9f5"/>
+      <rect x="20" y="50" width="80" height="70" fill="#e8d4b8" stroke="#a78b6a" stroke-width="2"/>
+      <polygon points="15,50 60,25 105,50" fill="#a76f3e"/>
+      <rect x="50" y="78" width="22" height="42" fill="#7b5a3a"/>
+      <circle cx="68" cy="100" r="2" fill="#f5ca64"/>
+      <use href="#mateo" x="115" y="78" width="28" height="42"/>
+      <use href="#dog" x="155" y="98" width="36" height="22"/>
+      <text x="92" y="42" font-size="22" fill="#5e9ed7" font-weight="bold">→</text>
+    </svg>`,
+    `<svg viewBox="0 0 200 160" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Mateo hace ejercicio">
+      <rect width="200" height="160" fill="#eaf3e6"/>
+      <rect x="0" y="120" width="200" height="40" fill="#c8dfb8"/>
+      <circle cx="30" cy="90" r="14" fill="#7fb86b"/>
+      <rect x="29" y="102" width="2" height="20" fill="#5a7a4a"/>
+      <circle cx="170" cy="88" r="12" fill="#7fb86b"/>
+      <rect x="169" y="98" width="2" height="24" fill="#5a7a4a"/>
+      <use href="#mateo" x="70" y="78" width="28" height="42"/>
+      <use href="#dog" x="110" y="98" width="36" height="22"/>
+      <text x="55" y="50" font-size="18" fill="#5e9ed7" font-weight="bold">💨</text>
+      <text x="105" y="48" font-size="18" fill="#5e9ed7" font-weight="bold">💨</text>
+    </svg>`,
+    `<svg viewBox="0 0 200 160" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Mateo ve a Lucía">
+      <rect width="200" height="160" fill="#eaf3e6"/>
+      <rect x="0" y="120" width="200" height="40" fill="#c8dfb8"/>
+      <circle cx="40" cy="55" r="18" fill="#7fb86b"/>
+      <rect x="38" y="73" width="4" height="47" fill="#5a7a4a"/>
+      <use href="#mateo" x="55" y="78" width="28" height="42"/>
+      <use href="#dog" x="20" y="98" width="36" height="22"/>
+      <use href="#lucia" x="135" y="78" width="28" height="42"/>
+      <text x="92" y="70" font-size="22" fill="#5e9ed7" font-weight="bold">👁</text>
+    </svg>`,
+    `<svg viewBox="0 0 200 160" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Mateo se pone nervioso">
+      <rect width="200" height="160" fill="#eaf3e6"/>
+      <rect x="0" y="120" width="200" height="40" fill="#c8dfb8"/>
+      <use href="#mateo" x="55" y="78" width="28" height="42"/>
+      <use href="#lucia" x="115" y="78" width="28" height="42"/>
+      <text x="100" y="58" font-size="22" fill="#d77a5e" font-weight="bold">💕</text>
+    </svg>`,
+    `<svg viewBox="0 0 200 160" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Le pide su correo">
+      <rect width="200" height="160" fill="#eaf3e6"/>
+      <rect x="0" y="120" width="200" height="40" fill="#c8dfb8"/>
+      <use href="#mateo" x="40" y="78" width="28" height="42"/>
+      <use href="#lucia" x="130" y="78" width="28" height="42"/>
+      <rect x="88" y="86" width="22" height="34" rx="3" fill="#1a4a6e" stroke="#0d2e44" stroke-width="1.5"/>
+      <rect x="91" y="90" width="16" height="22" fill="#89c2f1"/>
+      <circle cx="99" cy="116" r="1.5" fill="#fff"/>
+      <text x="92" y="78" font-size="22" fill="#5e9ed7" font-weight="bold">?</text>
+    </svg>`,
+    `<svg viewBox="0 0 200 160" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Mateo va a su casa">
+      <rect width="200" height="160" fill="#f4ecdc"/>
+      <rect x="0" y="120" width="200" height="40" fill="#e6d5b8"/>
+      <circle cx="170" cy="38" r="14" fill="#f5ca64" opacity="0.7"/>
+      <rect x="125" y="55" width="60" height="65" fill="#d4a574" stroke="#8b6a3f" stroke-width="2"/>
+      <polygon points="120,55 155,32 190,55" fill="#a76f3e"/>
+      <rect x="142" y="82" width="22" height="38" fill="#6b4a2a"/>
+      <use href="#mateo" x="50" y="78" width="28" height="42"/>
+      <use href="#dog" x="20" y="98" width="36" height="22"/>
+      <text x="80" y="80" font-size="20" fill="#5e9ed7" font-weight="bold">💧</text>
+      <text x="95" y="46" font-size="22" fill="#5e9ed7" font-weight="bold">→</text>
+    </svg>`
+  ];
+
+  // Slot index → correct phrase id
+  const ANSWERS = ['p1', 'p2', 'p3', 'p4', 'p5', 'p6'];
 
   let draggedId = null;
   let selectedId = null;
@@ -269,8 +404,7 @@
     const el = document.createElement('div');
     el.className = 'chip';
     el.id = chip.id;
-    el.dataset.verb = chip.verb;
-    el.textContent = chip.verb;
+    el.innerHTML = chip.html;
     el.draggable = true;
 
     el.addEventListener('dragstart', (e) => {
@@ -303,7 +437,7 @@
     return el;
   }
 
-  let chipOrder = shuffle(CHIPS.slice());
+  let chipOrder = shuffle(PHRASES.slice());
 
   function renderBank() {
     const bank = document.getElementById('chip-bank');
@@ -312,24 +446,24 @@
     chipOrder.filter(c => !used.has(c.id)).forEach(chip => bank.appendChild(buildChipEl(chip)));
   }
 
-  function renderStory() {
-    const wrap = document.getElementById('story');
+  function renderSlots() {
+    const wrap = document.getElementById('comic-strip');
     wrap.innerHTML = '';
-    let blankIdx = 0;
-    STORY_PARTS.forEach(part => {
-      if (part.blank) {
-        const i = blankIdx++;
-        const span = document.createElement('span');
-        span.className = 'blank';
-        span.id = 'blank-' + i;
-        span.setAttribute('ondragover', `blankDragOver(event, ${i})`);
-        span.setAttribute('ondragleave', `blankDragLeave(event, ${i})`);
-        span.setAttribute('ondrop', `blankDrop(event, ${i})`);
-        span.setAttribute('onclick', `blankClick(${i})`);
-        wrap.appendChild(span);
-      } else {
-        wrap.appendChild(document.createTextNode(part.text));
-      }
+    ANSWERS.forEach((_, i) => {
+      const panel = document.createElement('div');
+      panel.className = 'panel';
+      panel.innerHTML = `
+        <div class="panel-image">
+          <span class="panel-num">${i + 1}</span>
+          ${PANEL_SVGS[i]}
+        </div>
+        <span class="slot-blank" id="blank-${i}"
+              ondragover="blankDragOver(event, ${i})"
+              ondragleave="blankDragLeave(event, ${i})"
+              ondrop="blankDrop(event, ${i})"
+              onclick="blankClick(${i})"></span>
+      `;
+      wrap.appendChild(panel);
     });
     refreshBlanks();
   }
@@ -340,11 +474,11 @@
       const chipId = placements[i];
       blank.classList.remove('filled', 'drag-over', 'checked-correct', 'checked-wrong');
       if (chipId) {
-        const chip = CHIPS.find(c => c.id === chipId);
-        blank.textContent = chip ? chip.verb : '';
+        const chip = PHRASES.find(c => c.id === chipId);
+        blank.innerHTML = chip ? chip.html : '';
         blank.classList.add('filled');
       } else {
-        blank.textContent = '';
+        blank.innerHTML = '';
       }
     });
   }
@@ -417,9 +551,8 @@
     ANSWERS.forEach((ans, i) => {
       const blank = document.getElementById('blank-' + i);
       const chipId = placements[i];
-      const chip = CHIPS.find(c => c.id === chipId);
       blank.classList.remove('filled');
-      if (chip && chip.verb === ans) {
+      if (chipId === ans) {
         blank.classList.add('checked-correct');
         correct++;
       } else {
@@ -454,13 +587,13 @@
     document.getElementById('feedback-bar').classList.remove('show');
     document.getElementById('btn-check').style.display = 'inline-block';
     document.getElementById('btn-retry').style.display = 'none';
-    chipOrder = shuffle(CHIPS.slice());
+    chipOrder = shuffle(PHRASES.slice());
     renderBank();
-    renderStory();
+    renderSlots();
   }
 
   renderBank();
-  renderStory();
+  renderSlots();
 </script>
 
 </body>
