@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Opuestos — Tarjetas</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #f4f8fd;
+    color: #222;
+    min-height: 100vh;
+    padding: 24px 16px 48px;
+  }
+  header {
+    max-width: 720px;
+    margin: 0 auto 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  h1 { font-size: 1.5rem; color: #5e9ed7; }
+  .badge {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    background: #f5ca64;
+    color: #1a1a1a;
+    border-radius: 20px;
+    padding: 4px 10px;
+  }
+  .instructions {
+    max-width: 720px;
+    margin: 0 auto 18px;
+    font-size: 0.95rem;
+    color: #555;
+    line-height: 1.45;
+  }
+  .progress-bar {
+    max-width: 720px;
+    margin: 0 auto 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 14px;
+    background: #fff;
+    border: 1px solid #d0e4f5;
+    border-radius: 10px;
+    font-size: 0.88rem;
+    color: #555;
+    flex-wrap: wrap;
+  }
+  .dots { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; }
+  .dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #d0e4f5;
+    cursor: pointer;
+    border: none;
+    padding: 0;
+    transition: background 0.15s;
+  }
+  .dot.active { background: #5e9ed7; }
+  .dot.seen { background: #89c2f1; }
+
+  .nav {
+    max-width: 720px;
+    margin: 0 auto 14px;
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+  }
+  .btn {
+    background: #5e9ed7;
+    color: #fff;
+    border: none;
+    padding: 9px 18px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .btn:hover:not(:disabled) { background: #89c2f1; }
+  .btn:disabled { opacity: 0.4; cursor: default; }
+  .btn.ghost {
+    background: transparent;
+    color: #5e9ed7;
+    border: 1px solid #d0e4f5;
+  }
+  .btn.ghost:hover:not(:disabled) {
+    background: #e8f3fd;
+    border-color: #89c2f1;
+  }
+
+  .card-stage {
+    max-width: 720px;
+    margin: 0 auto;
+    perspective: 1200px;
+  }
+  .card {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    max-width: 420px;
+    margin: 0 auto;
+    transform-style: preserve-3d;
+    transition: transform 0.55s;
+    cursor: pointer;
+  }
+  .card.flipped { transform: rotateY(180deg); }
+  .face {
+    position: absolute;
+    inset: 0;
+    background: #fff;
+    border: 1px solid #d0e4f5;
+    border-radius: 16px;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 22px;
+    box-shadow: 0 4px 18px rgba(94, 158, 215, 0.12);
+  }
+  .face.back { transform: rotateY(180deg); }
+  .face img {
+    max-width: 80%;
+    max-height: 60%;
+    object-fit: contain;
+    margin-bottom: 18px;
+    border-radius: 8px;
+  }
+  .word {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #222;
+    text-align: center;
+  }
+  .hint {
+    margin-top: 10px;
+    font-size: 0.85rem;
+    color: #888;
+    font-style: italic;
+  }
+  .flip-hint {
+    text-align: center;
+    margin-top: 14px;
+    font-size: 0.82rem;
+    color: #aaa;
+  }
+
+  .controls {
+    max-width: 720px;
+    margin: 22px auto 0;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+  }
+
+  .summary {
+    max-width: 720px;
+    margin: 0 auto;
+    background: #fff;
+    border: 1px solid #d0e4f5;
+    border-radius: 16px;
+    padding: 32px 24px;
+    text-align: center;
+    display: none;
+  }
+  .summary.show { display: block; }
+  .summary h2 { color: #5e9ed7; font-size: 1.4rem; margin-bottom: 8px; }
+  .summary p { color: #555; margin-bottom: 18px; }
+
+  .hidden { display: none !important; }
+
+  @media (max-width: 480px) {
+    h1 { font-size: 1.2rem; }
+    .word { font-size: 1.6rem; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Opuestos — Tarjetas</h1>
+  <span class="badge">A1</span>
+</header>
+
+<p class="instructions">
+  Click the card to see the opposite. Use the arrows or dots to move between cards.
+</p>
+
+<div class="progress-bar">
+  <span>Card <strong id="current">1</strong> of <strong id="total">6</strong></span>
+  <div class="dots" id="dots"></div>
+  <span id="phase">Side: front</span>
+</div>
+
+<div class="nav">
+  <button class="btn ghost" id="prev">&larr; Anterior</button>
+  <button class="btn ghost" id="next">Siguiente &rarr;</button>
+</div>
+
+<div class="card-stage" id="stage">
+  <div class="card" id="card">
+    <div class="face front">
+      <img id="img-front" src="" alt="">
+      <div class="word" id="word-front"></div>
+      <div class="hint" id="hint-front"></div>
+    </div>
+    <div class="face back">
+      <img id="img-back" src="" alt="">
+      <div class="word" id="word-back"></div>
+      <div class="hint" id="hint-back"></div>
+    </div>
+  </div>
+  <p class="flip-hint">Click the card to flip</p>
+</div>
+
+<div class="controls">
+  <button class="btn" id="finish">Terminar</button>
+</div>
+
+<div class="summary" id="summary">
+  <h2>Well done</h2>
+  <p>You went through all 6 pairs of opposites.</p>
+  <button class="btn" id="restart">Empezar de nuevo</button>
+</div>
+
+<script>
+  const cards = [
+    { front: "Feliz", back: "Triste", hintFront: "happy", hintBack: "sad", img: "images/opuestos/feliz-triste.png" },
+    { front: "Grande", back: "Pequeño", hintFront: "big", hintBack: "small", img: "images/opuestos/grande-pequeno.png" },
+    { front: "Fácil", back: "Difícil", hintFront: "easy", hintBack: "difficult", img: "images/opuestos/facil-dificil.png" },
+    { front: "Rápido", back: "Lento", hintFront: "fast", hintBack: "slow", img: "images/opuestos/rapido-lento.png" },
+    { front: "Abrir", back: "Cerrar", hintFront: "to open", hintBack: "to close", img: "images/opuestos/abrir-cerrar.png" },
+    { front: "Vender", back: "Comprar", hintFront: "to sell", hintBack: "to buy", img: "images/opuestos/vender-comprar.png" }
+  ];
+
+  let index = 0;
+  const seen = new Set();
+  const stage = document.getElementById('stage');
+  const summary = document.getElementById('summary');
+  const card = document.getElementById('card');
+  const dotsEl = document.getElementById('dots');
+  const prevBtn = document.getElementById('prev');
+  const nextBtn = document.getElementById('next');
+  const finishBtn = document.getElementById('finish');
+  const phaseEl = document.getElementById('phase');
+
+  document.getElementById('total').textContent = cards.length;
+
+  function buildDots() {
+    dotsEl.innerHTML = '';
+    cards.forEach((_, i) => {
+      const b = document.createElement('button');
+      b.className = 'dot';
+      b.setAttribute('aria-label', 'Card ' + (i + 1));
+      b.addEventListener('click', () => goTo(i));
+      dotsEl.appendChild(b);
+    });
+  }
+
+  function render() {
+    const c = cards[index];
+    document.getElementById('img-front').src = c.img;
+    document.getElementById('img-front').alt = c.front + ' / ' + c.back;
+    document.getElementById('img-back').src = c.img;
+    document.getElementById('img-back').alt = c.front + ' / ' + c.back;
+    document.getElementById('word-front').textContent = c.front;
+    document.getElementById('word-back').textContent = c.back;
+    document.getElementById('hint-front').textContent = c.hintFront;
+    document.getElementById('hint-back').textContent = c.hintBack;
+    card.classList.remove('flipped');
+    document.getElementById('current').textContent = index + 1;
+    phaseEl.textContent = 'Side: front';
+    seen.add(index);
+    Array.from(dotsEl.children).forEach((d, i) => {
+      d.classList.toggle('active', i === index);
+      d.classList.toggle('seen', i !== index && seen.has(i));
+    });
+    prevBtn.disabled = index === 0;
+    nextBtn.disabled = index === cards.length - 1;
+  }
+
+  function goTo(i) {
+    if (i < 0 || i >= cards.length) return;
+    index = i;
+    render();
+  }
+
+  card.addEventListener('click', () => {
+    card.classList.toggle('flipped');
+    phaseEl.textContent = card.classList.contains('flipped') ? 'Side: back' : 'Side: front';
+  });
+
+  prevBtn.addEventListener('click', () => goTo(index - 1));
+  nextBtn.addEventListener('click', () => goTo(index + 1));
+
+  finishBtn.addEventListener('click', () => {
+    stage.classList.add('hidden');
+    document.querySelector('.controls').classList.add('hidden');
+    document.querySelector('.nav').classList.add('hidden');
+    document.querySelector('.progress-bar').classList.add('hidden');
+    document.querySelector('.instructions').classList.add('hidden');
+    summary.classList.add('show');
+  });
+
+  document.getElementById('restart').addEventListener('click', () => {
+    seen.clear();
+    index = 0;
+    summary.classList.remove('show');
+    stage.classList.remove('hidden');
+    document.querySelector('.controls').classList.remove('hidden');
+    document.querySelector('.nav').classList.remove('hidden');
+    document.querySelector('.progress-bar').classList.remove('hidden');
+    document.querySelector('.instructions').classList.remove('hidden');
+    render();
+  });
+
+  buildDots();
+  render();
+</script>
+
+</body>
+</html>

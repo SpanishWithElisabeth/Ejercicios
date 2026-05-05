@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Opuestos — Arrastrar</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #f4f8fd;
+    color: #222;
+    min-height: 100vh;
+    padding: 24px 16px 48px;
+  }
+  header {
+    max-width: 960px;
+    margin: 0 auto 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  h1 { font-size: 1.5rem; color: #5e9ed7; }
+  .badge {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    background: #f5ca64;
+    color: #1a1a1a;
+    border-radius: 20px;
+    padding: 4px 10px;
+  }
+  .instructions {
+    max-width: 960px;
+    margin: 0 auto 16px;
+    font-size: 0.95rem;
+    color: #555;
+    line-height: 1.45;
+  }
+  .score-bar {
+    max-width: 960px;
+    margin: 0 auto 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 14px;
+    background: #fff;
+    border: 1px solid #d0e4f5;
+    border-radius: 10px;
+    font-size: 0.88rem;
+    color: #555;
+    flex-wrap: wrap;
+  }
+  .score-bar strong { color: #5e9ed7; }
+
+  .btn {
+    background: #5e9ed7;
+    color: #fff;
+    border: none;
+    padding: 9px 18px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .btn:hover:not(:disabled) { background: #89c2f1; }
+  .btn:disabled { opacity: 0.4; cursor: default; }
+
+  .word-bank {
+    max-width: 960px;
+    margin: 0 auto 22px;
+    background: #fff;
+    border: 1px solid #d0e4f5;
+    border-radius: 12px;
+    padding: 14px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+    min-height: 60px;
+  }
+  .chip {
+    background: #e8f3fd;
+    border: 2px solid #d0e4f5;
+    color: #222;
+    padding: 8px 14px;
+    border-radius: 22px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+    user-select: none;
+  }
+  .chip:hover { border-color: #89c2f1; background: #d8ebfa; }
+  .chip.selected {
+    background: #5e9ed7;
+    color: #fff;
+    border-color: #5271ff;
+    box-shadow: 0 0 0 3px rgba(82, 113, 255, 0.25);
+  }
+  .chip.placed { display: none; }
+
+  .grid {
+    max-width: 960px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 18px;
+  }
+  .pair {
+    background: #fff;
+    border: 1px solid #d0e4f5;
+    border-radius: 14px;
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .pair img {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: contain;
+    border-radius: 10px;
+    background: #f4f8fd;
+  }
+  .slots {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .slot {
+    border: 2px dashed #d0e4f5;
+    border-radius: 10px;
+    padding: 10px 8px;
+    text-align: center;
+    min-height: 48px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.95rem;
+    color: #aaa;
+    transition: all 0.15s;
+  }
+  .slot:hover { border-color: #89c2f1; background: #f4f8fd; }
+  .slot.filled {
+    background: #e8f3fd;
+    border-style: solid;
+    border-color: #5e9ed7;
+    color: #222;
+    font-weight: 600;
+  }
+  .slot.correct {
+    background: #e8f3fd;
+    border-color: #5e9ed7;
+    color: #2c6ea4;
+    border-style: solid;
+    font-weight: 600;
+  }
+  .slot.wrong {
+    background: #fdf0eb;
+    border-color: #d77a5e;
+    color: #a64b30;
+    border-style: solid;
+    font-weight: 600;
+  }
+  .slot-label {
+    display: block;
+    font-size: 0.7rem;
+    color: #aaa;
+    margin-bottom: 6px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    text-align: center;
+  }
+
+  .actions {
+    max-width: 960px;
+    margin: 24px auto 0;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+  }
+
+  .feedback {
+    max-width: 960px;
+    margin: 18px auto 0;
+    padding: 14px 18px;
+    border-radius: 12px;
+    text-align: center;
+    font-size: 1rem;
+    font-weight: 600;
+    display: none;
+  }
+  .feedback.show { display: block; }
+  .feedback.success { background: #e8f3fd; color: #2c6ea4; border: 1px solid #5e9ed7; }
+  .feedback.partial { background: #fff7e0; color: #8a6d1c; border: 1px solid #f5ca64; }
+
+  @media (max-width: 480px) {
+    h1 { font-size: 1.2rem; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Opuestos — Arrastrar</h1>
+  <span class="badge">A1</span>
+</header>
+
+<p class="instructions">
+  Click a word to select it, then click a slot under the matching image to place it. Click a placed word to send it back to the bank.
+</p>
+
+<div class="score-bar">
+  <span>Placed <strong id="placed-count">0</strong> / <strong id="total-count">12</strong></span>
+  <span>Click a word, then click a slot</span>
+</div>
+
+<div class="word-bank" id="bank"></div>
+
+<div class="grid" id="grid"></div>
+
+<div class="feedback" id="feedback"></div>
+
+<div class="actions">
+  <button class="btn" id="check">Verificar</button>
+  <button class="btn" id="reset" style="background:transparent;color:#5e9ed7;border:1px solid #d0e4f5;">Empezar de nuevo</button>
+</div>
+
+<script>
+  const pairs = [
+    { img: "images/opuestos-actividad/feliz-triste.png", alt: "happy / sad", left: "feliz", right: "triste" },
+    { img: "images/opuestos-actividad/grande-pequeno.png", alt: "big / small", left: "grande", right: "pequeño" },
+    { img: "images/opuestos-actividad/facil-dificil.png", alt: "easy / difficult", left: "fácil", right: "difícil" },
+    { img: "images/opuestos-actividad/rapido-lento.png", alt: "fast / slow", left: "rápido", right: "lento" },
+    { img: "images/opuestos-actividad/abrir-cerrar.png", alt: "to open / to close", left: "abrir", right: "cerrar" },
+    { img: "images/opuestos-actividad/vender-comprar.png", alt: "to sell / to buy", left: "vender", right: "comprar" }
+  ];
+
+  const allWords = pairs.flatMap(p => [p.left, p.right]);
+
+  function shuffle(a) {
+    const copy = a.slice();
+    for (let i = copy.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [copy[i], copy[j]] = [copy[j], copy[i]];
+    }
+    return copy;
+  }
+
+  let selected = null;
+  let bankWords = shuffle(allWords);
+  // slots[i] is for pair index Math.floor(i/2), side i%2 (0=left, 1=right)
+  let slots = new Array(pairs.length * 2).fill(null);
+
+  const bankEl = document.getElementById('bank');
+  const gridEl = document.getElementById('grid');
+  const feedbackEl = document.getElementById('feedback');
+  const placedCountEl = document.getElementById('placed-count');
+
+  document.getElementById('total-count').textContent = pairs.length * 2;
+
+  function renderBank() {
+    bankEl.innerHTML = '';
+    if (bankWords.length === 0) {
+      bankEl.innerHTML = '<span style="color:#aaa;font-size:0.88rem;">All words placed</span>';
+      return;
+    }
+    bankWords.forEach(w => {
+      const c = document.createElement('button');
+      c.className = 'chip';
+      c.textContent = w;
+      if (selected === w) c.classList.add('selected');
+      c.addEventListener('click', () => {
+        selected = (selected === w) ? null : w;
+        renderBank();
+      });
+      bankEl.appendChild(c);
+    });
+  }
+
+  function renderGrid() {
+    gridEl.innerHTML = '';
+    pairs.forEach((p, pi) => {
+      const card = document.createElement('div');
+      card.className = 'pair';
+
+      const img = document.createElement('img');
+      img.src = p.img;
+      img.alt = p.alt;
+      card.appendChild(img);
+
+      const slotsWrap = document.createElement('div');
+      slotsWrap.className = 'slots';
+
+      [0, 1].forEach(side => {
+        const slotIndex = pi * 2 + side;
+        const s = document.createElement('div');
+        s.className = 'slot';
+        const value = slots[slotIndex];
+        if (value) {
+          s.textContent = value;
+          s.classList.add('filled');
+        } else {
+          s.textContent = '...';
+        }
+        s.addEventListener('click', () => {
+          if (value) {
+            // return word to bank
+            slots[slotIndex] = null;
+            bankWords.push(value);
+            selected = null;
+            update();
+            return;
+          }
+          if (selected) {
+            slots[slotIndex] = selected;
+            bankWords = bankWords.filter(w => w !== selected);
+            selected = null;
+            update();
+          }
+        });
+        slotsWrap.appendChild(s);
+      });
+
+      card.appendChild(slotsWrap);
+      gridEl.appendChild(card);
+    });
+  }
+
+  function update() {
+    renderBank();
+    renderGrid();
+    const placed = slots.filter(Boolean).length;
+    placedCountEl.textContent = placed;
+    feedbackEl.classList.remove('show', 'success', 'partial');
+  }
+
+  document.getElementById('check').addEventListener('click', () => {
+    if (slots.some(s => s === null)) {
+      feedbackEl.textContent = 'Coloca todas las palabras antes de verificar';
+      feedbackEl.classList.add('show', 'partial');
+      return;
+    }
+    let correct = 0;
+    pairs.forEach((p, pi) => {
+      const leftEl = gridEl.children[pi].querySelector('.slots').children[0];
+      const rightEl = gridEl.children[pi].querySelector('.slots').children[1];
+      const expected = [p.left, p.right];
+      const got = [slots[pi * 2], slots[pi * 2 + 1]];
+      [leftEl, rightEl].forEach((el, side) => {
+        el.classList.remove('filled');
+        if (expected.includes(got[side])) {
+          el.classList.add('correct');
+          correct++;
+        } else {
+          el.classList.add('wrong');
+        }
+      });
+    });
+    const total = pairs.length * 2;
+    feedbackEl.textContent = correct === total
+      ? 'Perfecto. ' + correct + ' / ' + total + ' correctas'
+      : correct + ' / ' + total + ' correctas';
+    feedbackEl.classList.add('show', correct === total ? 'success' : 'partial');
+  });
+
+  document.getElementById('reset').addEventListener('click', () => {
+    selected = null;
+    bankWords = shuffle(allWords);
+    slots = new Array(pairs.length * 2).fill(null);
+    update();
+  });
+
+  update();
+</script>
+
+</body>
+</html>
