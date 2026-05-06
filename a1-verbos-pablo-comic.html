@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>A1 — El día de Pablo</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f4f8fd;
+      color: #1a1a1a;
+      min-height: 100vh;
+      padding: 0 0 48px;
+    }
+
+    header {
+      background: #5e9ed7;
+      color: #fff;
+      padding: 20px 24px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    header h1 { font-size: 1.25rem; font-weight: 700; }
+    header p { font-size: 0.85rem; opacity: 0.88; margin-top: 2px; }
+    .cefr-badge {
+      background: #f5ca64;
+      color: #1a1a1a;
+      font-weight: 700;
+      font-size: 0.8rem;
+      padding: 3px 10px;
+      border-radius: 20px;
+      flex-shrink: 0;
+    }
+
+    .container {
+      max-width: 720px;
+      margin: 28px auto 0;
+      padding: 0 20px;
+    }
+
+    .instructions {
+      font-size: 0.9rem;
+      color: #555;
+      margin-bottom: 20px;
+      line-height: 1.5;
+    }
+
+    #chip-bank {
+      background: #fff;
+      border: 1px solid #d0e4f5;
+      border-radius: 12px;
+      padding: 14px;
+      margin-bottom: 20px;
+      min-height: 70px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-content: flex-start;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+
+    .chip {
+      background: #e8f3fd;
+      border: 2px solid #b8d8f5;
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 0.9rem;
+      line-height: 1.4;
+      color: #1a4a6e;
+      cursor: grab;
+      user-select: none;
+      transition: background 0.12s, border-color 0.12s, transform 0.1s, opacity 0.1s;
+      touch-action: none;
+      max-width: 100%;
+    }
+    .chip b { color: #0d2e44; }
+    .chip:hover { background: #d4eaf9; border-color: #89c2f1; }
+    .chip.dragging { opacity: 0.45; transform: scale(0.97); cursor: grabbing; }
+    .chip.selected {
+      background: #c8e0f5;
+      border-color: #5e9ed7;
+      box-shadow: 0 0 0 2px #5e9ed7;
+    }
+    .chip.placed-correct {
+      background: #e8f3fd;
+      border-color: #5e9ed7;
+      color: #1a4a6e;
+      cursor: default;
+    }
+
+    .slot-blank {
+      display: block;
+      min-height: 44px;
+      border: 2px dashed #b8d8f5;
+      border-radius: 8px;
+      padding: 10px 14px;
+      background: #f8fbfe;
+      cursor: pointer;
+      font-size: 0.95rem;
+      line-height: 1.45;
+      transition: border-color 0.15s, background 0.15s;
+      word-spacing: normal;
+      white-space: normal;
+    }
+    .slot-blank b, .chip b {
+      display: inline;
+      font-weight: 700;
+    }
+    .slot-blank:hover { border-color: #89c2f1; background: #eef6fd; }
+    .slot-blank.drag-over { border-color: #5e9ed7; background: #e8f3fd; }
+    .slot-blank.filled {
+      border-style: solid;
+      background: #e8f3fd;
+      border-color: #5e9ed7;
+      color: #1a4a6e;
+    }
+    .slot-blank.checked-correct {
+      border-style: solid;
+      background: #e8f3fd;
+      border-color: #5e9ed7;
+      color: #1a4a6e;
+    }
+    .slot-blank.checked-wrong {
+      border-style: solid;
+      background: #fdf0eb;
+      border-color: #d77a5e;
+      color: #7a2e10;
+    }
+
+    .comic-strip {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    @media (max-width: 520px) {
+      .comic-strip { grid-template-columns: 1fr; }
+    }
+    .panel {
+      background: #fff;
+      border: 1px solid #d0e4f5;
+      border-radius: 10px;
+      padding: 10px 10px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .panel svg { width: 100%; height: auto; display: block; border-radius: 6px; }
+    .panel-num {
+      position: absolute;
+      top: 6px;
+      left: 10px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      color: #5e9ed7;
+      background: rgba(255,255,255,0.85);
+      padding: 1px 6px;
+      border-radius: 10px;
+    }
+    .panel-image { position: relative; }
+    .panel .slot-blank {
+      flex: none;
+      min-height: 56px;
+    }
+
+    .btn-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+    button.main-btn {
+      background: #5e9ed7;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 20px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.12s;
+    }
+    button.main-btn:hover { background: #89c2f1; }
+    button.main-btn:disabled { background: #c5dff0; cursor: default; }
+    button.secondary {
+      background: #fff;
+      color: #5e9ed7;
+      border: 2px solid #5e9ed7;
+    }
+    button.secondary:hover { background: #eef6fd; }
+
+    #feedback-bar {
+      display: none;
+      background: #fff;
+      border: 1px solid #d0e4f5;
+      border-radius: 12px;
+      padding: 18px 22px;
+      margin-bottom: 16px;
+      text-align: center;
+    }
+    #feedback-bar.show { display: block; }
+    #feedback-bar .score {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #5e9ed7;
+      margin-bottom: 6px;
+    }
+    #feedback-bar .msg { color: #444; font-size: 0.92rem; }
+
+    footer {
+      max-width: 720px;
+      margin: 32px auto 0;
+      padding: 0 20px;
+      font-size: 0.8rem;
+      color: #bbb;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>El día de Pablo</h1>
+    <p>Drag each sentence onto the matching picture</p>
+  </div>
+  <span class="cefr-badge">A1</span>
+</header>
+
+<div class="container">
+
+  <p class="instructions">
+    Look at each picture and drag the matching sentence into the space below it. On mobile, tap a chip and then tap a space. When you finish, click <strong>Verificar</strong>.
+  </p>
+
+  <!-- Reusable character symbols — defined once, used in every panel for consistency -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <!-- PABLO: green shirt, dark hair cap, no face. Width ~28, height ~42. Anchor at top-left. -->
+      <symbol id="pablo" viewBox="0 0 28 42">
+        <rect x="6" y="18" width="16" height="24" fill="#7fb86b"/>
+        <circle cx="14" cy="12" r="9" fill="#f0c8a8"/>
+        <path d="M5 12 Q5 3 14 3 Q23 3 23 12 Q23 13 22 14 L20 11 L17 14 L14 11 L11 14 L8 11 L6 14 Q5 13 5 12 Z" fill="#2a1f15"/>
+      </symbol>
+      <!-- AMIGO: yellow shirt, lighter brown hair, no face. Width ~28, height ~42. -->
+      <symbol id="amigo" viewBox="0 0 28 42">
+        <rect x="6" y="18" width="16" height="24" fill="#f5ca64"/>
+        <circle cx="14" cy="12" r="9" fill="#fbe0c4"/>
+        <path d="M5 12 Q5 3 14 3 Q23 3 23 12 Q23 13 22 14 L20 11 L17 14 L14 11 L11 14 L8 11 L6 14 Q5 13 5 12 Z" fill="#7a4a28"/>
+      </symbol>
+      <!-- BACKPACK: red, used in panels 1 and 2 -->
+      <symbol id="backpack" viewBox="0 0 16 18">
+        <rect x="2" y="3" width="12" height="14" rx="2" fill="#d77a5e" stroke="#7a2e10" stroke-width="0.8"/>
+        <path d="M5 3 Q5 0 8 0 Q11 0 11 3" stroke="#7a2e10" stroke-width="1" fill="none"/>
+        <rect x="5" y="9" width="6" height="3" fill="#7a2e10"/>
+      </symbol>
+    </defs>
+  </svg>
+
+  <div id="chip-bank"
+       ondragover="bankDragOver(event)"
+       ondrop="bankDrop(event)">
+  </div>
+
+  <div class="comic-strip" id="comic-strip" aria-label="Story panels"></div>
+
+  <div class="btn-row">
+    <button class="main-btn" id="btn-check" onclick="checkAnswers()">Verificar</button>
+    <button class="main-btn secondary" id="btn-retry" onclick="resetAll()" style="display:none">Jugar otra vez</button>
+  </div>
+
+  <div id="feedback-bar">
+    <div class="score" id="score-text"></div>
+    <div class="msg" id="msg-text"></div>
+  </div>
+
+</div>
+
+<footer>Spanish with Elisabeth &mdash; spanishwithelisabeth.com</footer>
+
+<script>
+  // Six full sentences — one per panel. Each chip shows the whole sentence with the verb in bold.
+  const PHRASES = [
+    { id: 'p1', html: 'Pablo <b>sale de</b> casa con su mochila para ir a la escuela.' },
+    { id: 'p2', html: 'En el camino, <b>hace</b> ejercicio porque va caminando rápido.' },
+    { id: 'p3', html: 'En la escuela, <b>ve</b> a su mejor amigo.' },
+    { id: 'p4', html: 'Su amigo <b>le da</b> un lápiz nuevo.' },
+    { id: 'p5', html: 'Pablo <b>se pone</b> contento porque le gusta su lápiz nuevo.' },
+    { id: 'p6', html: 'A las tres, Pablo <b>vuelve</b> a casa para comer tacos.' }
+  ];
+
+  const PANEL_SVGS = [
+    // Panel 1: Pablo leaves home with backpack, heading right toward school
+    `<svg viewBox="0 0 200 160" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Pablo sale de casa">
+      <rect width="200" height="160" fill="#f4f8fd"/>
+      <rect x="0" y="120" width="200" height="40" fill="#dbe9f5"/>
+      <rect x="20" y="50" width="80" height="70" fill="#e8d4b8" stroke="#a78b6a" stroke-width="2"/>
+      <polygon points="15,50 60,25 105,50" fill="#a76f3e"/>
+      <rect x="50" y="78" width="22" height="42" fill="#7b5a3a"/>
+      <circle cx="68" cy="100" r="2" fill="#f5ca64"/>
+      <use href="#pablo" x="115" y="78" width="28" height="42"/>
+      <use href="#backpack" x="108" y="86" width="14" height="16"/>
+      <text x="92" y="42" font-size="22" fill="#5e9ed7" font-weight="bold">→</text>
+    </svg>`,
+
+    // Panel 2: Pablo walking on a path to school, exercise lines, backpack on
+    `<svg viewBox="0 0 200 160" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Pablo hace ejercicio">
+      <rect width="200" height="160" fill="#eaf3e6"/>
+      <rect x="0" y="120" width="200" height="40" fill="#c8dfb8"/>
+      <path d="M 20 130 Q 100 115 180 130" stroke="#a78b6a" stroke-width="3" fill="none"/>
+      <circle cx="30" cy="90" r="14" fill="#7fb86b"/>
+      <rect x="29" y="102" width="2" height="20" fill="#5a7a4a"/>
+      <circle cx="170" cy="88" r="12" fill="#7fb86b"/>
+      <rect x="169" y="98" width="2" height="24" fill="#5a7a4a"/>
+      <use href="#pablo" x="80" y="78" width="28" height="42"/>
+      <use href="#backpack" x="73" y="86" width="14" height="16"/>
+      <text x="55" y="50" font-size="18" fill="#5e9ed7" font-weight="bold">💨</text>
+      <text x="115" y="48" font-size="18" fill="#5e9ed7" font-weight="bold">💨</text>
+      <text x="92" y="42" font-size="22" fill="#5e9ed7" font-weight="bold">→</text>
+    </svg>`,
+
+    // Panel 3: Pablo arrives at school and sees his friend
+    `<svg viewBox="0 0 200 160" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Pablo ve a su amigo">
+      <rect width="200" height="160" fill="#f4f8fd"/>
+      <rect x="0" y="120" width="200" height="40" fill="#dbe9f5"/>
+      <rect x="105" y="40" width="85" height="80" fill="#d4a574" stroke="#7a4a28" stroke-width="2"/>
+      <polygon points="100,40 147,18 195,40" fill="#7a4a28"/>
+      <rect x="115" y="55" width="14" height="14" fill="#f5ca64"/>
+      <rect x="135" y="55" width="14" height="14" fill="#f5ca64"/>
+      <rect x="155" y="55" width="14" height="14" fill="#f5ca64"/>
+      <rect x="175" y="55" width="12" height="14" fill="#f5ca64"/>
+      <rect x="115" y="78" width="14" height="14" fill="#f5ca64"/>
+      <rect x="175" y="78" width="12" height="14" fill="#f5ca64"/>
+      <rect x="138" y="80" width="20" height="40" fill="#5a3a1a"/>
+      <text x="139" y="35" font-size="9" fill="#5e9ed7" font-weight="bold">ESCUELA</text>
+      <use href="#pablo" x="20" y="78" width="28" height="42"/>
+      <use href="#backpack" x="13" y="86" width="14" height="16"/>
+      <use href="#amigo" x="65" y="78" width="28" height="42"/>
+      <text x="55" y="70" font-size="18" fill="#5e9ed7" font-weight="bold">👁</text>
+    </svg>`,
+
+    // Panel 4: Friend gives Pablo a pencil
+    `<svg viewBox="0 0 200 160" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Su amigo le da un lápiz">
+      <rect width="200" height="160" fill="#eaf3e6"/>
+      <rect x="0" y="120" width="200" height="40" fill="#c8dfb8"/>
+      <use href="#pablo" x="50" y="78" width="28" height="42"/>
+      <use href="#amigo" x="120" y="78" width="28" height="42"/>
+      <line x1="80" y1="100" x2="120" y2="100" stroke="#f5ca64" stroke-width="6" stroke-linecap="round"/>
+      <polygon points="78,97 78,103 73,100" fill="#f0c8a8"/>
+      <rect x="116" y="98" width="6" height="4" fill="#f4a8a8"/>
+      <text x="92" y="58" font-size="20" fill="#d77a5e" font-weight="bold">→</text>
+    </svg>`,
+
+    // Panel 5: Pablo happy with the pencil, smile/heart symbol
+    `<svg viewBox="0 0 200 160" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Pablo se pone contento">
+      <rect width="200" height="160" fill="#eaf3e6"/>
+      <rect x="0" y="120" width="200" height="40" fill="#c8dfb8"/>
+      <use href="#pablo" x="86" y="78" width="28" height="42"/>
+      <line x1="120" y1="92" x2="140" y2="80" stroke="#f5ca64" stroke-width="5" stroke-linecap="round"/>
+      <polygon points="138,77 142,82 145,78" fill="#f4a8a8"/>
+      <text x="78" y="60" font-size="20" fill="#f5ca64" font-weight="bold">⭐</text>
+      <text x="115" y="60" font-size="20" fill="#f5ca64" font-weight="bold">⭐</text>
+    </svg>`,
+
+    // Panel 6: Pablo returns home, tacos waiting (bowl on table)
+    `<svg viewBox="0 0 200 160" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Pablo vuelve a casa">
+      <rect width="200" height="160" fill="#f4f8fd"/>
+      <rect x="0" y="120" width="200" height="40" fill="#dbe9f5"/>
+      <rect x="100" y="50" width="80" height="70" fill="#e8d4b8" stroke="#a78b6a" stroke-width="2"/>
+      <polygon points="95,50 140,25 185,50" fill="#a76f3e"/>
+      <rect x="130" y="78" width="22" height="42" fill="#7b5a3a"/>
+      <circle cx="148" cy="100" r="2" fill="#f5ca64"/>
+      <rect x="105" y="58" width="14" height="14" fill="#f5ca64"/>
+      <rect x="160" y="58" width="14" height="14" fill="#f5ca64"/>
+      <use href="#pablo" x="40" y="78" width="28" height="42"/>
+      <use href="#backpack" x="33" y="86" width="14" height="16"/>
+      <text x="78" y="42" font-size="22" fill="#5e9ed7" font-weight="bold">←</text>
+      <ellipse cx="186" cy="68" rx="14" ry="10" fill="#fff" stroke="#b8d8f5" stroke-width="1.5"/>
+      <ellipse cx="186" cy="66" rx="9" ry="3" fill="#f5ca64"/>
+      <ellipse cx="186" cy="66" rx="6" ry="2" fill="#d77a5e"/>
+      <text x="178" y="84" font-size="9" fill="#7a4a28" font-weight="bold">tacos</text>
+    </svg>`
+  ];
+
+  // Slot index → correct phrase id
+  const ANSWERS = ['p1', 'p2', 'p3', 'p4', 'p5', 'p6'];
+
+  let draggedId = null;
+  let selectedId = null;
+  let checked = false;
+
+  const placements = new Array(ANSWERS.length).fill(null);
+
+  function shuffle(arr) {
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  }
+
+  function buildChipEl(chip) {
+    const el = document.createElement('div');
+    el.className = 'chip';
+    el.id = chip.id;
+    el.innerHTML = chip.html;
+    el.draggable = true;
+
+    el.addEventListener('dragstart', (e) => {
+      if (checked) return;
+      draggedId = chip.id;
+      el.classList.add('dragging');
+      e.dataTransfer.effectAllowed = 'move';
+      e.dataTransfer.setData('text/plain', chip.id);
+    });
+    el.addEventListener('dragend', () => {
+      el.classList.remove('dragging');
+      draggedId = null;
+    });
+
+    el.addEventListener('click', () => {
+      if (checked) return;
+      if (selectedId === chip.id) {
+        el.classList.remove('selected');
+        selectedId = null;
+      } else {
+        if (selectedId) {
+          const old = document.getElementById(selectedId);
+          if (old) old.classList.remove('selected');
+        }
+        selectedId = chip.id;
+        el.classList.add('selected');
+      }
+    });
+
+    return el;
+  }
+
+  let chipOrder = shuffle(PHRASES.slice());
+
+  function renderBank() {
+    const bank = document.getElementById('chip-bank');
+    bank.innerHTML = '';
+    const used = new Set(placements.filter(Boolean));
+    chipOrder.filter(c => !used.has(c.id)).forEach(chip => bank.appendChild(buildChipEl(chip)));
+  }
+
+  function renderSlots() {
+    const wrap = document.getElementById('comic-strip');
+    wrap.innerHTML = '';
+    ANSWERS.forEach((_, i) => {
+      const panel = document.createElement('div');
+      panel.className = 'panel';
+      panel.innerHTML = `
+        <div class="panel-image">
+          <span class="panel-num">${i + 1}</span>
+          ${PANEL_SVGS[i]}
+        </div>
+        <span class="slot-blank" id="blank-${i}"
+              ondragover="blankDragOver(event, ${i})"
+              ondragleave="blankDragLeave(event, ${i})"
+              ondrop="blankDrop(event, ${i})"
+              onclick="blankClick(${i})"></span>
+      `;
+      wrap.appendChild(panel);
+    });
+    refreshBlanks();
+  }
+
+  function refreshBlanks() {
+    ANSWERS.forEach((_, i) => {
+      const blank = document.getElementById('blank-' + i);
+      const chipId = placements[i];
+      blank.classList.remove('filled', 'drag-over', 'checked-correct', 'checked-wrong');
+      if (chipId) {
+        const chip = PHRASES.find(c => c.id === chipId);
+        blank.innerHTML = chip ? chip.html : '';
+        blank.classList.add('filled');
+      } else {
+        blank.innerHTML = '';
+      }
+    });
+  }
+
+  window.bankDragOver = function(e) {
+    if (checked) return;
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+  };
+  window.bankDrop = function(e) {
+    if (checked) return;
+    e.preventDefault();
+    const id = draggedId || e.dataTransfer.getData('text/plain');
+    if (!id) return;
+    const idx = placements.indexOf(id);
+    if (idx !== -1) placements[idx] = null;
+    renderBank();
+    refreshBlanks();
+  };
+
+  window.blankDragOver = function(e, i) {
+    if (checked) return;
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    document.getElementById('blank-' + i).classList.add('drag-over');
+  };
+  window.blankDragLeave = function(e, i) {
+    document.getElementById('blank-' + i).classList.remove('drag-over');
+  };
+  window.blankDrop = function(e, i) {
+    if (checked) return;
+    e.preventDefault();
+    document.getElementById('blank-' + i).classList.remove('drag-over');
+    const id = draggedId || e.dataTransfer.getData('text/plain');
+    if (!id) return;
+    placeChip(id, i);
+  };
+
+  window.blankClick = function(i) {
+    if (checked) return;
+    if (selectedId) {
+      placeChip(selectedId, i);
+      selectedId = null;
+    } else if (placements[i]) {
+      placements[i] = null;
+      renderBank();
+      refreshBlanks();
+    }
+  };
+
+  function placeChip(chipId, targetIdx) {
+    const prevIdx = placements.indexOf(chipId);
+    if (prevIdx !== -1) placements[prevIdx] = null;
+    placements[targetIdx] = chipId;
+    renderBank();
+    refreshBlanks();
+  }
+
+  function checkAnswers() {
+    if (placements.some(p => p === null)) {
+      const bar = document.getElementById('feedback-bar');
+      bar.classList.add('show');
+      document.getElementById('score-text').textContent = 'Faltan respuestas';
+      document.getElementById('msg-text').textContent = 'Completa todos los espacios antes de verificar.';
+      return;
+    }
+
+    checked = true;
+    let correct = 0;
+    ANSWERS.forEach((ans, i) => {
+      const blank = document.getElementById('blank-' + i);
+      const chipId = placements[i];
+      blank.classList.remove('filled');
+      if (chipId === ans) {
+        blank.classList.add('checked-correct');
+        correct++;
+      } else {
+        blank.classList.add('checked-wrong');
+      }
+    });
+
+    document.querySelectorAll('.chip').forEach(el => {
+      el.draggable = false;
+      el.classList.add('placed-correct');
+    });
+
+    const bar = document.getElementById('feedback-bar');
+    bar.classList.add('show');
+    document.getElementById('score-text').textContent = correct + ' / ' + ANSWERS.length;
+    let msg;
+    if (correct === ANSWERS.length) msg = 'Excelente. Todas las respuestas son correctas.';
+    else if (correct >= ANSWERS.length - 1) msg = 'Muy bien. Revisa la marcada en rojo.';
+    else if (correct >= ANSWERS.length / 2) msg = 'Buen intento. Repasa los verbos e intenta de nuevo.';
+    else msg = 'Practica un poco más y vuelve a intentar.';
+    document.getElementById('msg-text').textContent = msg;
+
+    document.getElementById('btn-check').style.display = 'none';
+    document.getElementById('btn-retry').style.display = 'inline-block';
+  }
+
+  function resetAll() {
+    checked = false;
+    selectedId = null;
+    draggedId = null;
+    for (let i = 0; i < placements.length; i++) placements[i] = null;
+    document.getElementById('feedback-bar').classList.remove('show');
+    document.getElementById('btn-check').style.display = 'inline-block';
+    document.getElementById('btn-retry').style.display = 'none';
+    chipOrder = shuffle(PHRASES.slice());
+    renderBank();
+    renderSlots();
+  }
+
+  renderBank();
+  renderSlots();
+</script>
+
+</body>
+</html>
