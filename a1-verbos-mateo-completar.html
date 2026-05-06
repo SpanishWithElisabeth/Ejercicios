@@ -52,13 +52,17 @@
       background: #fff;
       border: 1px solid #d0e4f5;
       border-radius: 12px;
-      padding: 16px;
-      margin-bottom: 28px;
+      padding: 14px;
+      margin-bottom: 20px;
       min-height: 70px;
       display: flex;
       flex-wrap: wrap;
-      gap: 10px;
+      gap: 8px;
       align-content: flex-start;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
     }
 
     .chip {
@@ -287,13 +291,12 @@
     </defs>
   </svg>
 
-  <div class="comic-strip" id="comic-strip" aria-label="Story panels"></div>
-
   <div id="chip-bank"
        ondragover="bankDragOver(event)"
        ondrop="bankDrop(event)">
   </div>
 
+  <div class="comic-strip" id="comic-strip" aria-label="Story panels"></div>
 
   <div class="btn-row">
     <button class="main-btn" id="btn-check" onclick="checkAnswers()">Verificar</button>
