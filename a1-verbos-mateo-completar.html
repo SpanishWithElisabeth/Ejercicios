@@ -112,18 +112,22 @@
       min-width: 22px;
     }
     .slot-blank {
-      flex: 1;
+      display: block;
       min-height: 44px;
       border: 2px dashed #b8d8f5;
       border-radius: 8px;
-      padding: 8px 14px;
+      padding: 10px 14px;
       background: #f8fbfe;
       cursor: pointer;
-      display: flex;
-      align-items: center;
       font-size: 0.95rem;
-      line-height: 1.4;
+      line-height: 1.45;
       transition: border-color 0.15s, background 0.15s;
+      word-spacing: normal;
+      white-space: normal;
+    }
+    .slot-blank b, .chip b {
+      display: inline;
+      font-weight: 700;
     }
     .slot-blank:hover { border-color: #89c2f1; background: #eef6fd; }
     .slot-blank.drag-over { border-color: #5e9ed7; background: #e8f3fd; }
@@ -313,8 +317,8 @@
     { id: 'p2', html: 'Sale a caminar porque quiere <b>hacer</b> ejercicio.' },
     { id: 'p3', html: 'Cuando llega al parque <b>ve</b> a Lucía, su nueva compañera de clase.' },
     { id: 'p4', html: 'Mateo <b>se pone</b> muy nervioso porque le gusta Lucía.' },
-    { id: 'p5', html: '<b>Le pide</b> su correo electrónico, pero ella no le da su correo.' },
-    { id: 'p6', html: 'Mateo se pone triste, ya no tiene ganas de caminar y <b>va a</b> su casa.' }
+    { id: 'p5', html: '<b>Le pide</b> su número de teléfono y ella <b>le da</b> su número porque le gusta su perro.' },
+    { id: 'p6', html: 'Mateo se pone muy contento y <b>vuelve</b> a casa con su perro. Su perro <b>tiene ganas</b> de comer.' }
   ];
 
   // SVG markup for each panel. Mateo, Lucía, and the dog reuse the <symbol> defs in the page.
@@ -359,27 +363,35 @@
       <use href="#lucia" x="115" y="78" width="28" height="42"/>
       <text x="100" y="58" font-size="22" fill="#d77a5e" font-weight="bold">💕</text>
     </svg>`,
-    `<svg viewBox="0 0 200 160" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Le pide su correo">
+    `<svg viewBox="0 0 200 160" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Lucía le da su número">
       <rect width="200" height="160" fill="#eaf3e6"/>
       <rect x="0" y="120" width="200" height="40" fill="#c8dfb8"/>
       <use href="#mateo" x="40" y="78" width="28" height="42"/>
       <use href="#lucia" x="130" y="78" width="28" height="42"/>
-      <rect x="88" y="86" width="22" height="34" rx="3" fill="#1a4a6e" stroke="#0d2e44" stroke-width="1.5"/>
-      <rect x="91" y="90" width="16" height="22" fill="#89c2f1"/>
-      <circle cx="99" cy="116" r="1.5" fill="#fff"/>
-      <text x="92" y="78" font-size="22" fill="#5e9ed7" font-weight="bold">?</text>
+      <use href="#dog" x="78" y="98" width="36" height="22"/>
+      <rect x="115" y="86" width="20" height="32" rx="3" fill="#1a4a6e" stroke="#0d2e44" stroke-width="1.5"/>
+      <rect x="118" y="90" width="14" height="20" fill="#89c2f1"/>
+      <circle cx="125" cy="114" r="1.4" fill="#fff"/>
+      <path d="M 132 102 Q 122 96 112 102" stroke="#5e9ed7" stroke-width="2" fill="none" stroke-dasharray="3 2"/>
+      <text x="93" y="50" font-size="20" fill="#d77a5e" font-weight="bold">💕</text>
     </svg>`,
-    `<svg viewBox="0 0 200 160" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Mateo va a su casa">
-      <rect width="200" height="160" fill="#f4ecdc"/>
-      <rect x="0" y="120" width="200" height="40" fill="#e6d5b8"/>
-      <circle cx="170" cy="38" r="14" fill="#f5ca64" opacity="0.7"/>
-      <rect x="125" y="55" width="60" height="65" fill="#d4a574" stroke="#8b6a3f" stroke-width="2"/>
-      <polygon points="120,55 155,32 190,55" fill="#a76f3e"/>
-      <rect x="142" y="82" width="22" height="38" fill="#6b4a2a"/>
-      <use href="#mateo" x="50" y="78" width="28" height="42"/>
-      <use href="#dog" x="20" y="98" width="36" height="22"/>
-      <text x="80" y="80" font-size="20" fill="#5e9ed7" font-weight="bold">💧</text>
-      <text x="95" y="46" font-size="22" fill="#5e9ed7" font-weight="bold">→</text>
+    `<svg viewBox="0 0 200 160" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Mateo vuelve a casa contento">
+      <rect width="200" height="160" fill="#f4f8fd"/>
+      <rect x="0" y="120" width="200" height="40" fill="#dbe9f5"/>
+      <rect x="20" y="50" width="80" height="70" fill="#e8d4b8" stroke="#a78b6a" stroke-width="2"/>
+      <polygon points="15,50 60,25 105,50" fill="#a76f3e"/>
+      <rect x="50" y="78" width="22" height="42" fill="#7b5a3a"/>
+      <circle cx="68" cy="100" r="2" fill="#f5ca64"/>
+      <use href="#mateo" x="115" y="78" width="28" height="42"/>
+      <use href="#dog" x="155" y="98" width="36" height="22"/>
+      <text x="142" y="74" font-size="18" fill="#d77a5e" font-weight="bold">💕</text>
+      <text x="92" y="42" font-size="22" fill="#5e9ed7" font-weight="bold">←</text>
+      <circle cx="186" cy="84" r="3" fill="#fff" stroke="#b8d8f5" stroke-width="1"/>
+      <circle cx="190" cy="78" r="2" fill="#fff" stroke="#b8d8f5" stroke-width="1"/>
+      <ellipse cx="184" cy="68" rx="12" ry="9" fill="#fff" stroke="#b8d8f5" stroke-width="1.5"/>
+      <ellipse cx="184" cy="68" rx="6" ry="3" fill="#d4a574"/>
+      <circle cx="180" cy="66" r="1" fill="#7a4a28"/>
+      <circle cx="187" cy="68" r="1" fill="#7a4a28"/>
     </svg>`
   ];
 
