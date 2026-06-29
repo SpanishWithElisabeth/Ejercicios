@@ -153,10 +153,23 @@
   .result p { color: #555; margin-bottom: 14px; }
 
   @media (max-width: 620px) {
-    .board { grid-template-columns: 1fr; gap: 14px; }
-    .col-inner { grid-template-columns: repeat(2, 1fr); }
-    .tile { min-height: 88px; font-size: 0.9rem; }
-    .tile img { max-height: 72px; }
+    body { padding: 14px 10px 36px; }
+    h1 { font-size: 1.2rem; }
+    .instructions { font-size: 0.88rem; margin-bottom: 12px; }
+    .score-bar {
+      position: sticky; top: 0; z-index: 5;
+      font-size: 0.8rem; gap: 6px; padding: 8px 10px;
+    }
+    .board { grid-template-columns: 1fr 1fr; gap: 8px; }
+    .col-inner { grid-template-columns: 1fr; gap: 8px; }
+    .column h2 { font-size: 0.68rem; margin-bottom: 6px; }
+    .tile { min-height: 72px; padding: 8px 6px; font-size: 0.92rem; border-radius: 10px; }
+    .tile img { max-height: 60px; }
+    .btn { padding: 8px 12px; font-size: 0.85rem; }
+  }
+  @media (max-width: 380px) {
+    .tile { min-height: 64px; font-size: 0.85rem; }
+    .tile img { max-height: 52px; }
   }
 </style>
 </head>
@@ -173,9 +186,10 @@
 </p>
 
 <div class="score-bar">
-  <div><strong id="matched">0</strong> / <span id="total">12</span> matches</div>
+  <div>Set <strong id="setno">1 of 2</strong></div>
+  <div><strong id="matched">0</strong> / <span id="total">8</span> matches</div>
   <div>Attempts: <strong id="attempts">0</strong></div>
-  <button class="btn" id="restart">New round</button>
+  <button class="btn" id="restart">Next set</button>
 </div>
 
 <div class="board">
@@ -191,8 +205,8 @@
 
 <div class="result" id="result">
   <h3 id="result-title">Nice work</h3>
-  <p id="result-text">You matched all 12 words.</p>
-  <button class="btn" id="play-again">Play again</button>
+  <p id="result-text">You matched all 8 words.</p>
+  <button class="btn" id="play-again">Next set</button>
 </div>
 
 <script>
@@ -215,15 +229,17 @@
     { slug: 'la-cama',              label: 'La cama' }
   ];
 
-  const ROUND_SIZE = 12;
+  const ROUND_SIZE = 8;
   const imagesEl  = document.getElementById('images');
   const wordsEl   = document.getElementById('words');
   const matchedEl = document.getElementById('matched');
   const totalEl   = document.getElementById('total');
+  const setEl     = document.getElementById('setno');
   const attemptsEl = document.getElementById('attempts');
   const resultEl  = document.getElementById('result');
   const resultText = document.getElementById('result-text');
   const resultTitle = document.getElementById('result-title');
+  const playAgainBtn = document.getElementById('play-again');
 
   let selectedImg = null;
   let selectedWord = null;
@@ -231,6 +247,9 @@
   let attempts = 0;
   let locked = false;
   let round = [];
+  let deck = [];
+  let setIndex = 0;
+  let totalSets = Math.ceil(ITEMS.length / ROUND_SIZE);
 
   function shuffle(arr) {
     const a = arr.slice();
@@ -326,16 +345,27 @@
 
   function finish() {
     const perfect = attempts === round.length;
-    resultTitle.textContent = perfect ? 'Perfect round' : 'Nice work';
-    resultText.textContent = perfect
+    const moreSets = (setIndex + 1) < totalSets;
+    resultTitle.textContent = perfect ? 'Perfect set' : 'Nice work';
+    const base = perfect
       ? `You matched all ${round.length} words on the first try.`
       : `You matched all ${round.length} words in ${attempts} attempts.`;
+    resultText.textContent = moreSets
+      ? base + ' Ready for the next set?'
+      : base + ' That was the last set. Play again to shuffle a fresh round.';
+    playAgainBtn.textContent = moreSets ? 'Next set' : 'Play again';
     resultEl.classList.add('show');
     resultEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }
 
-  function start() {
-    round = shuffle(ITEMS).slice(0, ROUND_SIZE);
+  function buildDeck() {
+    deck = shuffle(ITEMS);
+    setIndex = 0;
+  }
+
+  function loadSet() {
+    if (setIndex >= totalSets) buildDeck();
+    round = deck.slice(setIndex * ROUND_SIZE, setIndex * ROUND_SIZE + ROUND_SIZE);
     matched = 0;
     attempts = 0;
     selectedImg = null;
@@ -344,12 +374,24 @@
     matchedEl.textContent = '0';
     attemptsEl.textContent = '0';
     totalEl.textContent = round.length;
+    if (setEl) setEl.textContent = (setIndex + 1) + ' of ' + totalSets;
     resultEl.classList.remove('show');
     render();
   }
 
-  document.getElementById('restart').addEventListener('click', start);
-  document.getElementById('play-again').addEventListener('click', start);
+  function nextSet() {
+    setIndex++;
+    if (setIndex >= totalSets) buildDeck();
+    loadSet();
+  }
+
+  function start() {
+    buildDeck();
+    loadSet();
+  }
+
+  document.getElementById('restart').addEventListener('click', nextSet);
+  document.getElementById('play-again').addEventListener('click', nextSet);
   start();
 </script>
 
