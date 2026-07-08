@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Viaje a Madrid Cap. 4 — Matching Game</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #f4f8fd;
+    color: #222;
+    min-height: 100vh;
+    padding: 24px 16px 48px;
+  }
+  header {
+    max-width: 900px;
+    margin: 0 auto 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  h1 { font-size: 1.5rem; color: #5e9ed7; }
+  .badge {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    background: #f5ca64;
+    color: #1a1a1a;
+    border-radius: 20px;
+    padding: 4px 10px;
+  }
+  .instructions {
+    max-width: 900px;
+    margin: 0 auto 18px;
+    font-size: 0.95rem;
+    color: #555;
+    line-height: 1.45;
+  }
+  .score-bar {
+    max-width: 900px;
+    margin: 0 auto 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 10px 14px;
+    background: #fff;
+    border: 1px solid #d0e4f5;
+    border-radius: 10px;
+    font-size: 0.88rem;
+    color: #555;
+    flex-wrap: wrap;
+  }
+  .score-bar strong { color: #5e9ed7; }
+  .btn {
+    background: #5e9ed7;
+    color: #fff;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .btn:hover:not(:disabled) { background: #89c2f1; }
+  .btn:disabled { opacity: 0.5; cursor: default; }
+
+  .board {
+    max-width: 900px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+  .column h2 {
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: #aaa;
+    margin-bottom: 10px;
+    text-align: center;
+  }
+  .col-inner {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+  .tile {
+    background: #fff;
+    border: 2px solid #d0e4f5;
+    border-radius: 12px;
+    padding: 10px 8px;
+    cursor: pointer;
+    transition: border-color 0.15s, transform 0.15s, background 0.15s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 96px;
+    text-align: center;
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: #222;
+    user-select: none;
+  }
+  .tile:hover:not(.matched):not(.selected) {
+    border-color: #89c2f1;
+    transform: translateY(-1px);
+  }
+  .tile.selected {
+    border-color: #5e9ed7;
+    background: #e8f3fd;
+  }
+  .tile.wrong {
+    border-color: #d77a5e;
+    background: #fdf0eb;
+    animation: shake 0.35s;
+  }
+  .tile.matched {
+    opacity: 0.35;
+    cursor: default;
+    border-color: #d0e4f5;
+    background: #fff;
+  }
+  .tile img {
+    max-width: 100%;
+    max-height: 84px;
+    object-fit: contain;
+    pointer-events: none;
+  }
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-4px); }
+    75% { transform: translateX(4px); }
+  }
+
+  .result {
+    max-width: 900px;
+    margin: 20px auto 0;
+    padding: 22px;
+    background: #fff;
+    border: 1px solid #d0e4f5;
+    border-radius: 12px;
+    text-align: center;
+    display: none;
+  }
+  .result.show { display: block; }
+  .result h3 { color: #5e9ed7; margin-bottom: 8px; font-size: 1.2rem; }
+  .result p { color: #555; margin-bottom: 14px; }
+
+  @media (max-width: 620px) {
+    body { padding: 14px 10px 36px; }
+    h1 { font-size: 1.2rem; }
+    .instructions { font-size: 0.88rem; margin-bottom: 12px; }
+    .score-bar {
+      position: sticky; top: 0; z-index: 5;
+      font-size: 0.8rem; gap: 6px; padding: 8px 10px;
+    }
+    .board { grid-template-columns: 1fr 1fr; gap: 8px; }
+    .col-inner { grid-template-columns: 1fr; gap: 8px; }
+    .column h2 { font-size: 0.68rem; margin-bottom: 6px; }
+    .tile { min-height: 72px; padding: 8px 6px; font-size: 0.92rem; border-radius: 10px; }
+    .tile img { max-height: 60px; }
+    .btn { padding: 8px 12px; font-size: 0.85rem; }
+  }
+  @media (max-width: 380px) {
+    .tile { min-height: 64px; font-size: 0.85rem; }
+    .tile img { max-height: 52px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Viaje a Madrid Cap. 4 — Matching</h1>
+  <span class="badge">A1</span>
+</header>
+
+<p class="instructions">
+  Match each picture with its word. Click a picture, then click the word that goes with it.
+  Correct matches fade out. Keep going until the board is empty.
+</p>
+
+<div class="score-bar">
+  <div>Set <strong id="setno">1 of 2</strong></div>
+  <div><strong id="matched">0</strong> / <span id="total">8</span> matches</div>
+  <div>Attempts: <strong id="attempts">0</strong></div>
+  <button class="btn" id="restart">Next set</button>
+</div>
+
+<div class="board">
+  <div class="column">
+    <h2>Pictures</h2>
+    <div class="col-inner" id="images"></div>
+  </div>
+  <div class="column">
+    <h2>Words</h2>
+    <div class="col-inner" id="words"></div>
+  </div>
+</div>
+
+<div class="result" id="result">
+  <h3 id="result-title">Nice work</h3>
+  <p id="result-text">You matched all 8 words.</p>
+  <button class="btn" id="play-again">Next set</button>
+</div>
+
+<script>
+  const ITEMS = [
+    { slug: 'dormir',        label: 'Dormir' },
+    { slug: 'me-siento',     label: 'Me siento' },
+    { slug: 'quedarse',      label: 'Quedarse' },
+    { slug: 'irse',          label: 'Irse' },
+    { slug: 'vestirse',      label: 'Vestirse' },
+    { slug: 'oir',           label: 'Oír' },
+    { slug: 'el-ruido',      label: 'El ruido' },
+    { slug: 'juntos',        label: 'Juntos' },
+    { slug: 'me-voy',        label: 'Me voy' },
+    { slug: 'me-quedo',      label: 'Me quedo' },
+    { slug: 'nos-vamos',     label: 'Nos vamos' },
+    { slug: 'llevar',        label: 'Llevar' },
+    { slug: 'entonces',      label: 'Entonces' },
+    { slug: 'siguiente',     label: 'Siguiente' },
+    { slug: 'que-te-parece', label: '¿Qué te parece?' }
+  ];
+
+  const ROUND_SIZE = 8;
+  const imagesEl  = document.getElementById('images');
+  const wordsEl   = document.getElementById('words');
+  const matchedEl = document.getElementById('matched');
+  const totalEl   = document.getElementById('total');
+  const setEl     = document.getElementById('setno');
+  const attemptsEl = document.getElementById('attempts');
+  const resultEl  = document.getElementById('result');
+  const resultText = document.getElementById('result-text');
+  const resultTitle = document.getElementById('result-title');
+  const playAgainBtn = document.getElementById('play-again');
+
+  let selectedImg = null;
+  let selectedWord = null;
+  let matched = 0;
+  let attempts = 0;
+  let locked = false;
+  let round = [];
+  let deck = [];
+  let setIndex = 0;
+  let totalSets = Math.ceil(ITEMS.length / ROUND_SIZE);
+
+  function shuffle(arr) {
+    const a = arr.slice();
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  function render() {
+    imagesEl.innerHTML = '';
+    wordsEl.innerHTML = '';
+
+    const imgOrder = shuffle(round);
+    const wordOrder = shuffle(round);
+
+    imgOrder.forEach(v => {
+      const tile = document.createElement('div');
+      tile.className = 'tile';
+      tile.dataset.slug = v.slug;
+      tile.dataset.kind = 'img';
+      const img = document.createElement('img');
+      img.src = `images/viaje-madrid-cap4/${v.slug}.png`;
+      img.alt = v.label;
+      tile.appendChild(img);
+      tile.addEventListener('click', () => onTile(tile));
+      imagesEl.appendChild(tile);
+    });
+
+    wordOrder.forEach(v => {
+      const tile = document.createElement('div');
+      tile.className = 'tile';
+      tile.dataset.slug = v.slug;
+      tile.dataset.kind = 'word';
+      tile.textContent = v.label;
+      tile.addEventListener('click', () => onTile(tile));
+      wordsEl.appendChild(tile);
+    });
+  }
+
+  function onTile(tile) {
+    if (locked || tile.classList.contains('matched')) return;
+    const kind = tile.dataset.kind;
+
+    if (tile.classList.contains('selected')) {
+      tile.classList.remove('selected');
+      if (kind === 'img') selectedImg = null;
+      else selectedWord = null;
+      return;
+    }
+
+    if (kind === 'img') {
+      if (selectedImg) selectedImg.classList.remove('selected');
+      selectedImg = tile;
+    } else {
+      if (selectedWord) selectedWord.classList.remove('selected');
+      selectedWord = tile;
+    }
+    tile.classList.add('selected');
+
+    if (selectedImg && selectedWord) {
+      attempts++;
+      attemptsEl.textContent = attempts;
+      if (selectedImg.dataset.slug === selectedWord.dataset.slug) {
+        const a = selectedImg, b = selectedWord;
+        setTimeout(() => {
+          a.classList.remove('selected');
+          b.classList.remove('selected');
+          a.classList.add('matched');
+          b.classList.add('matched');
+          matched++;
+          matchedEl.textContent = matched;
+          if (matched === round.length) finish();
+        }, 250);
+        selectedImg = null;
+        selectedWord = null;
+      } else {
+        locked = true;
+        const a = selectedImg, b = selectedWord;
+        a.classList.add('wrong');
+        b.classList.add('wrong');
+        setTimeout(() => {
+          a.classList.remove('wrong', 'selected');
+          b.classList.remove('wrong', 'selected');
+          selectedImg = null;
+          selectedWord = null;
+          locked = false;
+        }, 650);
+      }
+    }
+  }
+
+  function finish() {
+    const perfect = attempts === round.length;
+    const moreSets = (setIndex + 1) < totalSets;
+    resultTitle.textContent = perfect ? 'Perfect set' : 'Nice work';
+    const base = perfect
+      ? `You matched all ${round.length} words on the first try.`
+      : `You matched all ${round.length} words in ${attempts} attempts.`;
+    resultText.textContent = moreSets
+      ? base + ' Ready for the next set?'
+      : base + ' That was the last set. Play again to shuffle a fresh round.';
+    playAgainBtn.textContent = moreSets ? 'Next set' : 'Play again';
+    resultEl.classList.add('show');
+    resultEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  function buildDeck() {
+    deck = shuffle(ITEMS);
+    setIndex = 0;
+  }
+
+  function loadSet() {
+    if (setIndex >= totalSets) buildDeck();
+    round = deck.slice(setIndex * ROUND_SIZE, setIndex * ROUND_SIZE + ROUND_SIZE);
+    matched = 0;
+    attempts = 0;
+    selectedImg = null;
+    selectedWord = null;
+    locked = false;
+    matchedEl.textContent = '0';
+    attemptsEl.textContent = '0';
+    totalEl.textContent = round.length;
+    if (setEl) setEl.textContent = (setIndex + 1) + ' of ' + totalSets;
+    resultEl.classList.remove('show');
+    render();
+  }
+
+  function nextSet() {
+    setIndex++;
+    if (setIndex >= totalSets) buildDeck();
+    loadSet();
+  }
+
+  function start() {
+    buildDeck();
+    loadSet();
+  }
+
+  document.getElementById('restart').addEventListener('click', nextSet);
+  document.getElementById('play-again').addEventListener('click', nextSet);
+  start();
+</script>
+
+</body>
+</html>
