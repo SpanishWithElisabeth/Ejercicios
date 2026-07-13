@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Viaje a Madrid Cap. 4 — Matching Game</title>
+<title>Viaje a Madrid Cap. 5 — Matching Game</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
@@ -176,7 +176,7 @@
 <body>
 
 <header>
-  <h1>Viaje a Madrid Cap. 4 — Matching</h1>
+  <h1>Viaje a Madrid Cap. 5 — Matching</h1>
   <span class="badge">A1</span>
 </header>
 
@@ -211,22 +211,21 @@
 
 <script>
   const ITEMS = [
-    { slug: 'ayudar',     label: 'Ayudar' },
-    { slug: 'la-camisa',  label: 'La camisa' },
-    { slug: 'buscar',     label: 'Buscar' },
-    { slug: 'despues',    label: 'Después' },
-    { slug: 'cansado-a',  label: 'Cansado/a' },
-    { slug: 'encontrar',  label: 'Encontrar' },
-    { slug: 'enviar',     label: 'Enviar' },
-    { slug: 'facil',      label: 'Fácil' },
-    { slug: 'el-vaso',    label: 'El vaso' },
-    { slug: 'dar',        label: 'Dar' },
-    { slug: 'volver',     label: 'Volver' },
-    { slug: 'ayer',       label: 'Ayer' },
-    { slug: 'alli',       label: 'Allí' },
-    { slug: 'vago-a',     label: 'Vago/a' },
-    { slug: 'la-luz',     label: 'La luz' },
-    { slug: 'enfermo-a',  label: 'Enfermo/a' }
+    { slug: 'dormir',        label: 'Dormir' },
+    { slug: 'me-siento',     label: 'Me siento' },
+    { slug: 'quedarse',      label: 'Quedarse' },
+    { slug: 'irse',          label: 'Irse' },
+    { slug: 'vestirse',      label: 'Vestirse' },
+    { slug: 'oir',           label: 'Oír' },
+    { slug: 'el-ruido',      label: 'El ruido' },
+    { slug: 'juntos',        label: 'Juntos' },
+    { slug: 'me-voy',        label: 'Me voy' },
+    { slug: 'me-quedo',      label: 'Me quedo' },
+    { slug: 'nos-vamos',     label: 'Nos vamos' },
+    { slug: 'llevar',        label: 'Llevar' },
+    { slug: 'entonces',      label: 'Entonces' },
+    { slug: 'siguiente',     label: 'Siguiente' },
+    { slug: 'que-te-parece', label: '¿Qué te parece?' }
   ];
 
   const ROUND_SIZE = 8;
@@ -273,7 +272,7 @@
       tile.dataset.slug = v.slug;
       tile.dataset.kind = 'img';
       const img = document.createElement('img');
-      img.src = `images/viaje-madrid-cap4/${v.slug}.png`;
+      img.src = `images/viaje-madrid-cap5/${v.slug}.png`;
       img.alt = v.label;
       tile.appendChild(img);
       tile.addEventListener('click', () => onTile(tile));
