@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Viaje a Madrid — Juego completo</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #f4f8fd;
+    color: #222;
+    min-height: 100vh;
+    padding: 24px 16px 48px;
+  }
+  header {
+    max-width: 900px;
+    margin: 0 auto 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  h1 { font-size: 1.5rem; color: #5e9ed7; }
+  .badge {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    background: #f5ca64;
+    color: #1a1a1a;
+    border-radius: 20px;
+    padding: 4px 10px;
+  }
+  .instructions {
+    max-width: 900px;
+    margin: 0 auto 18px;
+    font-size: 0.95rem;
+    color: #555;
+    line-height: 1.45;
+  }
+  .score-bar {
+    max-width: 900px;
+    margin: 0 auto 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 10px 14px;
+    background: #fff;
+    border: 1px solid #d0e4f5;
+    border-radius: 10px;
+    font-size: 0.88rem;
+    color: #555;
+    flex-wrap: wrap;
+  }
+  .score-bar strong { color: #5e9ed7; }
+  .btn {
+    background: #5e9ed7;
+    color: #fff;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .btn:hover:not(:disabled) { background: #89c2f1; }
+  .btn:disabled { opacity: 0.5; cursor: default; }
+
+  .board {
+    max-width: 900px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+  .column h2 {
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: #aaa;
+    margin-bottom: 10px;
+    text-align: center;
+  }
+  .col-inner {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+  .tile {
+    background: #fff;
+    border: 2px solid #d0e4f5;
+    border-radius: 12px;
+    padding: 10px 8px;
+    cursor: pointer;
+    transition: border-color 0.15s, transform 0.15s, background 0.15s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 96px;
+    text-align: center;
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: #222;
+    user-select: none;
+  }
+  .tile:hover:not(.matched):not(.selected) {
+    border-color: #89c2f1;
+    transform: translateY(-1px);
+  }
+  .tile.selected {
+    border-color: #5e9ed7;
+    background: #e8f3fd;
+  }
+  .tile.wrong {
+    border-color: #d77a5e;
+    background: #fdf0eb;
+    animation: shake 0.35s;
+  }
+  .tile.matched {
+    opacity: 0.35;
+    cursor: default;
+    border-color: #d0e4f5;
+    background: #fff;
+  }
+  .tile img {
+    max-width: 100%;
+    max-height: 84px;
+    object-fit: contain;
+    pointer-events: none;
+  }
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-4px); }
+    75% { transform: translateX(4px); }
+  }
+
+  .result {
+    max-width: 900px;
+    margin: 20px auto 0;
+    padding: 22px;
+    background: #fff;
+    border: 1px solid #d0e4f5;
+    border-radius: 12px;
+    text-align: center;
+    display: none;
+  }
+  .result.show { display: block; }
+  .result h3 { color: #5e9ed7; margin-bottom: 8px; font-size: 1.2rem; }
+  .result p { color: #555; margin-bottom: 14px; }
+
+  @media (max-width: 620px) {
+    body { padding: 14px 10px 36px; }
+    h1 { font-size: 1.2rem; }
+    .instructions { font-size: 0.88rem; margin-bottom: 12px; }
+    .score-bar {
+      position: sticky; top: 0; z-index: 5;
+      font-size: 0.8rem; gap: 6px; padding: 8px 10px;
+    }
+    .board { grid-template-columns: 1fr 1fr; gap: 8px; }
+    .col-inner { grid-template-columns: 1fr; gap: 8px; }
+    .column h2 { font-size: 0.68rem; margin-bottom: 6px; }
+    .tile { min-height: 72px; padding: 8px 6px; font-size: 0.92rem; border-radius: 10px; }
+    .tile img { max-height: 60px; }
+    .btn { padding: 8px 12px; font-size: 0.85rem; }
+  }
+  @media (max-width: 380px) {
+    .tile { min-height: 64px; font-size: 0.85rem; }
+    .tile img { max-height: 52px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Viaje a Madrid — Juego completo</h1>
+  <span class="badge">A1</span>
+</header>
+
+<p class="instructions">
+  All the vocabulary from Cap. 1–10 in one game. Match each picture with its word: click a picture,
+  then click the word that goes with it. Correct matches fade out. Finish a set to move on to the next one.
+</p>
+
+<div class="score-bar">
+  <div>Set <strong id="setno">1 of 16</strong></div>
+  <div><strong id="matched">0</strong> / <span id="total">8</span> matches</div>
+  <div>Attempts: <strong id="attempts">0</strong></div>
+  <button class="btn" id="restart">Next set</button>
+</div>
+
+<div class="board">
+  <div class="column">
+    <h2>Pictures</h2>
+    <div class="col-inner" id="images"></div>
+  </div>
+  <div class="column">
+    <h2>Words</h2>
+    <div class="col-inner" id="words"></div>
+  </div>
+</div>
+
+<div class="result" id="result">
+  <h3 id="result-title">Nice work</h3>
+  <p id="result-text">You matched all 8 words.</p>
+  <button class="btn" id="play-again">Next set</button>
+</div>
+
+<script>
+  const ITEMS = [
+    { slug: 'la-maleta',            label: 'La maleta',                                      dir: 'viaje-madrid' },
+    { slug: 'el-tren',              label: 'El tren',                                        dir: 'viaje-madrid' },
+    { slug: 'pasar-tiempo-con',     label: 'Pasar tiempo con',                               dir: 'viaje-madrid' },
+    { slug: 'alquilar',             label: 'Alquilar',                                       dir: 'viaje-madrid' },
+    { slug: 'el-helado',            label: 'El helado',                                      dir: 'viaje-madrid' },
+    { slug: 'listo-a',              label: 'Listo/a',                                        dir: 'viaje-madrid' },
+    { slug: 'temprano',             label: 'Temprano',                                       dir: 'viaje-madrid' },
+    { slug: 'el-movil-celular',     label: 'El celular (el móvil, primarily used in Spain)', dir: 'viaje-madrid' },
+    { slug: 'el-partido-de-futbol', label: 'El partido de fútbol',                           dir: 'viaje-madrid' },
+    { slug: 'vago-a',               label: 'Vago/a',                                         dir: 'viaje-madrid' },
+    { slug: 'el-cafe',              label: 'El café',                                        dir: 'viaje-madrid' },
+    { slug: 'el-cielo-azul',        label: 'El cielo azul',                                  dir: 'viaje-madrid' },
+    { slug: 'lleno-a',              label: 'Lleno/a',                                        dir: 'viaje-madrid' },
+    { slug: 'la-semana-que-viene',  label: 'La semana que viene',                            dir: 'viaje-madrid' },
+    { slug: 'tener-ganas-de',       label: 'Tener ganas de',                                 dir: 'viaje-madrid' },
+    { slug: 'la-cama',              label: 'La cama',                                        dir: 'viaje-madrid' },
+    { slug: 'los-ojos',             label: 'Los ojos',                                       dir: 'viaje-madrid-cap2' },
+    { slug: 'la-ventana',           label: 'La ventana',                                     dir: 'viaje-madrid-cap2' },
+    { slug: 'el-paisaje',           label: 'El paisaje',                                     dir: 'viaje-madrid-cap2' },
+    { slug: 'el-cargador',          label: 'El cargador',                                    dir: 'viaje-madrid-cap2' },
+    { slug: 'el-cajero',            label: 'El cajero',                                      dir: 'viaje-madrid-cap2' },
+    { slug: 'comprar',              label: 'Comprar',                                        dir: 'viaje-madrid-cap2' },
+    { slug: 'salir',                label: 'Salir',                                          dir: 'viaje-madrid-cap2' },
+    { slug: 'llover',               label: 'Llover',                                         dir: 'viaje-madrid-cap2' },
+    { slug: 'pensar',               label: 'Pensar',                                         dir: 'viaje-madrid-cap2' },
+    { slug: 'por-favor',            label: 'Por favor',                                      dir: 'viaje-madrid-cap2' },
+    { slug: 'buena-suerte',         label: 'Buena suerte',                                   dir: 'viaje-madrid-cap2' },
+    { slug: 'de-verdad',            label: '¿De verdad?',                                    dir: 'viaje-madrid-cap2' },
+    { slug: 'otra-vez',             label: 'Otra vez',                                       dir: 'viaje-madrid-cap2' },
+    { slug: 'abrir',                label: 'Abrir',                                          dir: 'viaje-madrid-cap2' },
+    { slug: 'cerrar',               label: 'Cerrar',                                         dir: 'viaje-madrid-cap2' },
+    { slug: 'desayunar',            label: 'Desayunar',                                      dir: 'viaje-madrid-cap2' },
+    { slug: 'el-pelo',              label: 'El pelo',                                        dir: 'viaje-madrid-cap3' },
+    { slug: 'empezar',              label: 'Empezar',                                        dir: 'viaje-madrid-cap3', pair: 'x3' },
+    { slug: 'la-cena',              label: 'La cena',                                        dir: 'viaje-madrid-cap3' },
+    { slug: 'querer',               label: 'Querer',                                         dir: 'viaje-madrid-cap3' },
+    { slug: 'nadie',                label: 'Nadie',                                          dir: 'viaje-madrid-cap3' },
+    { slug: 'la-cancion',           label: 'La canción',                                     dir: 'viaje-madrid-cap3' },
+    { slug: 'toca-musica',          label: 'Tocar música',                                   dir: 'viaje-madrid-cap3' },
+    { slug: 'primera-vez',          label: 'Primera vez',                                    dir: 'viaje-madrid-cap3' },
+    { slug: 'la-vida',              label: 'La vida',                                        dir: 'viaje-madrid-cap3' },
+    { slug: 'beber-tomar',          label: 'Beber/tomar',                                    dir: 'viaje-madrid-cap3' },
+    { slug: 'mirar',                label: 'Mirar',                                          dir: 'viaje-madrid-cap3' },
+    { slug: 'hijo-hija',            label: 'Hijo/hija',                                      dir: 'viaje-madrid-cap3' },
+    { slug: 'la-comida',            label: 'La comida',                                      dir: 'viaje-madrid-cap3' },
+    { slug: 'segunda-vez',          label: 'Segunda vez',                                    dir: 'viaje-madrid-cap3' },
+    { slug: 'no-te-preocupes',      label: 'No te preocupes',                                dir: 'viaje-madrid-cap3' },
+    { slug: 'decir',                label: 'Decir',                                          dir: 'viaje-madrid-cap3' },
+    { slug: 'ayudar',               label: 'Ayudar',                                         dir: 'viaje-madrid-cap4' },
+    { slug: 'la-camisa',            label: 'La camisa',                                      dir: 'viaje-madrid-cap4' },
+    { slug: 'buscar',               label: 'Buscar',                                         dir: 'viaje-madrid-cap4' },
+    { slug: 'despues',              label: 'Después',                                        dir: 'viaje-madrid-cap4' },
+    { slug: 'cansado-a',            label: 'Cansado/a',                                      dir: 'viaje-madrid-cap4' },
+    { slug: 'encontrar',            label: 'Encontrar',                                      dir: 'viaje-madrid-cap4' },
+    { slug: 'enviar',               label: 'Enviar',                                         dir: 'viaje-madrid-cap4' },
+    { slug: 'facil',                label: 'Fácil',                                          dir: 'viaje-madrid-cap4' },
+    { slug: 'el-vaso',              label: 'El vaso',                                        dir: 'viaje-madrid-cap4' },
+    { slug: 'dar',                  label: 'Dar',                                            dir: 'viaje-madrid-cap4' },
+    { slug: 'volver',               label: 'Volver',                                         dir: 'viaje-madrid-cap4' },
+    { slug: 'ayer',                 label: 'Ayer',                                           dir: 'viaje-madrid-cap4' },
+    { slug: 'alli',                 label: 'Allí',                                           dir: 'viaje-madrid-cap4' },
+    { slug: 'la-luz',               label: 'La luz',                                         dir: 'viaje-madrid-cap4' },
+    { slug: 'enfermo-a',            label: 'Enfermo/a',                                      dir: 'viaje-madrid-cap4' },
+    { slug: 'dormir',               label: 'Dormir',                                         dir: 'viaje-madrid-cap5' },
+    { slug: 'me-siento',            label: 'Me siento',                                      dir: 'viaje-madrid-cap5' },
+    { slug: 'quedarse',             label: 'Quedarse',                                       dir: 'viaje-madrid-cap5' },
+    { slug: 'irse',                 label: 'Irse',                                           dir: 'viaje-madrid-cap5' },
+    { slug: 'vestirse',             label: 'Vestirse',                                       dir: 'viaje-madrid-cap5' },
+    { slug: 'oir',                  label: 'Oír',                                            dir: 'viaje-madrid-cap5' },
+    { slug: 'el-ruido',             label: 'El ruido',                                       dir: 'viaje-madrid-cap5' },
+    { slug: 'juntos',               label: 'Juntos',                                         dir: 'viaje-madrid-cap5' },
+    { slug: 'me-voy',               label: 'Me voy',                                         dir: 'viaje-madrid-cap5' },
+    { slug: 'me-quedo',             label: 'Me quedo',                                       dir: 'viaje-madrid-cap5' },
+    { slug: 'nos-vamos',            label: 'Nos vamos',                                      dir: 'viaje-madrid-cap5' },
+    { slug: 'llevar',               label: 'Llevar',                                         dir: 'viaje-madrid-cap5' },
+    { slug: 'entonces',             label: 'Entonces',                                       dir: 'viaje-madrid-cap5' },
+    { slug: 'siguiente',            label: 'Siguiente',                                      dir: 'viaje-madrid-cap5' },
+    { slug: 'que-te-parece',        label: '¿Qué te parece?',                                dir: 'viaje-madrid-cap5' },
+    { slug: 'el-arroz',             label: 'El arroz',                                       dir: 'viaje-madrid-cap6' },
+    { slug: 'el-pescado',           label: 'El pescado',                                     dir: 'viaje-madrid-cap6' },
+    { slug: 'reirse',               label: 'Reírse',                                         dir: 'viaje-madrid-cap7', pair: 'x2' },
+    { slug: 'llorar',               label: 'Llorar',                                         dir: 'viaje-madrid-cap6', pair: 'x2' },
+    { slug: 'la-llave',             label: 'La llave',                                       dir: 'viaje-madrid-cap6' },
+    { slug: 'la-puerta',            label: 'La puerta',                                      dir: 'viaje-madrid-cap6' },
+    { slug: 'la-verdad',            label: 'La verdad',                                      dir: 'viaje-madrid-cap6' },
+    { slug: 'la-mentira',           label: 'La mentira',                                     dir: 'viaje-madrid-cap6' },
+    { slug: 'lavar',                label: 'Lavar',                                          dir: 'viaje-madrid-cap6' },
+    { slug: 'secar',                label: 'Secar',                                          dir: 'viaje-madrid-cap6' },
+    { slug: 'algo',                 label: 'Algo',                                           dir: 'viaje-madrid-cap6' },
+    { slug: 'nada',                 label: 'Nada',                                           dir: 'viaje-madrid-cap6' },
+    { slug: 'nunca',                label: 'Nunca',                                          dir: 'viaje-madrid-cap6', pair: 'x1' },
+    { slug: 'siempre',              label: 'Siempre',                                        dir: 'viaje-madrid-cap6', pair: 'x1' },
+    { slug: 'alegre',               label: 'Alegre',                                         dir: 'viaje-madrid-cap7', pair: 'c78p1' },
+    { slug: 'triste',               label: 'Triste',                                         dir: 'viaje-madrid-cap7', pair: 'c78p1' },
+    { slug: 'tranquilo-a',          label: 'Tranquilo/a',                                    dir: 'viaje-madrid-cap7', pair: 'c78p3' },
+    { slug: 'nervioso-a',           label: 'Nervioso/a',                                     dir: 'viaje-madrid-cap7', pair: 'c78p3' },
+    { slug: 'divertido',            label: 'Divertido',                                      dir: 'viaje-madrid-cap7', pair: 'c78p4' },
+    { slug: 'aburrido',             label: 'Aburrido',                                       dir: 'viaje-madrid-cap7', pair: 'c78p4' },
+    { slug: 'olvidar',              label: 'Olvidar',                                        dir: 'viaje-madrid-cap7', pair: 'c78p5' },
+    { slug: 'recordar',             label: 'Recordar',                                       dir: 'viaje-madrid-cap7', pair: 'c78p5' },
+    { slug: 'el-recuerdo',          label: 'El recuerdo',                                    dir: 'viaje-madrid-cap7' },
+    { slug: 'intentar',             label: 'Intentar',                                       dir: 'viaje-madrid-cap7' },
+    { slug: 'la-camiseta',          label: 'La camiseta',                                    dir: 'viaje-madrid-cap7' },
+    { slug: 'la-silla',             label: 'La silla',                                       dir: 'viaje-madrid-cap7' },
+    { slug: 'el-vestido',           label: 'El vestido',                                     dir: 'viaje-madrid-cap7' },
+    { slug: 'la-cocina',            label: 'La cocina',                                      dir: 'viaje-madrid-cap9', pair: 'c9p5' },
+    { slug: 'el-salon',             label: 'El salón',                                       dir: 'viaje-madrid-cap9', pair: 'c9p5' },
+    { slug: 'enamorarse',           label: 'Enamorarse',                                     dir: 'viaje-madrid-cap9', pair: 'c9p6' },
+    { slug: 'te-quiero',            label: 'Te quiero',                                      dir: 'viaje-madrid-cap9', pair: 'c9p6' },
+    { slug: 'terminar',             label: 'Terminar',                                       dir: 'viaje-madrid-cap9', pair: 'x3' },
+    { slug: 'si-yes',               label: 'Sí',                                             dir: 'viaje-madrid-cap9', pair: 'c9p2' },
+    { slug: 'si-if',                label: 'Si',                                             dir: 'viaje-madrid-cap9', pair: 'c9p2' },
+    { slug: 'la-alegria',           label: 'La alegría',                                     dir: 'viaje-madrid-cap9', pair: 'c9p3' },
+    { slug: 'la-tristeza',          label: 'La tristeza',                                    dir: 'viaje-madrid-cap9', pair: 'c9p3' },
+    { slug: 'los-pasatiempos',      label: 'Los pasatiempos',                                dir: 'viaje-madrid-cap9' },
+    { slug: 'cuidar',               label: 'Cuidar',                                         dir: 'viaje-madrid-cap9' },
+    { slug: 'seco',                 label: 'Seco',                                           dir: 'viaje-madrid-cap10', pair: 'c10p2' },
+    { slug: 'mojado',               label: 'Mojado',                                         dir: 'viaje-madrid-cap10', pair: 'c10p2' },
+    { slug: 'primero',              label: 'Primero',                                        dir: 'viaje-madrid-cap10', pair: 'c10p3' },
+    { slug: 'ultimo',               label: 'Último',                                         dir: 'viaje-madrid-cap10', pair: 'c10p3' },
+    { slug: 'las-noticias',         label: 'Las noticias',                                   dir: 'viaje-madrid-cap10' },
+    { slug: 'el-verano',            label: 'El verano',                                      dir: 'viaje-madrid-cap10' },
+    { slug: 'el-vuelo',             label: 'El vuelo',                                       dir: 'viaje-madrid-cap10' },
+    { slug: 'la-llamada',           label: 'La llamada',                                     dir: 'viaje-madrid-cap10' },
+    { slug: 'la-suerte',            label: 'La suerte',                                      dir: 'viaje-madrid-cap10' },
+    { slug: 'fuera',                label: 'Fuera',                                          dir: 'viaje-madrid-cap10' },
+    { slug: 'quiza',                label: 'Quizá',                                          dir: 'viaje-madrid-cap10' }
+  ];
+
+  const ROUND_SIZE = 8;
+  const imagesEl  = document.getElementById('images');
+  const wordsEl   = document.getElementById('words');
+  const matchedEl = document.getElementById('matched');
+  const totalEl   = document.getElementById('total');
+  const setEl     = document.getElementById('setno');
+  const attemptsEl = document.getElementById('attempts');
+  const resultEl  = document.getElementById('result');
+  const resultText = document.getElementById('result-text');
+  const resultTitle = document.getElementById('result-title');
+  const playAgainBtn = document.getElementById('play-again');
+
+  let selectedImg = null;
+  let selectedWord = null;
+  let matched = 0;
+  let attempts = 0;
+  let locked = false;
+  let round = [];
+  let deck = [];
+  let setIndex = 0;
+  let totalSets = Math.ceil(ITEMS.length / ROUND_SIZE);
+
+  function shuffle(arr) {
+    const a = arr.slice();
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  function render() {
+    imagesEl.innerHTML = '';
+    wordsEl.innerHTML = '';
+
+    const imgOrder = shuffle(round);
+    const wordOrder = shuffle(round);
+
+    imgOrder.forEach(v => {
+      const tile = document.createElement('div');
+      tile.className = 'tile';
+      tile.dataset.slug = v.slug;
+      tile.dataset.kind = 'img';
+      const img = document.createElement('img');
+      img.src = `images/${v.dir}/${v.slug}.png`;
+      img.alt = v.label;
+      tile.appendChild(img);
+      tile.addEventListener('click', () => onTile(tile));
+      imagesEl.appendChild(tile);
+    });
+
+    wordOrder.forEach(v => {
+      const tile = document.createElement('div');
+      tile.className = 'tile';
+      tile.dataset.slug = v.slug;
+      tile.dataset.kind = 'word';
+      tile.textContent = v.label;
+      tile.addEventListener('click', () => onTile(tile));
+      wordsEl.appendChild(tile);
+    });
+  }
+
+  function onTile(tile) {
+    if (locked || tile.classList.contains('matched')) return;
+    const kind = tile.dataset.kind;
+
+    if (tile.classList.contains('selected')) {
+      tile.classList.remove('selected');
+      if (kind === 'img') selectedImg = null;
+      else selectedWord = null;
+      return;
+    }
+
+    if (kind === 'img') {
+      if (selectedImg) selectedImg.classList.remove('selected');
+      selectedImg = tile;
+    } else {
+      if (selectedWord) selectedWord.classList.remove('selected');
+      selectedWord = tile;
+    }
+    tile.classList.add('selected');
+
+    if (selectedImg && selectedWord) {
+      attempts++;
+      attemptsEl.textContent = attempts;
+      if (selectedImg.dataset.slug === selectedWord.dataset.slug) {
+        const a = selectedImg, b = selectedWord;
+        setTimeout(() => {
+          a.classList.remove('selected');
+          b.classList.remove('selected');
+          a.classList.add('matched');
+          b.classList.add('matched');
+          matched++;
+          matchedEl.textContent = matched;
+          if (matched === round.length) finish();
+        }, 250);
+        selectedImg = null;
+        selectedWord = null;
+      } else {
+        locked = true;
+        const a = selectedImg, b = selectedWord;
+        a.classList.add('wrong');
+        b.classList.add('wrong');
+        setTimeout(() => {
+          a.classList.remove('wrong', 'selected');
+          b.classList.remove('wrong', 'selected');
+          selectedImg = null;
+          selectedWord = null;
+          locked = false;
+        }, 650);
+      }
+    }
+  }
+
+  function finish() {
+    const perfect = attempts === round.length;
+    const moreSets = (setIndex + 1) < totalSets;
+    resultTitle.textContent = perfect ? 'Perfect set' : 'Nice work';
+    const base = perfect
+      ? `You matched all ${round.length} words on the first try.`
+      : `You matched all ${round.length} words in ${attempts} attempts.`;
+    resultText.textContent = moreSets
+      ? base + ' Ready for the next set?'
+      : base + ' That was the last set. Play again to shuffle a fresh round.';
+    playAgainBtn.textContent = moreSets ? 'Next set' : 'Play again';
+    resultEl.classList.add('show');
+    resultEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  function buildDeck() {
+    // Group items: paired items (same `pair` id) travel together into one set.
+    const groups = {};
+    const units = [];               // each unit = array of items kept together
+    ITEMS.forEach(it => {
+      if (it.pair) { (groups[it.pair] = groups[it.pair] || []).push(it); }
+      else units.push([it]);
+    });
+    Object.values(groups).forEach(g => units.push(shuffle(g)));
+    // largest units first so pairs get placed before singles fill gaps
+    units.sort((a, b) => b.length - a.length);
+
+    const nSets = Math.ceil(ITEMS.length / ROUND_SIZE);
+    const bins = Array.from({ length: nSets }, () => []);
+    units.forEach(u => {
+      // put unit in the emptiest bin that still has room for it
+      let best = -1, bestRoom = -1;
+      for (let i = 0; i < nSets; i++) {
+        const room = ROUND_SIZE - bins[i].length;
+        if (room >= u.length && (ROUND_SIZE - bins[i].length) > bestRoom) { bestRoom = ROUND_SIZE - bins[i].length; best = i; }
+      }
+      if (best < 0) { best = 0; for (let i = 1; i < nSets; i++) if (bins[i].length < bins[best].length) best = i; }
+      u.forEach(it => bins[best].push(it));
+    });
+    deck = shuffle(bins.map(b => shuffle(b)));   // shuffle set order and within-set order
+    totalSets = deck.length;
+    setIndex = 0;
+  }
+
+  function loadSet() {
+    if (setIndex >= totalSets) buildDeck();
+    round = deck[setIndex];
+    matched = 0;
+    attempts = 0;
+    selectedImg = null;
+    selectedWord = null;
+    locked = false;
+    matchedEl.textContent = '0';
+    attemptsEl.textContent = '0';
+    totalEl.textContent = round.length;
+    if (setEl) setEl.textContent = (setIndex + 1) + ' of ' + totalSets;
+    resultEl.classList.remove('show');
+    render();
+  }
+
+  function nextSet() {
+    setIndex++;
+    if (setIndex >= totalSets) buildDeck();
+    loadSet();
+  }
+
+  function start() {
+    buildDeck();
+    loadSet();
+  }
+
+  document.getElementById('restart').addEventListener('click', nextSet);
+  document.getElementById('play-again').addEventListener('click', nextSet);
+  start();
+</script>
+
+</body>
+</html>
