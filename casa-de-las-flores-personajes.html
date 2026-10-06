@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>La casa de las flores — Los personajes</title>
+<style>
+  :root{
+    --bg:#12181f;
+    --card:#1c2733;
+    --line:#2a3a4a;
+    --accent:#5e9ed7;
+    --wrong:#d77a5e;
+    --text:#e8eef5;
+    --muted:#8ba3bb;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    padding:24px 16px 56px;
+    background:var(--bg);
+    color:var(--text);
+    font-family:"Segoe UI",Tahoma,Geneva,Verdana,sans-serif;
+    line-height:1.5;
+  }
+  .wrap{max-width:860px;margin:0 auto}
+  .back{
+    display:inline-block;
+    color:var(--muted);
+    text-decoration:none;
+    font-size:.9rem;
+    margin-bottom:18px;
+  }
+  .back:hover{color:var(--accent)}
+  h1{
+    font-size:1.7rem;
+    font-weight:800;
+    text-transform:uppercase;
+    letter-spacing:1px;
+    margin:0 0 4px;
+  }
+  .sub{color:var(--muted);font-size:.95rem;margin:0 0 22px}
+  .instruction{
+    background:var(--card);
+    border:2px solid var(--line);
+    border-radius:14px;
+    padding:16px 18px;
+    margin-bottom:20px;
+  }
+  .instruction p{margin:0;color:var(--muted);font-size:.95rem}
+  .riddle{
+    font-size:1.25rem;
+    margin:0 0 10px;
+    min-height:3.2em;
+  }
+  .tag{
+    display:inline-block;
+    font-size:.78rem;
+    text-transform:uppercase;
+    letter-spacing:.5px;
+    color:var(--accent);
+    border:1px solid var(--line);
+    border-radius:50px;
+    padding:3px 12px;
+  }
+  .meta{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:12px;
+    margin:18px 0 14px;
+    flex-wrap:wrap;
+  }
+  .counter{color:var(--muted);font-size:.9rem}
+  .dots{display:flex;gap:6px;flex-wrap:wrap}
+  .dot{
+    width:11px;height:11px;
+    border-radius:50%;
+    background:var(--line);
+  }
+  .dot.ok{background:var(--accent)}
+  .dot.no{background:var(--wrong)}
+  .dot.active{outline:2px solid var(--accent);outline-offset:2px}
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(150px,1fr));
+    gap:14px;
+  }
+  .char{
+    background:var(--card);
+    border:2px solid var(--line);
+    border-radius:14px;
+    padding:14px 10px;
+    text-align:center;
+    cursor:pointer;
+    transition:transform .15s,border-color .15s,color .15s;
+    color:var(--text);
+    font-size:1rem;
+    font-family:inherit;
+  }
+  .char:hover:not(:disabled){transform:translateY(-3px);border-color:var(--accent)}
+  .char:disabled{cursor:default}
+  .char img{
+    width:100%;
+    aspect-ratio:1/1;
+    object-fit:cover;
+    border-radius:10px;
+    margin-bottom:10px;
+    display:block;
+  }
+  .char.correct{border-color:var(--accent);color:var(--accent)}
+  .char.incorrect{border-color:var(--wrong);color:var(--wrong)}
+  .char.dim{opacity:.4}
+  .nav{
+    display:flex;
+    justify-content:space-between;
+    gap:12px;
+    margin-top:24px;
+  }
+  button.btn{
+    background:transparent;
+    border:2px solid var(--line);
+    color:var(--muted);
+    border-radius:50px;
+    padding:10px 22px;
+    font-size:.95rem;
+    font-family:inherit;
+    cursor:pointer;
+    transition:border-color .15s,color .15s;
+  }
+  button.btn:hover:not(:disabled){border-color:var(--accent);color:var(--accent)}
+  button.btn:disabled{opacity:.35;cursor:default}
+  .end{text-align:center;padding:40px 10px}
+  .end h2{font-size:1.5rem;margin:0 0 10px}
+  .score{font-size:2.6rem;font-weight:800;color:var(--accent);margin:10px 0}
+  .end p{color:var(--muted);margin:0 0 24px}
+  .hidden{display:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <a class="back" href="index.html">&larr; Volver a ejercicios</a>
+
+  <h1>La casa de las flores</h1>
+  <p class="sub">Los personajes &middot; Temporada 1, cap&iacute;tulos 1&ndash;3</p>
+
+  <div id="game">
+    <div class="instruction">
+      <p>Haz clic en el personaje que corresponde a la descripci&oacute;n.</p>
+    </div>
+
+    <p class="riddle" id="riddle"></p>
+    <span class="tag" id="tag"></span>
+
+    <div class="meta">
+      <span class="counter" id="counter"></span>
+      <div class="dots" id="dots"></div>
+      <span class="counter" id="score"></span>
+    </div>
+
+    <div class="grid" id="grid"></div>
+
+    <div class="nav">
+      <button class="btn" id="prev">&larr; Anterior</button>
+      <button class="btn" id="next">Siguiente &rarr;</button>
+    </div>
+  </div>
+
+  <div class="end hidden" id="end">
+    <h2>Fin del ejercicio</h2>
+    <div class="score" id="final"></div>
+    <p id="message"></p>
+    <button class="btn" id="again">Jugar otra vez</button>
+  </div>
+
+</div>
+
+<script>
+// Para poner fotos: guarda las imagenes como flores/virginia.jpg, flores/ernesto.jpg, etc.
+// Si el archivo no existe, la tarjeta muestra solo el nombre y no se rompe.
+const CHARACTERS = [
+  { id:"virginia",  label:"Virginia",  photo:"flores/virginia.jpg" },
+  { id:"ernesto",   label:"Ernesto",   photo:"flores/ernesto.jpg" },
+  { id:"paulina",   label:"Paulina",   photo:"flores/paulina.jpg" },
+  { id:"elena",     label:"Elena",     photo:"flores/elena.jpg" },
+  { id:"julian",    label:"Julián", photo:"flores/julian.jpg" },
+  { id:"diego",     label:"Diego",     photo:"flores/diego.jpg" },
+  { id:"lucia",     label:"Lucía", photo:"flores/lucia.jpg" },
+  { id:"roberta",   label:"Roberta",   photo:"flores/roberta.jpg" },
+  { id:"micaela",   label:"Micaela",   photo:"flores/micaela.jpg" },
+  { id:"delia",     label:"Delia",     photo:"flores/delia.jpg" },
+  { id:"bruno",     label:"Bruno",     photo:"flores/bruno.jpg" },
+  { id:"dominique", label:"Dominique", photo:"flores/dominique.jpg" }
+];
+
+const RIDDLES = [
+  { answer:"virginia", tag:"la generación mayor",
+    text:"Es la matriarca de la familia y la dueña de la florería. Le importa muchísimo lo que diga la gente." },
+  { answer:"ernesto", tag:"la generación mayor",
+    text:"Es el padre de familia. Tiene una amante desde hace años y una hija que casi nadie conoce." },
+  { answer:"paulina", tag:"los hijos",
+    text:"Es la hija mayor y la que dirige los negocios. Ya sabía lo de la amante y no había dicho nada." },
+  { answer:"elena", tag:"los hijos",
+    text:"Vive en Estados Unidos y vuelve a México para la fiesta de su papá." },
+  { answer:"julian", tag:"los hijos",
+    text:"Tiene novia, pero también tiene un amante. En el capítulo 3 decide contarle la verdad a su familia." },
+  { answer:"diego", tag:"fuera de la familia",
+    text:"Es el asesor financiero de la familia. También es el amante de uno de los hijos." },
+  { answer:"roberta", tag:"fuera de la familia",
+    text:"Es la amante de Ernesto. Se ahorca en la florería el día de la fiesta y deja una carta." },
+  { answer:"micaela", tag:"la generación joven",
+    text:"Es la hija de Roberta y de Ernesto. Todavía no sabe quién es su padre." },
+  { answer:"delia", tag:"la casa",
+    text:"Trabaja en la casa desde hace muchos años. Es la que tiene la carta que dejó Roberta." },
+  { answer:"lucia", tag:"fuera de la familia",
+    text:"Es la novia de Julián. Cuando él le dice la verdad, ella insiste en que no puede ser." }
+];
+
+let order = [], idx = 0, answers = [];
+
+const $ = id => document.getElementById(id);
+
+function shuffle(a){
+  const b = a.slice();
+  for (let i = b.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    [b[i], b[j]] = [b[j], b[i]];
+  }
+  return b;
+}
+
+function startGame(){
+  order = shuffle(RIDDLES);
+  idx = 0;
+  answers = new Array(order.length).fill(null);
+  $("game").classList.remove("hidden");
+  $("end").classList.add("hidden");
+  render();
+}
+
+function render(){
+  const r = order[idx];
+  $("riddle").textContent = r.text;
+  $("tag").textContent = r.tag;
+  $("counter").textContent = "Pregunta " + (idx + 1) + " / " + order.length;
+  $("score").textContent = "Correctas: " + answers.filter(a => a === true).length;
+
+  $("dots").innerHTML = "";
+  order.forEach((_, i) => {
+    const d = document.createElement("div");
+    d.className = "dot";
+    if (answers[i] === true) d.classList.add("ok");
+    if (answers[i] === false) d.classList.add("no");
+    if (i === idx) d.classList.add("active");
+    $("dots").appendChild(d);
+  });
+
+  $("grid").innerHTML = "";
+  CHARACTERS.forEach(c => {
+    const b = document.createElement("button");
+    b.className = "char";
+    b.innerHTML =
+      '<img src="' + c.photo + '" alt="" onerror="this.style.display=\'none\'">' +
+      '<span>' + c.label + '</span>';
+    if (answers[idx] !== null){
+      b.disabled = true;
+      if (c.id === r.answer) b.classList.add("correct");
+      else b.classList.add("dim");
+    } else {
+      b.addEventListener("click", () => handleAnswer(c.id, b));
+    }
+    $("grid").appendChild(b);
+  });
+
+  $("prev").disabled = idx === 0;
+  $("next").textContent = idx === order.length - 1 ? "Ver resultado" : "Siguiente →";
+  $("next").disabled = answers[idx] === null;
+}
+
+function handleAnswer(chosen, btn){
+  const r = order[idx];
+  const ok = chosen === r.answer;
+  answers[idx] = ok;
+
+  [...$("grid").children].forEach(el => el.disabled = true);
+  if (ok){
+    btn.classList.add("correct");
+  } else {
+    btn.classList.add("incorrect");
+    [...$("grid").children].forEach(el => {
+      if (el.textContent.trim() === labelOf(r.answer)) el.classList.add("correct");
+    });
+  }
+  $("score").textContent = "Correctas: " + answers.filter(a => a === true).length;
+  $("next").disabled = false;
+
+  const dots = $("dots").children;
+  dots[idx].classList.add(ok ? "ok" : "no");
+}
+
+function labelOf(id){
+  const c = CHARACTERS.find(x => x.id === id);
+  return c ? c.label : "";
+}
+
+function showResults(){
+  const total = order.length;
+  const got = answers.filter(a => a === true).length;
+  $("game").classList.add("hidden");
+  $("end").classList.remove("hidden");
+  $("final").textContent = got + " / " + total;
+  let msg;
+  if (got === total) msg = "Perfecto. Ya conoces a toda la familia.";
+  else if (got >= total - 2) msg = "Muy bien. Se te escapó alguno, nada más.";
+  else if (got >= total / 2) msg = "Vas bien. Vuelve a mirar el capítulo 2, que ahí entra más gente.";
+  else msg = "Tranquilo, son muchos personajes de golpe. Inténtalo otra vez.";
+  $("message").textContent = msg;
+}
+
+$("next").addEventListener("click", () => {
+  if (idx === order.length - 1) showResults();
+  else { idx++; render(); }
+});
+$("prev").addEventListener("click", () => { if (idx > 0){ idx--; render(); } });
+$("again").addEventListener("click", startGame);
+
+startGame();
+</script>
+</body>
+</html>
