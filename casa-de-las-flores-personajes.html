@@ -143,7 +143,7 @@
   <a class="back" href="index.html">&larr; Volver a ejercicios</a>
 
   <h1>La casa de las flores</h1>
-  <p class="sub">Los personajes &middot; Temporada 1, cap&iacute;tulos 1&ndash;3</p>
+  <p class="sub">Los personajes &middot; Temporada 1, cap&iacute;tulo 1</p>
 
   <div id="game">
     <div class="instruction">
@@ -204,17 +204,17 @@ const RIDDLES = [
   { answer:"elena", tag:"los hijos",
     text:"Vive en Estados Unidos y vuelve a México para la fiesta de su papá." },
   { answer:"julian", tag:"los hijos",
-    text:"Tiene novia, pero también tiene un amante. En el capítulo 3 decide contarle la verdad a su familia." },
+    text:"Tiene novia, pero también tiene un amante. Nadie en la familia lo sabe todavía." },
   { answer:"diego", tag:"fuera de la familia",
     text:"Es el asesor financiero de la familia. También es el amante de uno de los hijos." },
   { answer:"roberta", tag:"fuera de la familia",
     text:"Es la amante de Ernesto. Se ahorca en la florería el día de la fiesta y deja una carta." },
   { answer:"micaela", tag:"la generación joven",
-    text:"Es la hija de Roberta y de Ernesto. Todavía no sabe quién es su padre." },
+    text:"Es la hija de Roberta. En la familia, solo Paulina sabe que Ernesto es su papá." },
   { answer:"delia", tag:"la casa",
-    text:"Trabaja en la casa desde hace muchos años. Es la que tiene la carta que dejó Roberta." },
+    text:"Trabaja en la casa desde hace muchos años y se entera de todo lo que pasa ahí." },
   { answer:"lucia", tag:"fuera de la familia",
-    text:"Es la novia de Julián. Cuando él le dice la verdad, ella insiste en que no puede ser." }
+    text:"Es la novia de Julián. Él no le ha contado toda la verdad." }
 ];
 
 let order = [], idx = 0, answers = [];
@@ -313,7 +313,7 @@ function showResults(){
   let msg;
   if (got === total) msg = "Perfecto. Ya conoces a toda la familia.";
   else if (got >= total - 2) msg = "Muy bien. Se te escapó alguno, nada más.";
-  else if (got >= total / 2) msg = "Vas bien. Vuelve a mirar el capítulo 2, que ahí entra más gente.";
+  else if (got >= total / 2) msg = "Vas bien. Vuelve a mirar el capítulo 1, que entran muchos personajes de golpe.";
   else msg = "Tranquilo, son muchos personajes de golpe. Inténtalo otra vez.";
   $("message").textContent = msg;
 }
